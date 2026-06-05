@@ -1,0 +1,316 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --footer-btn-padding-block: 20px;
+  --footer-btn-radius: 14px;
+  --footer-btn-font-size: 14px;
+  --footer-btn-font-weight: 500;
+  --footer-bar-padding-x: 20px;
+  --footer-bar-padding-bottom: 20px;
+  --footer-bar-max-width: 480px;
+  /* Фиксированные отступы как на profile-plan / iPhone SE — без clamp(vh) */
+  --link-bank-stack-gap: 25px;
+  /* ~56px при font-size 14px, как на profile-plan.html */
+  --footer-btn-height: 56px;
+  --footer-clearance: calc(
+    var(--link-bank-stack-gap) + var(--footer-btn-height) +
+      var(--footer-bar-padding-bottom) + env(safe-area-inset-bottom, 0px)
+  );
+}
+
+body {
+  background-color: #fafafa;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* final.html — колонка и кнопка в потоке (как newcomer) */
+body:has(.final-shell) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.final-shell {
+  width: 100%;
+  max-width: var(--footer-bar-max-width);
+  min-height: 100dvh;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.final-shell .bottom-bg,
+.newcomer-shell .bottom-bg {
+  display: none;
+}
+
+/* final + newcomer: кнопка в потоке, отступы 1:1 с profile-plan */
+.final-shell .btn,
+.newcomer-shell .btn {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  flex-shrink: 0;
+  padding: 0 var(--footer-bar-padding-x)
+    calc(var(--footer-bar-padding-bottom) + env(safe-area-inset-bottom, 0px));
+  background-color: #fafafa;
+  border: 1px solid #fafafa;
+  box-shadow: none;
+  box-sizing: border-box;
+  z-index: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: 16px;
+  margin-top: 16px;
+}
+
+/* Отступ под фиксированную кнопку; final/newcomer — кнопка в потоке */
+body:not(:has(.newcomer-shell)):not(:has(.final-shell)) > .main {
+  margin-bottom: 0;
+  padding-bottom: var(--footer-clearance);
+}
+
+.final-shell > .main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* final: зазор до кнопки через спейсер; newcomer — через padding у .choice-section */
+.final-shell > .main::after {
+  content: "";
+  display: block;
+  flex: 1 1 auto;
+  min-height: var(--link-bank-stack-gap);
+}
+
+.newcomer-shell > .main::after {
+  content: "";
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.newcomer-shell > .main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user__text-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.user__text-desc {
+  font-size: 14px;
+  color: #787878;
+}
+
+.link-bank {
+  padding: 16px 16px 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #fff;
+  margin-top: 32px;
+  border-radius: 16px;
+  margin-inline: 16px;
+}
+
+.link-bank__title {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.link-bank__desc {
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  color: #787878;
+  margin-top: 12px;
+}
+
+.link-bank__image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--link-bank-stack-gap);
+  width: 100%;
+  max-width: 338px;
+  aspect-ratio: 338 / 401;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.link-bank__note {
+  margin-top: var(--link-bank-stack-gap);
+  margin-bottom: 0;
+}
+.link-bank__note-title {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 21px;
+    color: #9A9A9A;
+    width: 100%;
+    margin: 0;
+}
+
+.link-bank__note-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: #0F0F0F;
+    width: 100%;
+    margin: 0;
+}
+/* Bottom Background */
+.bottom-bg {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--footer-bar-max-width);
+  height: calc(
+    var(--footer-btn-height) + var(--footer-bar-padding-bottom) +
+      env(safe-area-inset-bottom, 0px)
+  );
+  z-index: 999;
+  background: #fafafa;
+}
+
+/* Кнопка 1:1 с profile-plan.html (question.css .btn + .footer__btn) */
+.btn {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: var(--footer-bar-max-width);
+  padding: 0 var(--footer-bar-padding-x)
+    calc(var(--footer-bar-padding-bottom) + env(safe-area-inset-bottom, 0px));
+  background-color: #fafafa;
+  border: 1px solid #fafafa;
+  box-shadow: none;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.footer__btn {
+  padding-block: var(--footer-btn-padding-block);
+  border: none;
+  border-radius: var(--footer-btn-radius);
+  font-size: var(--footer-btn-font-size);
+  font-weight: var(--footer-btn-font-weight);
+  color: #fff;
+  width: 100%;
+  max-width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 31, 1) 0%,
+    rgba(255, 119, 215, 1) 100%
+  );
+}
+
+.waiting-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.waiting-modal--open {
+  display: flex;
+}
+
+.waiting-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 15, 15, 0.56);
+}
+
+.waiting-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 360px;
+  padding: 24px 20px 20px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(15, 15, 15, 0.18);
+  text-align: center;
+}
+
+.waiting-modal__title {
+  color: #0f0f0f;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.waiting-modal__text {
+  margin-top: 12px;
+  color: #0f0f0f;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.waiting-modal__btn {
+  width: 100%;
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 31, 1) 0%,
+    rgba(255, 119, 215, 1) 100%
+  );
+  color: #fff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

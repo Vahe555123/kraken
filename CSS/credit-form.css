@@ -1,0 +1,409 @@
+/* Credit Form – Formulario de datos personales */
+
+/* Ширина и выравнивание как у .btn — ровно по вертикали */
+.credit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  gap: 20px;
+  width: calc(100vw - 40px);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  margin-bottom: 36px;
+  box-sizing: border-box;
+}
+
+/* Dirección — выравнивание по ширине с кнопкой */
+.main__content-3 .credit-form,
+.main__content-3 .address-form {
+  width: calc(100vw - 40px);
+  max-width: calc(100vw - 40px);
+  margin-left: auto;
+  margin-right: auto;
+  align-self: stretch;
+}
+
+/* Блок 2 – подгоняем отступ credit-form до кнопки */
+.main__content-2 .credit-form {
+  margin-bottom: 36px;
+}
+
+/* Income form (bloque 4) */
+.main__content-4 .credit-form {
+  width: calc(100vw - 40px);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  align-self: stretch;
+}
+
+/* Bloque 5 - créditos activos, vehículo, PEP, historial */
+.main__content-5 .credit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  gap: 20px;
+  width: calc(100vw - 40px);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  margin-bottom: 36px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+/* Bloque 6 - ofertas adicionales (Hipoteca, Seguro, Tarjeta) */
+.main__content-6 .credit-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  gap: 20px;
+  width: calc(100vw - 40px);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  /* как и на остальных экранах — чтобы на маленьких экранах
+     максимальный отступ при долистывании вниз был одинаковым */
+  margin-bottom: 36px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+
+.credit-form__field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  /* убираем общий gap, чтобы расстояния контролировать через margin */
+  gap: 0;
+  width: 100%;
+  flex: none;
+  align-self: stretch;
+  position: relative;
+}
+.credit-form__field-education {
+  /* отступ до кнопки теперь задаём через margin-bottom у .credit-form,
+     чтобы на всех экранах расстояние от последнего поля до кнопки было одинаковым */
+  margin-bottom: 0;
+}
+.credit-form__label {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #787878;
+  flex: none;
+  align-self: stretch;
+}
+
+.credit-form__label--iban {
+  line-height: 1.4;
+  min-height: 44px;
+}
+
+/* Общий стиль рамки для полей и dropdown */
+.credit-form__input-wrap {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  width: 100%;
+  height: 52px;
+  background: #FFFFFF;
+  border: 1px solid #787878;
+  border-radius: 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.credit-form__field:not(.credit-form__dropdown) .credit-form__input-wrap {
+  cursor: default;
+}
+
+.credit-form__dropdown .credit-form__input-wrap {
+  cursor: pointer;
+}
+
+/* Заполненный dropdown — оранжевая рамка и текст */
+.credit-form__dropdown:has(.credit-form__value[data-empty="false"]) .credit-form__input-wrap:not(.credit-form__input-wrap--error) {
+  border-color: #FA6C12;
+}
+
+.credit-form__dropdown .credit-form__value[data-empty="false"] {
+  color: #FA6C12;
+}
+
+/* Обычные поля: при фокусе/заполнении такая же оранжевая рамка и текст, как у dropdown */
+.credit-form__field:not(.credit-form__dropdown)
+  .credit-form__input-wrap:has(input:focus),
+.credit-form__field:not(.credit-form__dropdown)
+  .credit-form__input-wrap:has(input:not(:placeholder-shown)) {
+  border-color: #FA6C12;
+}
+
+.credit-form__field:not(.credit-form__dropdown)
+  .credit-form__input-wrap input:focus,
+.credit-form__field:not(.credit-form__dropdown)
+  .credit-form__input-wrap input:not(:placeholder-shown) {
+  color: #FA6C12;
+}
+
+/* Стиль незаполненного обязательного поля — красная рамка + "Campo obligatorio" */
+.credit-form__input-wrap--error {
+  border-color: #FF0000;
+}
+
+.credit-form__input-wrap input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0F0F0F;
+  background: transparent;
+  min-width: 0;
+}
+
+.credit-form__input-wrap input::placeholder {
+  color: #9A9A9A;
+}
+
+.credit-form__value {
+  flex: 1;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0F0F0F;
+  min-width: 0;
+}
+
+.credit-form__dropdown .credit-form__value[data-empty="true"] {
+  color: #9A9A9A;
+}
+
+/* Стрелка:
+   - в свернутом состоянии (пустом и выбранном) — вниз
+   - в развернутом состоянии — вверх */
+.credit-form__chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  /* базовая иконка — стрелка влево, поворачиваем (сейчас) ВВЕРХ */
+  transform: rotate(-90deg);
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: brightness(0) invert(0.78);
+}
+
+.credit-form__dropdown.is-open .credit-form__chevron {
+  /* при открытом списке — стрелка ВНИЗ */
+  transform: rotate(90deg);
+  filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(102%) contrast(101%);
+}
+
+.credit-form__dropdown:not(.is-open):has(.credit-form__value[data-empty="false"]) .credit-form__chevron {
+  /* после выбора и закрытия списка — стрелка ВВЕРХ, только цвет меняем */
+  transform: rotate(-90deg);
+  filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(346deg) brightness(102%) contrast(101%);
+}
+
+.credit-form__field-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.credit-form__field-row .credit-form__input-wrap {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  min-height: 52px;
+}
+
+/* Fecha — DD, MM, AAAA: равная ширина, фиксированная высота 52px */
+.credit-form__field--date {
+  gap: 0;
+  align-self: stretch;
+  width: 100%;
+}
+
+.credit-form__field--date .credit-form__label {
+  margin-bottom: 8px;
+}
+
+/* flex-start: при открытии DD только колонка дня растёт, MM и AAAA остаются 52px */
+.credit-form__field--date .credit-form__field-row {
+  align-items: flex-start;
+  width: 100%;
+  min-height: 52px;
+}
+
+.credit-form__field--date .credit-form__field-row .credit-form__input-wrap {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 52px;
+  min-height: 52px;
+}
+
+.credit-form__field--date .credit-form__field-row .credit-form__field {
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  position: relative;
+  gap: 0;
+}
+
+.credit-form__field--date .credit-form__input-wrap--day,
+.credit-form__field--date .credit-form__input-wrap--month,
+.credit-form__field--date .credit-form__input-wrap--year {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  min-height: 52px;
+}
+
+.credit-form__field--date .credit-form__field-row .credit-form__dropdown--day,
+.credit-form__field--date .credit-form__field-row .credit-form__dropdown--month,
+.credit-form__field--date .credit-form__field-row .credit-form__dropdown--year {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Текст ошибки для незаполненного поля (Campo obligatorio) */
+.credit-form__error {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: #FF0000;
+  text-align: right;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.credit-form__field--iban {
+  /* отступ до кнопки задаём через margin-bottom у .credit-form,
+     поэтому здесь убираем дополнительный нижний отступ,
+     чтобы на 7 экране расстояние до кнопки было таким же, как на остальных */
+  margin-bottom: 0;
+}
+
+/* Dropdown list — стиль как credit-form__input-wrap */
+.credit-form__dropdown-list {
+  display: none;
+  flex-direction: column;
+  /* по умолчанию список идёт в потоке сразу под полем */
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: auto;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-top: none;
+  /* рамка по бокам и снизу у всего списка,
+     чтобы углы снизу слева/справа были закрашены */
+  border-left: 1px solid #FA6C12;
+  border-right: 1px solid #FA6C12;
+  border-bottom: 1px solid #FA6C12;
+  border-radius: 0 0 14px 14px;
+  margin-top: -1px;
+  /* ширина как у поля + высота под ровно 5 пунктов (5 * 52px) */
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Строка со списками даты: под полями DD/MM/AAAA, высота добавляется только открытому списку */
+.credit-form__field-row--lists {
+  display: none;
+  gap: 8px;
+  width: 100%;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.credit-form__field--date:has(.credit-form__date-list-wrap.is-open) .credit-form__field-row--lists {
+  display: flex;
+}
+
+/* Все три обёртки всегда в ряду (по 1/3 ширины = как DD, MM, AAAA); список виден только в .is-open */
+.credit-form__date-list-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.credit-form__date-list-wrap.is-open .credit-form__dropdown-list {
+  display: flex;
+}
+
+.credit-form__dropdown.is-open .credit-form__dropdown-list {
+  display: flex;
+}
+
+.credit-form__dropdown.is-open .credit-form__input-wrap {
+  border: 1px solid #FA6C12;
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+}
+
+.credit-form__dropdown-option {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  width: 100%;
+  height: 52px;
+  min-height: 52px;
+  background: #FFFFFF;
+  /* рамку теперь рисует контейнер списка,
+     у пунктов оставляем только разделители по желанию (сейчас без них) */
+  border-width: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0F0F0F;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.credit-form__dropdown-option:last-child {
+  /* нижнюю границу теперь рисует контейнер списка */
+  border-bottom-width: 0;
+  border-radius: 0 0 14px 14px;
+}
+
+.credit-form__dropdown-option:hover {
+  background: #F4F4F4;
+  color: #0F0F0F;
+}
+
+.credit-form__dropdown-option.is-selected {
+  background: #F4F4F4;
+  color: #FA6C12;
+}
+
+.bank__update {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #787878;
+}
+
+.bank__update-link {
+  color: #FA6C12;
+  text-decoration: underline;
+}

@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(command -v figma)",
+      "Read(//Users/ayubxonxakimov/.claude/**)",
+      "Bash(mdls -name kMDItemNumberOfPages \"Контракт .pdf\" \"Контракт 2.pdf\")",
+      "Bash(python3 -c \"import fitz; print\\('pymupdf', fitz.__doc__\\)\")",
+      "Bash(python3 -c \"import pdfplumber; print\\('pdfplumber ok'\\)\")",
+      "Bash(python3 -m pip install --quiet --user pymupdf)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(python3 -c \"import fitz; print\\('pymupdf', fitz.VersionBind\\)\")",
+      "Bash(brew install *)",
+      "Bash(mkdir -p /tmp/contract)",
+      "Bash(pdfinfo \"Контракт .pdf\")",
+      "Bash(pdfinfo \"Контракт 2.pdf\")",
+      "Bash(pdftoppm -r 110 -png \"Контракт 2.pdf\" /tmp/contract/c2)",
+      "Bash(pdftoppm -r 110 -png \"Контракт .pdf\" /tmp/contract/c1)",
+      "Read(//tmp/**)",
+      "Bash(pdftotext -layout -f 1 -l 1 \"Контракт .pdf\" -)",
+      "Bash(pdftotext -layout -f 2 -l 2 \"Контракт .pdf\" -)",
+      "Bash(pdftotext -layout -f 3 -l 3 \"Контракт .pdf\" -)",
+      "Bash(pdftotext -layout -f 4 -l 4 \"Контракт .pdf\" -)",
+      "Bash(pdftotext -layout -f 5 -l 5 \"Контракт .pdf\" -)",
+      "Read(//private/tmp/contract/**)",
+      "Bash(pdftoppm -r 200 -png -f 1 -l 1 \"/Users/ayubxonxakimov/Developer/freelance/client/Контракт .pdf\" hi)",
+      "Bash(sips -c 520 1654 hi-1.png --out hd-top.png)",
+      "Bash(sips --cropToHeightWidth 700 1654 hi-1.png --out tmp_full.png)",
+      "Bash(pdftoppm -r 200 -png -f 1 -l 1 -x 0 -y 0 -W 1654 -H 560 \"/Users/ayubxonxakimov/Developer/freelance/client/Контракт .pdf\" header)",
+      "Bash(pdftoppm -r 300 -png -f 1 -l 1 -x 1900 -y 130 -W 560 -H 200 \"/Users/ayubxonxakimov/Developer/freelance/client/Контракт .pdf\" goval)",
+      "Bash(pdftoppm -r 200 -png -f 5 -l 5 -x 60 -y 380 -W 1300 -H 500 \"/Users/ayubxonxakimov/Developer/freelance/client/Контракт .pdf\" stamp)",
+      "Bash(awk '{ *)",
+      "Bash(python3 -)",
+      "Bash(node /tmp/contract/shot.js)",
+      "Bash(npm root *)",
+      "Read(//opt/homebrew/lib/node_modules/**)",
+      "Bash(sips -c 2300 960 full.png --out v_top.png)",
+      "Bash(which magick *)",
+      "Bash(npx --no-install playwright --version)",
+      "Read(//Users/ayubxonxakimov/Library/Caches/ms-playwright/**)",
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)"
+    ]
+  }
+}

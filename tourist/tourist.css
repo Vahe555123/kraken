@@ -1,0 +1,3429 @@
+/* Tourist — общие стили для всех экранов папки.
+   База (фон, шрифт, ширина колонки, типографика) взята из link-bank.css / profile-plan.css,
+   чтобы переходы между страницами были без скачков. */
+
+html {
+  overflow-x: clip;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 96px;
+  width: 100%;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+.tourist-shell {
+  width: min(100%, 480px);
+  margin-inline: auto;
+  /* Не 100vh: под fixed tabbar body уже даёт padding-bottom: 96px — иначе лишний скролл */
+  min-height: calc(100vh - 96px);
+  min-height: calc(100dvh - 96px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Воздух под шапкой с «назад» (не прилипает к первому блоку main) */
+.tourist-shell > .tourist-topbar + .tourist-main {
+  margin-top: 12px;
+}
+
+/* ===== Header вариант 1: профиль (как в newcomer / final.html) ===== */
+.tourist-header {
+  --tourist-header-control: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+}
+
+.tourist-header__user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tourist-header__avatar {
+  width: var(--tourist-header-control, 48px);
+  height: var(--tourist-header-control, 48px);
+  border-radius: 50%;
+  background: #ededed;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.tourist-header__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tourist-header__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tourist-header__subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Кнопка уведомлений: иконка + бейдж в одном SVG (как в макете) */
+.tourist-header__notification {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tourist-header__notification svg {
+  display: block;
+}
+
+.tourist-header__notification:active {
+  opacity: 0.85;
+}
+
+/* ===== Header вариант 2: back + title (Notificaciones / Historial / etc.) ===== */
+/* Слот 48px как .tourist-header__avatar / .user__img; плашка «назад» 38px по центру слота */
+.tourist-topbar {
+  --tourist-header-control: 48px;
+  --tourist-topbar-back-pad: 38px;
+  display: grid;
+  grid-template-columns: var(--tourist-header-control) 1fr var(--tourist-header-control);
+  align-items: center;
+  column-gap: 16px;
+  box-sizing: border-box;
+  padding: max(16px, env(safe-area-inset-top, 0px)) 16px 16px;
+  min-height: 0;
+}
+
+.tourist-topbar__back {
+  grid-column: 1;
+  justify-self: start;
+  position: relative;
+  width: var(--tourist-header-control);
+  height: var(--tourist-header-control);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Плашка слева в слоте: без доп. зазора между левым краем колонки (уже с 16px как у main) и серым фоном */
+.tourist-topbar__back::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--tourist-topbar-back-pad);
+  height: var(--tourist-topbar-back-pad);
+  transform: translateY(-50%);
+  border-radius: 12px;
+  background: #ededed;
+  pointer-events: none;
+}
+
+.tourist-topbar__back svg {
+  position: absolute;
+  left: calc(var(--tourist-topbar-back-pad) * 0.5);
+  top: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.tourist-topbar__back:active {
+  opacity: 0.85;
+}
+
+.tourist-topbar__title {
+  grid-column: 2;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  text-align: center;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* ===== Основная область ===== */
+.tourist-main {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== Карты ===== */
+.tourist-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tourist-card--center {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ===== Plan de pagos (карточка графика платежей) ===== */
+.tourist-plan {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  padding: 16px 16px 16px;
+  background: linear-gradient(90deg, #f4eef9 0.07%, #f7f1f7 50%, #f9eee9 99.93%);
+  border-radius: 16px;
+}
+
+.tourist-plan__head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.tourist-plan__head-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.tourist-plan__title {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+}
+
+.tourist-plan__info {
+  display: block;
+  flex: 0 0 auto;
+  opacity: 0.9;
+}
+
+.tourist-plan__link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  text-align: right;
+  color: #fa6c12;
+  cursor: pointer;
+}
+
+.tourist-plan__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.tourist-plan__top {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tourist-plan__next {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tourist-plan__next-label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #0f0f0f;
+}
+
+.tourist-plan__next-value {
+  font-family: "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 34px;
+  color: #0f0f0f;
+}
+
+.tourist-plan__next-currency {
+  background: linear-gradient(360deg, #ff77d7 0%, #fa6c12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.tourist-plan__bank {
+  position: relative;
+  display: block;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 auto;
+  background: #ffffff;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.tourist-plan__bank-logo {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  height: 30px;
+  width: auto;
+  max-width: none;
+  display: block;
+}
+
+.tourist-plan__cols {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.tourist-plan__col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tourist-plan__col:last-child {
+  padding-left: 24px;
+}
+
+.tourist-plan__col-divider {
+  align-self: center;
+  width: 1px;
+  height: 42px;
+  background: #f4eef9;
+  flex: 0 0 auto;
+}
+
+.tourist-plan__col-label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #2d2d2d;
+}
+
+.tourist-plan__col-value {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #0f0f0f;
+}
+
+.tourist-plan__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tourist-plan__progress-track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: #e1f8e9;
+  border-radius: 360px;
+  overflow: hidden;
+}
+
+.tourist-plan__progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 8px;
+  width: 3.3%;
+  min-width: 10px;
+  background: #1ec756;
+  border-radius: 360px;
+}
+
+.tourist-plan__progress-meta {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tourist-plan__progress-meta span {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #2d2d2d;
+}
+
+.tourist-plan__cta {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  background: #0f0f0f;
+  border-radius: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.tourist-plan__cta svg {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.tourist-plan__cta:active {
+  opacity: 0.9;
+}
+
+/* ===== Section header (заголовок + ссылка справа) ===== */
+.tourist-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tourist-section-head__left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tourist-section-head__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.tourist-section-head__link {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #fa6c12;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* ===== Баланс ===== */
+.tourist-balance {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tourist-balance__label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+  margin: 0;
+}
+
+.tourist-balance__value {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 45px;
+  color: #0f0f0f;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+}
+
+.tourist-balance__currency,
+.tourist-gradient-text {
+  background: linear-gradient(90deg, #ff77d7 0%, #fa6c12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ===== Bank row (Masters Card строка) ===== */
+.tourist-bank {
+  width: 100%;
+  height: 60px;
+  box-sizing: border-box;
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 0 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Главная: карта скрыта до нажатия «Actualizar» */
+.tourist-bank.tourist-bank--hidden-until-update {
+  display: none;
+}
+
+/* Пульсация строки банка при «Actualizar» — те же ключевые кадры, что newcomer-progress-track-pulse */
+.tourist-bank.tourist-bank--home-pulse {
+  animation: tourist-home-bank-pulse 1.35s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+@keyframes tourist-home-bank-pulse {
+  0% {
+    opacity: 1;
+  }
+  36% {
+    opacity: 0;
+  }
+  64% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Экран детали: только текст + сумма + замок по макету (338) */
+.tourist-bank--detail {
+  display: block;
+  padding: 0;
+}
+
+.tourist-bank--detail .tourist-bank__text {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  width: min(201px, calc(100% - 144px));
+  flex: none;
+}
+
+.tourist-bank__logo {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-bank__logo svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.tourist-bank__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tourist-bank:not(.tourist-bank--detail) .tourist-bank__text {
+  padding-right: 100px;
+}
+
+.tourist-bank__title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.tourist-bank__mask {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  color: #787878;
+  margin: 0;
+}
+
+.tourist-bank__lock {
+  position: absolute;
+  right: 16px;
+  top: 0;
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tourist-bank__amount {
+  position: absolute;
+  right: 32px;
+  top: 19.5px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  text-align: right;
+  color: #0f0f0f;
+  white-space: nowrap;
+}
+
+/* ===== Группа кнопок (Activar + Transferencia) ===== */
+.tourist-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.tourist-btn {
+  flex: 1;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: none;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.tourist-btn--gradient {
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+  color: #ffffff;
+}
+
+.tourist-btn--outline {
+  background: #ffffff;
+  border: 1px solid #e7e7e7;
+  color: #0f0f0f;
+}
+
+.tourist-btn--dark {
+  background: #0f0f0f;
+  color: #ffffff;
+}
+
+.tourist-btn:active {
+  opacity: 0.9;
+}
+
+.tourist-btn svg,
+.tourist-btn img {
+  display: block;
+  flex-shrink: 0;
+}
+
+.tourist-btn__default-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tourist-btn__loading-content {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tourist-btn.is-loading {
+  position: relative;
+  pointer-events: none;
+  cursor: progress;
+}
+
+.tourist-btn.is-loading .tourist-btn__default-content {
+  visibility: hidden;
+}
+
+.tourist-btn.is-loading .tourist-btn__loading-content {
+  display: flex;
+}
+
+@keyframes tourist-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tourist-btn__spinner {
+  display: block;
+  animation: tourist-btn-spin 0.75s linear infinite;
+}
+
+/* Update line (Actualizado: hace poco · Actualizar) */
+.tourist-update-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 18px;
+  color: #787878;
+  margin: 0;
+}
+
+.tourist-update-line__btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  color: #fa6c12;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ===== Пустое состояние (Goals empty / Archived empty) ===== */
+.tourist-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.tourist-empty__illustration {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #ededed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tourist-empty__illustration svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+/* Иллюстрация целиком в SVG (72×72, фон внутри макета) — блок Objetivos на index */
+.tourist-empty__illustration--embed {
+  background: transparent;
+  border-radius: 0;
+}
+
+.tourist-empty__illustration--embed svg {
+  width: 72px;
+  height: 72px;
+}
+
+.tourist-empty__text {
+  width: 100%;
+  text-align: center;
+  opacity: 0.4;
+}
+
+.tourist-empty__title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.tourist-empty__desc {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+  margin: 0;
+}
+
+.tourist-empty--page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+/* ===== Item-ряд с круглой иконкой + текст + сумма (transactions) ===== */
+.tourist-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tourist-list-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.tourist-list-item__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ededed;
+}
+
+.tourist-list-item__icon--success {
+  background: #e1f8e9;
+}
+
+.tourist-list-item__icon--alert {
+  background: #fde5dd;
+}
+
+.tourist-list-item__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+/* Иконка 32×32 целиком в SVG (фон внутри) */
+.tourist-list-item__icon--full {
+  background: transparent;
+}
+
+.tourist-list-item__icon--full svg {
+  width: 32px;
+  height: 32px;
+}
+
+.tourist-list-item__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tourist-list-item__name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.tourist-list-item__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #9a9a9a;
+}
+
+.tourist-list-item__meta-dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #9a9a9a;
+  display: inline-block;
+}
+
+.tourist-list-item__amount {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 21px;
+  color: #0f0f0f;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tourist-list-item__amount--success {
+  color: #1ec756;
+}
+
+/* Запись истории (большая, со скрытой картинкой) */
+.tourist-record {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tourist-record__left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tourist-record__name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #0f0f0f;
+}
+
+.tourist-record__date {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #9a9a9a;
+}
+
+.tourist-record__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+}
+
+.tourist-record__amount {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #1ec756;
+}
+
+.tourist-record__card {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  color: #787878;
+}
+
+.tourist-record__card b {
+  font-weight: 700;
+  color: #787878;
+}
+
+/* ===== Алерт (notificación banner) ===== */
+.tourist-alert {
+  background: #fdecdf;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #fa6c12;
+}
+
+/* ===== Notifications list ===== */
+.tourist-shell--notifications {
+  width: min(100%, 402px);
+}
+
+.tourist-shell--notifications main {
+  width: 100%;
+}
+
+.tourist-notif {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tourist-notif__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.tourist-notif__item--unread {
+  background: #e1f8e9;
+}
+
+.tourist-notif__item--with-pdf {
+  position: relative;
+  height: 221px;
+  display: block;
+  padding: 0;
+}
+
+.tourist-notif__item:has(.tourist-notif__link) {
+  padding: 0;
+}
+
+.tourist-notif__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.tourist-notif__link:active {
+  opacity: 0.92;
+}
+
+.tourist-notif__link--credit {
+  position: relative;
+  height: 157px;
+  display: block;
+  padding: 0;
+}
+
+.tourist-notif__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ededed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-notif__link--credit .tourist-notif__icon {
+  position: absolute;
+  left: 16px;
+  top: 62.5px;
+}
+
+.tourist-notif__icon--success {
+  background: #e1f8e9;
+}
+
+.tourist-notif__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.tourist-notif__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tourist-notif__link--credit .tourist-notif__text {
+  position: absolute;
+  left: 60px;
+  top: 12px;
+  width: calc(100% - 104px);
+  height: 133px;
+  justify-content: center;
+}
+
+.tourist-notif__title {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.tourist-notif__desc {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #2d2d2d;
+  margin: 0;
+}
+
+.tourist-notif__desc--muted {
+  color: #787878;
+}
+
+.tourist-notif__desc .accent-success {
+  color: #1ec756;
+}
+
+.tourist-notif__chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-notif__link--credit .tourist-notif__chevron {
+  position: absolute;
+  right: 16px;
+  top: 70.5px;
+}
+
+.tourist-notif__chevron svg {
+  display: block;
+}
+
+.tourist-notif-pdf {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 157px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000000;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.tourist-notif-pdf:active {
+  opacity: 0.92;
+}
+
+.tourist-notif-pdf__icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: block;
+}
+
+.tourist-notif-pdf__text {
+  width: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tourist-notif-pdf__text strong {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tourist-notif-pdf__text span {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  color: #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tourist-notif-pdf__button {
+  flex: 0 0 auto;
+  min-width: 86px;
+  height: 36px;
+  padding: 0 9px;
+  border-radius: 8px;
+  background: #e1f8e9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 14px;
+  color: #1ec756;
+  text-align: center;
+}
+
+/* ===== Transaction detail page ===== */
+.tourist-warning-msg {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  text-align: center;
+  margin: 0;
+  padding: 0 16px;
+}
+.tourist-warning-msg__accent {
+  color: #fa6c12;
+}
+
+.tourist-detail-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tourist-detail-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+  /* Доп. шаг от заголовка карточки до первого ряда (иконка / поля) */
+  padding-bottom: 4px;
+}
+
+.tourist-person {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tourist-person__avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fde5dd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-person__avatar svg {
+  display: block;
+}
+
+.tourist-person__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tourist-person__name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #0f0f0f;
+}
+
+.tourist-person__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #9a9a9a;
+}
+
+.tourist-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tourist-input-field__label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+  margin: 0;
+}
+
+.tourist-input-field__box {
+  position: relative;
+  height: 52px;
+  border: 1px solid #dfdfdf;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 0 44px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #0f0f0f;
+  box-sizing: border-box;
+}
+
+.tourist-input-field__box[data-copy] {
+  cursor: pointer;
+}
+
+.tourist-input-field__box[data-copy]:focus-visible {
+  outline: 2px solid #fa6c12;
+  outline-offset: 2px;
+}
+
+.tourist-input-field__box.is-copied {
+  border-color: #1ec756;
+}
+
+.tourist-input-field__copied-toast {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%) scale(0.96);
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: rgba(15, 15, 15, 0.92);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+
+.tourist-input-field__box.is-copied .tourist-input-field__copied-toast {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.tourist-input-field__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-input-field__icon svg {
+  display: block;
+}
+
+.tourist-input-field__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 21px;
+}
+
+.tourist-input-field__copy {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: #787878;
+}
+
+.tourist-input-field__copy svg {
+  display: block;
+  pointer-events: none;
+}
+
+.tourist-rows {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tourist-rows__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: none;
+  font-size: 14px;
+}
+
+/* Линии только у средней строки (контейнер .tourist-rows без рамки — см. разметку) */
+.tourist-rows__row:nth-child(2):nth-last-child(2) {
+  border-top: 1px solid #ededed;
+  border-bottom: 1px solid #ededed;
+}
+
+.tourist-rows__label {
+  flex: 1;
+  min-width: 0;
+  font-weight: 400;
+  color: #0f0f0f;
+}
+
+.tourist-rows__value {
+  font-weight: 600;
+  color: #0f0f0f;
+  text-align: right;
+}
+
+.tourist-rows__value-extra {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #9a9a9a;
+  margin-top: 2px;
+}
+
+.tourist-amount-block {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "label label"
+    "value status";
+  column-gap: 12px;
+  row-gap: 0;
+  align-items: center;
+  min-height: 0;
+  padding: 16px;
+  margin: 0;
+  box-sizing: border-box;
+  width: 100%;
+  background: transparent;
+  border-radius: 0;
+}
+
+.tourist-amount-block__label {
+  grid-area: label;
+  justify-self: start;
+  align-self: start;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.tourist-amount-block__status-col {
+  grid-area: status;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  align-self: center;
+}
+
+.tourist-amount-block__status-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #0f0f0f;
+}
+
+.tourist-amount-block__status-row svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.tourist-amount-block__value {
+  grid-area: value;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  color: #0f0f0f;
+  align-self: center;
+}
+
+.tourist-amount-block__currency {
+  background: linear-gradient(360deg, #ff77d7 0%, #fa6c12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.tourist-amount-block__digits {
+  color: #0f0f0f;
+}
+
+.tourist-amount-block__status-note {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  text-align: right;
+  color: #fa6c16;
+  transition: opacity 0.2s ease;
+}
+
+.tourist-amount-block.is-refreshing .tourist-amount-block__status-note {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Первый показ страницы (transaction-detail): полноэкранный лоадер до события window load */
+.tourist-page-boot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 21px;
+  box-sizing: border-box;
+  padding: 24px;
+  background: #ffffff;
+  transition: opacity 0.35s ease;
+}
+
+.tourist-page-boot-loader--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.tourist-page-boot-loader__text {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  text-align: center;
+  color: #000000;
+}
+
+/* Спиннер как в Figma: слот 40×40, SVG 36×36 по центру (offset 2px) */
+.tourist-boot-spinner {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  animation: tourist-boot-spinner-spin 0.9s linear infinite;
+  transform-origin: center center;
+}
+
+.tourist-boot-spinner svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+@keyframes tourist-boot-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tourist-boot-spinner {
+    animation: none;
+  }
+
+  .tourist-page-boot-loader {
+    transition: none;
+  }
+}
+
+/* Кнопка внутри карточки: не растягивать по высоте (у .tourist-btn flex:1 ломает высоту в column-flex) */
+.tourist-detail-card > .tourist-btn--block {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+  min-height: 44px;
+  height: 44px;
+}
+
+/* Полноширинная градиентная кнопка с иконкой (Actualizar внутри карты) */
+.tourist-btn--block {
+  width: 100%;
+}
+
+/* ===== FAQ (pantalla Soporte / 101) ===== */
+.tourist-shell--faq {
+  background: #fafafa;
+}
+
+.tourist-main--faq {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+.tourist-faq-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.tourist-faq-hero__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tourist-faq-hero__icon svg {
+  display: block;
+}
+
+.tourist-faq-hero__title {
+  width: 100%;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+  color: #0f0f0f;
+}
+
+a.tourist-faq-hero__accent {
+  color: #25d366;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  font-weight: inherit;
+}
+
+a.tourist-faq-hero__accent:active {
+  opacity: 0.92;
+}
+
+a.tourist-faq-hero__accent:focus-visible {
+  outline: 2px solid #fa6c12;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.tourist-faq-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.tourist-faq-item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 16px;
+  gap: 4px;
+  box-sizing: border-box;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 14px;
+}
+
+.tourist-faq-item.is-open {
+  padding-bottom: 20px;
+}
+
+.tourist-faq-item__trigger {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  text-align: left;
+  color: inherit;
+}
+
+.tourist-faq-item__trigger:active {
+  opacity: 0.9;
+}
+
+.tourist-faq-item__question {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #0f0f0f;
+}
+
+.tourist-faq-item__chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-faq-item__chevron svg {
+  display: block;
+}
+
+.tourist-faq-item:not(.is-open) .tourist-faq-item__chevron--up {
+  display: none;
+}
+
+.tourist-faq-item.is-open .tourist-faq-item__chevron--down {
+  display: none;
+}
+
+.tourist-faq-item__panel {
+  margin: 0;
+  padding: 0 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #9a9a9a;
+}
+
+.tourist-faq-item__panel[hidden] {
+  display: none !important;
+}
+
+/* ===== Нижний tab bar ===== */
+.tourist-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 480px;
+  transform: none;
+  background: #ffffff;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  padding: 0 24px;
+  box-sizing: border-box;
+  z-index: 50;
+  box-shadow: 0 -8px 24px rgba(15, 15, 15, 0.04);
+}
+
+.tourist-tabbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 0 24px;
+  text-decoration: none;
+  color: #787878;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  border-top: 2px solid transparent;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.tourist-tabbar__item svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.tourist-tabbar__item.is-active {
+  color: #fa6c12;
+  border-top-color: #fa6c12;
+  font-weight: 600;
+}
+
+/* ===== Адаптив ===== */
+@media screen and (max-width: 360px) {
+  .tourist-balance__value,
+  .tourist-amount-block__value,
+  .tourist-amount-block__digits,
+  .tourist-amount-block__currency {
+    font-size: 26px;
+    line-height: 40px;
+  }
+}
+
+/* —— Modal (как newcomer: transfer-modal) —— */
+.transfer-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.transfer-modal--open {
+  display: flex;
+}
+
+.transfer-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.71);
+  cursor: pointer;
+}
+
+.transfer-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 348px;
+  max-width: 100%;
+  min-height: 244px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px 16px;
+  gap: 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+  margin-top: -88px;
+}
+
+.transfer-modal__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 12px;
+  width: 100%;
+  max-width: 316px;
+  align-self: stretch;
+}
+
+.transfer-modal__title {
+  width: 100%;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+  text-align: center;
+  color: #0f0f0f;
+}
+
+.transfer-modal__desc {
+  width: 100%;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+  color: #787878;
+}
+
+.transfer-modal__actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 316px;
+  align-self: stretch;
+}
+
+.transfer-modal__btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 14px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #ffffff;
+  cursor: pointer;
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+}
+
+.transfer-modal__btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.transfer-modal__btn:active {
+  opacity: 0.9;
+}
+
+body.transfer-modal-open {
+  overflow: hidden;
+}
+
+/* ===== Tarjeta de Crédito (credit-card.html) ===== */
+.tourist-main--credit-card {
+  gap: 20px;
+  padding: 0 16px 16px;
+}
+
+/* Hero: заголовок с акцентом + подзаголовок */
+.tourist-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.tourist-hero__title {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+  color: #0f0f0f;
+  text-align: center;
+}
+
+.tourist-hero__accent {
+  color: #fa6c12;
+}
+
+.tourist-hero__subtitle {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #787878;
+  text-align: center;
+}
+
+/* Превью кредитки */
+.tourist-credit-card {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 340 / 216;
+  margin: 0 auto;
+  padding: 22px 24px;
+  border-radius: 11px;
+  background: linear-gradient(120.26deg, #0f0f10 0%, #1b1b1e 100%);
+  color: #ffffff;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tourist-credit-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(23.57% 40.41% at 15% 17.14%, rgba(255, 106, 0, 0.18) 0%, rgba(255, 106, 0, 0) 100%),
+    radial-gradient(34.13% 40.97% at 81.67% 82.86%, rgba(248, 87, 193, 0.18) 0%, rgba(248, 87, 193, 0) 100%);
+  pointer-events: none;
+}
+
+.tourist-credit-card__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  border-radius: 11px;
+}
+
+.tourist-credit-card__stripe {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4.71%;
+  background: linear-gradient(360deg, #ff77d7 0%, #fa6c12 100%);
+  border-radius: 0 10px 10px 0;
+  pointer-events: none;
+}
+
+.tourist-credit-card__top,
+.tourist-credit-card__bottom {
+  position: relative;
+  z-index: 2;
+}
+
+.tourist-credit-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tourist-credit-card__brand {
+  font-family: "DM Sans", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 33px;
+  color: #fa6c12;
+}
+
+.tourist-credit-card__brand-suffix {
+  color: #fa6c12;
+}
+
+.tourist-credit-card__network {
+  font-family: "DM Sans", sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -1px;
+  color: #ffffff;
+}
+
+.tourist-credit-card__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tourist-credit-card__pan {
+  font-family: "DM Sans", sans-serif;
+  font-size: 17px;
+  line-height: 26px;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.tourist-credit-card__exp {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #dfdfdf;
+}
+
+/* Превью договора */
+.tourist-contract-card {
+  position: relative;
+  width: 100%;
+  max-width: 370px;
+  height: 169px;
+  margin: 0 auto;
+  border-radius: 16px;
+  background: #0f0f10;
+  color: #ffffff;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.tourist-contract-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(23.57% 40.41% at 15% 17.14%, rgba(255, 106, 0, 0.18) 0%, rgba(255, 106, 0, 0) 100%),
+    radial-gradient(34.13% 40.97% at 81.67% 82.86%, rgba(248, 87, 193, 0.18) 0%, rgba(248, 87, 193, 0) 100%),
+    linear-gradient(120.26deg, #0f0f10 0%, #1b1b1e 100%);
+}
+
+.tourist-contract-card__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.tourist-contract-card__stripe {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 100%;
+  background: #fa6c12;
+  border-radius: 0 10px 10px 0;
+}
+
+.tourist-contract-card__content {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+}
+
+.tourist-contract-card__copy {
+  position: absolute;
+  left: 32px;
+  top: 20px;
+  right: 86px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tourist-contract-card__title {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #ffffff;
+}
+
+.tourist-contract-card__desc {
+  width: 236px;
+  max-width: 100%;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 10.9px;
+  font-weight: 300;
+  line-height: 16px;
+  color: #fafafa;
+}
+
+.tourist-contract-card__pdf {
+  position: absolute;
+  top: 20px;
+  left: calc(100% - 54px);
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tourist-contract-card__pdf svg {
+  display: block;
+}
+
+.tourist-contract-card__bank {
+  position: absolute;
+  left: 32px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tourist-contract-card__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tourist-contract-card__logo svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.tourist-contract-card__bank-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tourist-contract-card__bank-text strong {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #ffffff;
+}
+
+.tourist-contract-card__bank-text span {
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.tourist-contract-card__button {
+  position: absolute;
+  left: calc(100% - 102px);
+  top: 113px;
+  width: 86px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+  color: #ffffff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 14px;
+  cursor: pointer;
+}
+
+.tourist-contract-card__button:active,
+.tourist-contract-card__pdf:active {
+  opacity: 0.88;
+}
+
+/* Карточка статистики: 3 колонки с разделителями */
+.tourist-stats {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.tourist-stats__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  min-width: 0;
+}
+
+.tourist-stats__icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.tourist-stats__icon svg {
+  display: block;
+}
+
+.tourist-stats__title {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+}
+
+.tourist-stats__sub {
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #9a9a9a;
+}
+
+.tourist-stats__divider {
+  flex-shrink: 0;
+  width: 1px;
+  align-self: stretch;
+  background: #ededed;
+}
+
+/* Баннер «Tu tarjeta llegará …» */
+.tourist-eta-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(99.29deg, #fa6c12 0.04%, #ff77d7 100%);
+  border-radius: 16px;
+  box-sizing: border-box;
+  color: #fafafa;
+}
+
+.tourist-eta-banner__icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: transparent;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tourist-eta-banner__icon svg {
+  display: block;
+}
+
+.tourist-eta-banner__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tourist-eta-banner__title {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #fafafa;
+}
+
+.tourist-eta-banner__caption {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  color: #fafafa;
+}
+
+/* Форма (Nombre / Calle / Piso / Ciudad / Provincia / Código Postal) */
+.tourist-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+}
+
+.tourist-form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.tourist-form-field__label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+}
+
+.tourist-form-field__input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1px solid #dfdfdf;
+  border-radius: 14px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #0f0f0f;
+  outline: none;
+}
+
+.tourist-form-field__input::placeholder {
+  color: #9a9a9a;
+}
+
+.tourist-form-field__input:focus-visible {
+  border-color: #fa6c12;
+}
+
+.tourist-form-field--select .tourist-form-field__box {
+  position: relative;
+  width: 100%;
+}
+
+.tourist-form-field__select {
+  padding-right: 44px;
+  background-image: none;
+  cursor: pointer;
+}
+
+.tourist-form-field__select:invalid,
+.tourist-form-field__select option[disabled] {
+  color: #9a9a9a;
+}
+
+.tourist-form-field__chevron {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.tourist-form-field__chevron svg {
+  display: block;
+}
+
+/* Нижняя CTA-кнопка (credit-card/detail-transaction): макет 370×44, gradient H 02 — без flex:1 */
+.tourist-form > .tourist-btn.tourist-btn--credit-pay,
+.tourist-btn--credit-pay {
+  flex: 0 0 auto;
+  align-self: stretch;
+  min-height: 0;
+  height: auto;
+  box-sizing: border-box;
+  /* Размер 1:1 с profile-plan.html (.footer__btn): итог 348×56.
+     padding-block 18px (у профиля 20px без иконки → строка 16px = 56;
+     здесь иконка 20px, поэтому 18+18+20 = 56), радиус 14, вес 500.
+     Боковой отступ 21px (16px main + 5px margin) → ширина как у .btn */
+  margin-top: 4px;
+  margin-inline: 5px;
+  width: auto;
+  padding: 18px 14px;
+  gap: 8px;
+  border-radius: 14px;
+  font-weight: 500;
+  line-height: normal;
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+}
+
+.tourist-btn--credit-pay .tourist-btn__default-content {
+  gap: 8px;
+}
+
+.tourist-btn__icon--contract {
+  width: 20px;
+  height: 20px;
+}
+
+/* Договор: полноэкранный просмотр и подписание */
+.tourist-contract-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: none;
+}
+
+.tourist-contract-modal--open {
+  display: block;
+}
+
+.tourist-contract-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 15, 16, 0.78);
+}
+
+.tourist-contract-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 480px);
+  height: 100dvh;
+  margin: 0 auto;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.tourist-contract-modal__header {
+  --tourist-header-control: 48px;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: var(--tourist-header-control) 1fr var(--tourist-header-control);
+  align-items: center;
+  column-gap: 16px;
+  box-sizing: border-box;
+  padding: max(16px, env(safe-area-inset-top, 0px)) 16px 16px;
+  background: #fafafa;
+  border-bottom: none;
+}
+
+.tourist-contract-modal__heading {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.tourist-contract-modal__eyebrow {
+  display: none;
+}
+
+.tourist-contract-modal__title {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tourist-contract-modal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 12px 18px;
+  outline: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+}
+
+.tourist-contract-modal__body--pdf {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #fafafa;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+
+.tourist-contract-modal--pdf .tourist-contract-modal__panel {
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: none;
+  background: #fafafa;
+}
+
+.tourist-contract-modal--pdf .tourist-contract-modal__footer {
+  background: #fafafa;
+}
+
+.tourist-contract-modal__pdf-frame {
+  display: block;
+  width: min(calc(100% + 16px), 611px);
+  height: min(calc(100vw * 842 / 595), calc(100dvh - 125px));
+  margin-left: -8px;
+  margin-right: -8px;
+  flex: 0 0 auto;
+  border: 0;
+  background: #ffffff;
+}
+
+.tourist-contract-modal__pdf-preview {
+  display: block;
+  width: min(100%, 595px);
+  height: auto;
+  aspect-ratio: 595 / 842;
+  flex: 0 0 auto;
+  object-fit: contain;
+  background: #fafafa;
+}
+
+.tourist-contract-modal__footer {
+  flex-shrink: 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+  border-top: 1px solid #ededed;
+}
+
+.tourist-contract-modal__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #fa6c12;
+  color: #ffffff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  cursor: pointer;
+}
+
+.tourist-contract-modal__action-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tourist-contract-modal__action-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.tourist-contract-modal__action.is-loading {
+  opacity: 0.82;
+  cursor: progress;
+}
+
+.tourist-contract-modal__action:active {
+  opacity: 0.88;
+}
+
+body.contract-modal-open {
+  overflow: hidden;
+}
+
+body.contract-modal-open .tourist-tabbar {
+  display: none;
+}
+
+.credit-contract {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.credit-contract__page {
+  position: relative;
+  min-height: 720px;
+  padding: 22px 22px 46px;
+  background: #ffffff;
+  border: 3px solid #2C9BD6;
+  border-radius: 3px;
+  box-shadow: 0 10px 28px rgba(15, 15, 16, 0.08);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #111111;
+  overflow-wrap: anywhere;
+}
+
+.credit-contract__masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.credit-contract__caixa-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.credit-contract__caixa-logo {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+.credit-contract__goval {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.credit-contract__goval-logo {
+  height: 70px;
+  width: auto;
+  display: block;
+}
+
+.credit-contract__mono {
+  margin: 0 0 14px;
+}
+
+.credit-contract__doc-title {
+  margin: 18px 0 2px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #111111;
+  text-transform: uppercase;
+}
+
+.credit-contract__doc-subtitle {
+  margin: 0 0 18px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.credit-contract__rule {
+  width: 100%;
+  height: 0;
+  border-top: 2px dashed #111111;
+  margin: 9px 0 7px;
+}
+
+.credit-contract__section-title {
+  margin: 14px 0 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+  color: #111111;
+}
+
+.credit-contract p {
+  margin: 0 0 12px;
+}
+
+.credit-contract__table {
+  width: 100%;
+  margin: 18px 0 12px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.credit-contract__table th,
+.credit-contract__table td {
+  border: 1px solid #666666;
+  padding: 5px 6px;
+  vertical-align: top;
+}
+
+.credit-contract__table th {
+  background: #b7b7b7;
+  font-weight: 700;
+  text-align: center;
+}
+
+.credit-contract__table td:first-child {
+  font-weight: 700;
+}
+
+.credit-contract__table--compact {
+  table-layout: auto;
+}
+
+.credit-contract__note {
+  margin-top: 16px;
+}
+
+.credit-contract__list {
+  margin: 0 0 10px;
+  padding-left: 18px;
+}
+
+.credit-contract__list li {
+  margin: 0 0 4px;
+}
+
+.credit-contract__signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 24px 0 18px;
+}
+
+.credit-contract__signature-box {
+  min-height: 112px;
+  padding: 12px;
+  border: 1px solid #9a9a9a;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.credit-contract__signature-box span {
+  color: #787878;
+}
+
+.credit-contract__signature-box strong,
+.credit-contract__signature-box small {
+  display: block;
+}
+
+.credit-contract__acceptance {
+  margin-top: 20px;
+}
+
+.credit-contract__page-footer {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 14px;
+  padding-top: 8px;
+  color: #111111;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Tabla del calendario de amortización (5 columnas) */
+.credit-contract__table--schedule {
+  table-layout: fixed;
+  font-size: 10px;
+  line-height: 13px;
+  margin: 12px 0;
+}
+
+.credit-contract__table--schedule th,
+.credit-contract__table--schedule td {
+  padding: 4px 5px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.credit-contract__table--schedule th {
+  text-align: left;
+}
+
+.credit-contract__table--schedule col,
+.credit-contract__table--schedule td:first-child,
+.credit-contract__table--schedule th:first-child {
+  width: 9%;
+}
+
+.credit-contract__table--schedule td:first-child {
+  font-weight: 400;
+}
+
+/* Página 5 — firmas y sello */
+.credit-contract__sign-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 26px 0 0;
+  text-align: center;
+}
+
+.credit-contract__sign-col {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 15px;
+  color: #111111;
+}
+
+.credit-contract__stamp-area {
+  position: relative;
+  height: 190px;
+  margin-top: 6px;
+}
+
+.credit-contract__stamp {
+  position: absolute;
+  left: 35%;
+  top: 10px;
+  width: 160px;
+  height: 160px;
+  transform: translateX(-50%);
+}
+
+.credit-contract__signature {
+  position: absolute;
+  width: 130px;
+  height: auto;
+}
+
+.credit-contract__signature--left {
+  left: 4%;
+  top: 82px;
+  transform: rotate(-5deg);
+}
+
+.credit-contract__signature--right {
+  left: 48%;
+  top: 80px;
+  transform: rotate(-2deg);
+}
+
+.credit-contract__sign-line {
+  height: 0;
+  border-top: 1px solid #111111;
+  margin: 4px 0 0;
+}
+
+@media (min-width: 560px) {
+  .tourist-contract-modal__panel {
+    height: min(94dvh, 920px);
+    margin-top: 3dvh;
+    border-radius: 22px;
+  }
+}
+
+@media (max-width: 390px) {
+  .tourist-contract-card__copy {
+    left: 24px;
+    right: 74px;
+  }
+
+  .tourist-contract-card__bank {
+    left: 24px;
+  }
+
+  .tourist-contract-card__button {
+    left: calc(100% - 98px);
+    width: 86px;
+  }
+
+  .tourist-contract-card__bank-text span {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 430px) {
+  .credit-contract__page {
+    min-height: 680px;
+    padding: 18px 14px 40px;
+    border-radius: 12px;
+    font-size: 10.5px;
+    line-height: 1.42;
+  }
+
+  .credit-contract__masthead {
+    gap: 8px;
+  }
+
+  .credit-contract__caixa-logo {
+    height: 38px;
+  }
+
+  .credit-contract__goval-logo {
+    height: 50px;
+  }
+
+  .credit-contract__doc-title {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .credit-contract__section-title {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .credit-contract__table {
+    font-size: 9.6px;
+    line-height: 12px;
+  }
+
+  .credit-contract__table th,
+  .credit-contract__table td {
+    padding: 4px;
+  }
+
+  .credit-contract__table--schedule {
+    font-size: 8.6px;
+    line-height: 11px;
+  }
+
+  .credit-contract__table--schedule th,
+  .credit-contract__table--schedule td {
+    padding: 3px 3px;
+  }
+
+  .credit-contract__sign-col {
+    font-size: 9.5px;
+    line-height: 13px;
+  }
+
+  .credit-contract__stamp {
+    width: 130px;
+    height: 130px;
+  }
+
+  .credit-contract__signature {
+    width: 100px;
+  }
+
+  .credit-contract__signature--left {
+    left: 2%;
+    top: 68px;
+  }
+
+  .credit-contract__signature--right {
+    left: 46%;
+    top: 66px;
+  }
+
+  .credit-contract__page-footer {
+    left: 14px;
+    right: 14px;
+  }
+}
+
+/* ===== CREDIT LETTER (Контракт 2) ===== */
+
+.credit-letter__page {
+  position: relative;
+  min-height: 720px;
+  background: #ffffff;
+  border: 3px solid #2C9BD6;
+  border-radius: 3px;
+  box-shadow: 0 10px 28px rgba(15, 15, 16, 0.08);
+  padding: 22px 22px 46px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #111111;
+  overflow-wrap: anywhere;
+}
+
+.credit-letter__masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.credit-letter__caixa-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.credit-letter__caixa-logo {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+.credit-letter__goval {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.credit-letter__goval-logo {
+  height: 70px;
+  width: auto;
+  display: block;
+}
+
+.credit-letter__body {
+  margin-bottom: 8px;
+}
+
+.credit-letter__line {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.credit-letter__para {
+  margin: 14px 0;
+  line-height: 1.45;
+}
+
+.credit-letter__stamp-area {
+  position: relative;
+  height: 170px;
+  margin-top: 12px;
+}
+
+.credit-letter__stamp {
+  position: absolute;
+  right: 40px;
+  bottom: 10px;
+  width: 150px;
+  height: 150px;
+}
+
+.credit-letter__signature {
+  position: absolute;
+  right: 120px;
+  bottom: 50px;
+  width: 120px;
+  height: auto;
+  transform: rotate(-4deg);
+}
+
+@media (max-width: 430px) {
+  .credit-letter__page {
+    min-height: 680px;
+    padding: 18px 14px 40px;
+    border-radius: 12px;
+    font-size: 10.5px;
+    line-height: 1.42;
+  }
+
+  .credit-letter__masthead {
+    gap: 8px;
+  }
+
+  .credit-letter__caixa-logo {
+    height: 38px;
+  }
+
+  .credit-letter__goval-logo {
+    height: 50px;
+  }
+
+  .credit-letter__stamp-area {
+    height: 140px;
+  }
+
+  .credit-letter__stamp {
+    width: 120px;
+    height: 120px;
+    right: 20px;
+    bottom: 8px;
+  }
+
+  .credit-letter__signature {
+    width: 96px;
+    right: 86px;
+    bottom: 40px;
+  }
+}
+
+/* ===== Bottom Sheet: Acciones (Activar / Transferencia) ===== */
+.tourist-sheet {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+}
+
+.tourist-sheet--open {
+  display: block;
+}
+
+.tourist-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.71);
+  cursor: pointer;
+}
+
+.tourist-sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.tourist-sheet--open .tourist-sheet__panel {
+  transform: translateY(0);
+}
+
+.tourist-sheet__handle {
+  width: 40px;
+  height: 4px;
+  margin: 16px auto 0;
+  background: #e7e7e7;
+  border-radius: 360px;
+}
+
+.tourist-sheet__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 16px 24px;
+}
+
+.tourist-sheet__icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tourist-sheet__texts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.tourist-sheet__title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #000000;
+}
+
+.tourist-sheet__desc {
+  margin: 0;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #787878;
+}
+
+.tourist-sheet__profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+
+.tourist-sheet__profile-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tourist-sheet__avatar {
+  width: 49px;
+  height: 49px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ededed;
+  flex-shrink: 0;
+}
+
+.tourist-sheet__profile-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tourist-sheet__profile-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 15.13px;
+  line-height: 23px;
+  color: #0f0f0f;
+}
+
+.tourist-sheet__profile-sub {
+  margin: 0;
+  font-weight: 400;
+  font-size: 13.24px;
+  line-height: 20px;
+  color: #787878;
+}
+
+.tourist-sheet__airdrop {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  animation: tourist-sheet-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes tourist-sheet-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.tourist-sheet__btn-call {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #ffffff;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: opacity 0.15s;
+}
+
+.tourist-sheet__btn-call:active {
+  opacity: 0.85;
+}
+
+.tourist-sheet__btn-call.is-called {
+  background: none;
+  color: #1ec756;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  pointer-events: none;
+}
+
+.tourist-sheet__btn-call.is-called .tourist-sheet__call-icon {
+  display: none;
+}
+
+.tourist-sheet__btn-close {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #e7e7e7;
+  border-radius: 12px;
+  background: none;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #0f0f0f;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: opacity 0.15s;
+}
+
+.tourist-sheet__btn-close:active {
+  opacity: 0.85;
+}
+
+body.tourist-sheet-open {
+  overflow: hidden;
+}

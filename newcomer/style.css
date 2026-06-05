@@ -1,0 +1,699 @@
+/* newcomer — поверх link-bank.css + card-component.css (как final.html / profile-plan) */
+
+body:has(.newcomer-shell) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Та же ширина колонки, что у profile-plan / нижней панели link-bank */
+.newcomer-shell {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  --newcomer-gutter: 16px;
+  /* .main padding + .choice-section padding — ширина как у .newcomer-card-frame */
+  --newcomer-card-track: calc(var(--newcomer-gutter) * 2);
+  /* Один шаг: заголовок ↔ карта и карта ↔ кнопка */
+  --newcomer-section-gap: var(--link-bank-stack-gap, 25px);
+}
+
+/* .newcomer-shell .btn / .bottom-bg — в link-bank.css */
+
+/* Размеры кнопки 1:1 с profile-plan.html */
+.newcomer-shell .footer__btn {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-block: var(--footer-btn-padding-block, 20px);
+  border-radius: var(--footer-btn-radius, 14px);
+  font-size: var(--footer-btn-font-size, 14px);
+  font-weight: var(--footer-btn-font-weight, 500);
+  box-sizing: border-box;
+}
+
+/* Шапка = tourist-header: padding 16px, аватар 48px, те же line-height/ellipsis (link-bank давал margin 16px и без нижнего padding — из-за этого «прыжок») */
+.newcomer-shell .header {
+  margin: 0;
+  padding: 16px;
+  gap: 16px;
+  align-items: center;
+}
+
+.newcomer-shell .user {
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+.newcomer-shell .user__img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: block;
+}
+
+.newcomer-shell .user__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  min-height: 48px;
+}
+
+.newcomer-shell .user__text-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newcomer-shell .user__text-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Отступы колонки как в Figma: 16px по бокам, 16px между блоками */
+.newcomer-shell > .main {
+  margin-top: 0;
+  padding: 0 var(--newcomer-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.newcomer-shell > .main > .choice-section {
+  margin-top: var(--newcomer-section-gap);
+}
+
+/* Header: кнопка уведомлений 50×50 как tourist */
+.newcomer-shell .header__notification {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.newcomer-shell .header__notification svg {
+  display: block;
+  width: 50px;
+  height: 50px;
+}
+
+.newcomer-shell .header__notification:active {
+  opacity: 0.85;
+}
+
+/* Карточка «Proceso completado» — заголовок как link-bank__title (24 / 700) */
+.completion-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.completion-card__title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 34px;
+  color: #0f0f0f;
+  text-align: center;
+  margin: 0;
+}
+
+.completion-card__balance {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.completion-card__balance-label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #787878;
+  margin: 0;
+}
+
+.completion-card__balance-value {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 45px;
+  color: #0f0f0f;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+}
+
+/* Как .card-price .currency в card-component.css */
+.completion-card__balance-currency {
+  background: linear-gradient(90deg, #ff77d7 0%, #fa6c12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-right: 2px;
+}
+
+/* Градиентная обводка #FF77D7 → #FA6C12 (как в макете) */
+.transfer-btn-wrap {
+  width: 100%;
+  padding: 1px;
+  border-radius: 13px;
+  background: linear-gradient(90deg, #ff77d7 0%, #fa6c12 100%);
+  box-sizing: border-box;
+}
+
+.transfer-btn {
+  width: 100%;
+  height: 44px;
+  border: none;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #0f0f0f;
+  cursor: pointer;
+  padding: 0 14px;
+}
+
+.transfer-btn:active {
+  opacity: 0.92;
+}
+
+/* Option List / Default: 60px, logo 16+36, текст с 68px, справа замок + сумма */
+.bank-row {
+  width: 100%;
+  height: 60px;
+  min-height: 60px;
+  box-sizing: border-box;
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.bank-row__logo {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bank-row__logo svg {
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+.bank-row__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.bank-row__title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.bank-row__mask {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  color: #787878;
+  margin: 0;
+}
+
+.bank-row__right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  align-self: center;
+}
+
+.bank-row__lock {
+  display: block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.bank-row__amount {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21px;
+  text-align: right;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.progress-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-section__track-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-section__track-block--pulse {
+  animation: newcomer-progress-track-pulse 1.35s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+@keyframes newcomer-progress-track-pulse {
+  0% {
+    opacity: 1;
+  }
+  36% {
+    opacity: 0;
+  }
+  64% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.progress-section__bar {
+  width: 100%;
+  height: 8px;
+  background: #ededed;
+  border-radius: 360px;
+  overflow: hidden;
+}
+
+.progress-section__legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #9a9a9a;
+}
+
+.progress-section__hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #787878;
+  margin: 0;
+}
+
+.progress-section__update {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  color: #fa6c12;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.completion-card__note {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  text-align: center;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.completion-card__note .brand {
+  font-weight: 700;
+  color: #fa6c12;
+}
+
+.choice-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: var(--newcomer-gutter) var(--newcomer-gutter) var(--newcomer-section-gap);
+  display: flex;
+  flex-direction: column;
+  gap: var(--newcomer-section-gap);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.choice-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.choice-section__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.choice-section__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.choice-section__next {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ededed;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.choice-section__next img {
+  width: 20px;
+  height: 20px;
+  transform: rotate(180deg);
+}
+
+.choice-section__nav {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.choice-section__prev {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ededed;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.choice-section__prev img {
+  width: 20px;
+  height: 20px;
+}
+
+.card-component--clickable { cursor: pointer; transition: transform 0.15s ease; }
+.card-component--clickable:active { transform: scale(0.985); }
+
+/* Карточка оффера: на всю ширину секции, пропорции 338×401 масштабируются */
+.newcomer-card-frame {
+  display: block;
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 338 / 401;
+  margin: 0;
+  container-type: inline-size;
+}
+
+/* Бейдж: не фиксировать % ширины/высоты карты — подстраивается под контейнер и длину текста */
+.newcomer-card-frame .card-badge {
+  width: auto;
+  max-width: min(52%, 200px);
+  height: auto;
+  min-height: 28px;
+  padding: 5px 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.newcomer-card-frame .card-badge-text {
+  font-size: clamp(11px, 3.9cqi, 14px);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* SE и малые экраны: 25px над картой (header↔card) = 25px под картой (card↔кнопка) */
+@media screen and (max-height: 667px) {
+  .newcomer-shell > .main::after {
+    flex: 0 0 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .completion-card__balance-value {
+    font-size: 26px;
+    line-height: 40px;
+  }
+}
+
+/* —— Modal Transferencia —— */
+.transfer-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.transfer-modal--open {
+  display: flex;
+}
+
+.transfer-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.71);
+  cursor: pointer;
+}
+
+.transfer-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: 348px;
+  max-width: 100%;
+  min-height: 244px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px 16px;
+  gap: 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+  /* Макет: top: calc(50% - 244px/2 - 88px) — смещение вверх на 88px от центра */
+  margin-top: -88px;
+}
+
+.transfer-modal__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 12px;
+  width: 100%;
+  max-width: 316px;
+  align-self: stretch;
+}
+
+.transfer-modal__title {
+  width: 100%;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 36px;
+  text-align: center;
+  color: #0f0f0f;
+}
+
+.transfer-modal__desc {
+  width: 100%;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+  color: #787878;
+}
+
+.transfer-modal__actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 316px;
+  align-self: stretch;
+}
+
+.transfer-modal__btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 14px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  color: #ffffff;
+  cursor: pointer;
+  background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+}
+
+.transfer-modal__btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.transfer-modal__btn:active {
+  opacity: 0.9;
+}
+
+body.transfer-modal-open {
+  overflow: hidden;
+}
+
+/* Кнопка вверху от таббара — safe-area уходит на таббар, чтобы не было двойного отступа */
+.newcomer-shell .btn {
+  padding-bottom: var(--footer-bar-padding-bottom);
+}
+
+/* ===== Bottom tab bar — 1:1 с tourist-tabbar ===== */
+.newcomer-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: 100%;
+  max-width: 480px;
+  transform: none;
+  background: #ffffff;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  padding: 0 24px;
+  box-sizing: border-box;
+  z-index: 50;
+  box-shadow: 0 -8px 24px rgba(15, 15, 15, 0.04);
+}
+
+/* Резервируем место под фиксированный таббар (на body — как в туристе) */
+body:has(.newcomer-tabbar) {
+  padding-bottom: calc(72px + 24px + env(safe-area-inset-bottom, 0px));
+}
+
+.newcomer-tabbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 0 24px;
+  text-decoration: none;
+  color: #787878;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  border-top: 2px solid transparent;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.newcomer-tabbar__item svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.newcomer-tabbar__item.is-active {
+  color: #fa6c12;
+  border-top-color: #fa6c12;
+  font-weight: 600;
+}

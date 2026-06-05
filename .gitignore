@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Environment — contains secrets (DB credentials, API keys, tokens)
+.env
+.env.local
+.env.*.local
+
+# Prisma generated client
+node_modules/.prisma/
+
+# Logs
+*.log
+logs/
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Build / cache
+dist/
+.cache/

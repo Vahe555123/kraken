@@ -1,0 +1,25 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - button "Back" [ref=e4] [cursor=pointer]:
+      - img [ref=e5]
+    - heading "Tarjeta de Crédito" [level=1] [ref=e7]
+  - main [ref=e8]:
+    - region "Link new bank account" [ref=e9]:
+      - img [ref=e11]
+      - heading "Link new bank account" [level=2] [ref=e16]
+      - paragraph [ref=e17]: Conecta una cuenta bancaria para continuar con la activación de tu tarjeta.
+    - region "What you will get?" [ref=e18]:
+      - heading "What you will get?" [level=3] [ref=e19]
+      - generic [ref=e20]:
+        - generic [ref=e23]: La cuenta bancaria se vinculará a tu tarjeta de crédito.
+        - generic [ref=e26]: Podrás recibir fondos aprobados directamente en tu cuenta.
+        - generic [ref=e29]: La configuración tarda solo unos minutos.
+      - generic [ref=e31]:
+        - paragraph [ref=e32]: Sofía
+        - paragraph [ref=e33]: Un especialista se encarga de su préstamo
+  - generic [ref=e35]:
+    - button "¡Continuar! 15:00" [disabled] [ref=e36]:
+      - generic [ref=e37]: ¡Continuar!
+      - img [ref=e38]
+      - generic [ref=e41]: 15:00
+    - paragraph [ref=e42]: La oferta se renovará automáticamente si no continúas ahora.

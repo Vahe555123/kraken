@@ -1,0 +1,275 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - button "Atrás" [ref=e4] [cursor=pointer]:
+        - img [ref=e5]
+      - heading "Tarjeta de Crédito" [level=1] [ref=e7]
+    - main [ref=e8]:
+      - generic [ref=e9]:
+        - heading "Solicita tu tarjeta virtual con transferencias SEPA" [level=2] [ref=e10]
+        - paragraph [ref=e11]: Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra online con total comodidad.
+      - region "Términos contrato de crédito" [ref=e12]:
+        - img
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - heading "Términos contrato de crédito" [level=3] [ref=e16]
+            - paragraph [ref=e17]: Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra
+          - button "Abrir PDF del contrato" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - generic [ref=e25]:
+            - img [ref=e27]
+            - generic [ref=e32]:
+              - strong [ref=e33]: Caixa Bank
+              - generic [ref=e34]: Contrato Nº ES-4738D9215
+          - button "Abrir PDF" [ref=e35] [cursor=pointer]
+      - region "Beneficios del plan" [ref=e36]:
+        - generic [ref=e37]:
+          - img [ref=e39]
+          - generic [ref=e45]: Flexible
+          - generic [ref=e46]: Uso inmediato
+        - generic [ref=e48]:
+          - img [ref=e50]
+          - generic [ref=e54]: 24/7
+          - generic [ref=e55]: Soporte activo
+        - generic [ref=e57]:
+          - img [ref=e59]
+          - generic [ref=e65]: Global
+          - generic [ref=e66]: Pagos mundiales
+      - generic [ref=e67]:
+        - img [ref=e69]
+        - generic [ref=e74]:
+          - paragraph [ref=e75]: Tu tarjeta estará lista en 15 minutos
+          - paragraph [ref=e76]: tras completar la solicitud.
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]: Nombre
+          - textbox "Nombre" [ref=e80]
+        - generic [ref=e81]:
+          - generic [ref=e82]: DNI / NIE
+          - textbox "DNI / NIE" [ref=e83]
+        - generic [ref=e84]:
+          - generic [ref=e85]: Cuenta Bancaria (IBAN)
+          - paragraph [ref=e86]: Podrás retirar fondos de tu tarjeta únicamente a este IBAN.
+          - textbox "Cuenta Bancaria (IBAN)" [ref=e87]:
+            - /placeholder: ES00 0000 0000 0000 0000 0000
+        - generic [ref=e88]:
+          - generic [ref=e89]: Calle
+          - textbox "Calle" [ref=e90]
+        - generic [ref=e91]:
+          - generic [ref=e92]: Piso y Escalera
+          - textbox "Piso y Escalera" [ref=e93]
+        - generic [ref=e94]:
+          - generic [ref=e95]: Ciudad
+          - textbox "Ciudad" [ref=e96]
+        - generic [ref=e97]:
+          - generic [ref=e98]: Provincia
+          - generic [ref=e99]:
+            - combobox "Provincia" [ref=e100] [cursor=pointer]:
+              - option "A Coruña"
+              - option "Álava"
+              - option "Albacete"
+              - option "Alicante"
+              - option "Almería"
+              - option "Asturias"
+              - option "Ávila"
+              - option "Badajoz"
+              - option "Barcelona"
+              - option "Burgos"
+              - option "Cáceres"
+              - option "Cádiz"
+              - option "Cantabria"
+              - option "Castellón"
+              - option "Ciudad Real"
+              - option "Córdoba"
+              - option "Cuenca"
+              - option "Girona"
+              - option "Granada"
+              - option "Guadalajara"
+              - option "Guipúzcoa"
+              - option "Huelva"
+              - option "Huesca"
+              - option "Islas Baleares"
+              - option "Jaén"
+              - option "La Rioja"
+              - option "Las Palmas"
+              - option "León"
+              - option "Lleida"
+              - option "Lugo"
+              - option "Madrid"
+              - option "Málaga"
+              - option "Murcia"
+              - option "Navarra"
+              - option "Ourense"
+              - option "Palencia"
+              - option "Pontevedra"
+              - option "Salamanca"
+              - option "Santa Cruz de Tenerife"
+              - option "Segovia"
+              - option "Sevilla"
+              - option "Soria"
+              - option "Tarragona"
+              - option "Teruel"
+              - option "Toledo"
+              - option "Valencia"
+              - option "Valladolid"
+              - option "Vizcaya"
+              - option "Zamora"
+              - option "Zaragoza"
+            - generic:
+              - img
+        - generic [ref=e101]:
+          - generic [ref=e102]: Código Postal
+          - textbox "Código Postal" [ref=e103]
+        - button "Firmar contrato" [ref=e104] [cursor=pointer]:
+          - generic [ref=e105]:
+            - generic [ref=e106]: Firmar contrato
+            - img [ref=e107]
+  - dialog "Tarjeta de Crédito" [ref=e141]:
+    - banner [ref=e142]:
+      - heading "Tarjeta de Crédito" [level=2] [ref=e144]
+    - article "Contrato preliminar de crédito" [ref=e146]:
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - generic "CaixaBank" [ref=e149]:
+            - img [ref=e150]
+            - generic [ref=e154]:
+              - generic [ref=e155]: CaixaBank
+              - generic [ref=e156]: CAIXABANK S.A.
+          - generic "GO VAL Finance S.L." [ref=e157]:
+            - generic [ref=e159]:
+              - text: GO VAL
+              - text: FINANCE S.L.
+        - paragraph [ref=e160]:
+          - text: "Sede social: Calle Pintor Sorolla, 2-4, 46002 Valencia, España."
+          - text: "NIF (CIF): A-98663619"
+          - text: "Capital social: € 7.885.565.456 (representado por 7.885.565.456 acciones de €1 cada una)."
+          - text: Inscrita en el Registro Mercantil de Valencia (Tomo 10370, Hoja 1, Página V-178351).
+          - text: Inscrita en el Registro Especial del Banco de España con el nº 2100.
+        - heading "CONTRATO PRELIMINAR DE CRÉDITO" [level=3] [ref=e161]
+        - paragraph [ref=e162]: (Aviso sobre las condiciones de crédito)
+        - paragraph [ref=e163]:
+          - strong [ref=e164]: "Cliente:"
+          - text: Marta Sainz de la Maza Pastor
+          - text: "DNI / NIE: pendiente de completar"
+          - text: "Domicilio: pendiente de completar"
+          - text: La empresa
+          - strong [ref=e165]: MONETO PLUS FINANCE S.L.
+          - text: ", actuando como intermediario de crédito (Agente en actividad financiera - OAM A130179), confirma la mediación de la operación."
+        - paragraph [ref=e166]:
+          - text: El banco CaixaBank S.A. confirma la aprobación de la concesión del crédito.
+          - text: El presente documento constituye una notificación preliminar de las condiciones y no genera efectos jurídicos hasta la firma del contrato definitivo.
+        - heading "1. Condiciones principales del crédito" [level=4] [ref=e168]
+        - table [ref=e170]:
+          - rowgroup [ref=e171]:
+            - row "Parámetro Detalles" [ref=e172]:
+              - columnheader "Parámetro" [ref=e173]
+              - columnheader "Detalles" [ref=e174]
+          - rowgroup [ref=e175]:
+            - 'row "Importe del crédito: 5 000.00" [ref=e176]':
+              - cell "Importe del crédito:" [ref=e177]
+              - cell "5 000.00" [ref=e178]
+            - 'row "Tasa Anual Nominal (TAN): 7.86%" [ref=e179]':
+              - cell "Tasa Anual Nominal (TAN):" [ref=e180]
+              - cell "7.86%" [ref=e181]
+            - 'row "Tasa Anual Equivalente Global (TAEG): 8.30%" [ref=e182]':
+              - cell "Tasa Anual Equivalente Global (TAEG):" [ref=e183]
+              - cell "8.30%" [ref=e184]
+            - 'row "Plazo del crédito: 60 mes" [ref=e185]':
+              - cell "Plazo del crédito:" [ref=e186]
+              - cell "60 mes" [ref=e187]
+            - 'row "Cuota mensual*: 101.05" [ref=e188]':
+              - cell "Cuota mensual*:" [ref=e189]
+              - cell "101.05" [ref=e190]
+            - 'row "Comisión de cobro: € 0" [ref=e191]':
+              - cell "Comisión de cobro:" [ref=e192]
+              - cell "€ 0" [ref=e193]
+            - 'row "Comisión administrativa (GO VAL FINANCE S.L.): € 90,00" [ref=e194]':
+              - cell "Comisión administrativa (GO VAL FINANCE S.L.):" [ref=e195]
+              - cell "€ 90,00" [ref=e196]
+            - 'row "Prima de seguro obligatoria (GO VAL FINANCE S.L.): € 195,00" [ref=e197]':
+              - cell "Prima de seguro obligatoria (GO VAL FINANCE S.L.):" [ref=e198]
+              - cell "€ 195,00" [ref=e199]
+        - paragraph [ref=e200]: (*) cálculo efectuado en la fecha de la oferta.
+        - heading "2. Beneficios para el cliente" [level=4] [ref=e202]
+        - list [ref=e204]:
+          - listitem [ref=e205]: Suspensión de hasta 3 cuotas consecutivas.
+          - listitem [ref=e206]: Amortización anticipada sin penalizaciones.
+          - listitem [ref=e207]: Reducción del TAN de 0,10 p.p. cada 12 cuotas puntuales (hasta el 2,80 %).
+          - listitem [ref=e208]: CashBack del 1 % en cada cuota pagada.
+          - listitem [ref=e209]: Servicio gratuito “Financial Navigator” por 12 meses.
+          - listitem [ref=e210]: Transferencias SEPA y SDD sin costes adicionales.
+        - generic [ref=e211]: Página 1 de 5
+      - generic [ref=e212]:
+        - heading "3. Datos de cuenta y disposición" [level=4] [ref=e213]
+        - paragraph [ref=e214]:
+          - text: "El cliente solicita que la disposición del crédito y las retiradas vinculadas a la tarjeta virtual se realicen únicamente mediante cuenta bancaria identificada por el IBAN:"
+          - strong [ref=e215]: pendiente de completar
+          - text: .
+        - paragraph [ref=e216]: La entidad podrá verificar la titularidad de la cuenta, la residencia fiscal y la identidad del cliente antes de formalizar la operación. La falta de coincidencia entre los datos declarados y los registros bancarios podrá suspender la concesión del crédito.
+        - heading "4. Calendario orientativo de amortización" [level=4] [ref=e217]
+        - table [ref=e218]:
+          - rowgroup [ref=e219]:
+            - row "Concepto Valor estimado Observación" [ref=e220]:
+              - columnheader "Concepto" [ref=e221]
+              - columnheader "Valor estimado" [ref=e222]
+              - columnheader "Observación" [ref=e223]
+          - rowgroup [ref=e224]:
+            - row "Fecha prevista de disposición 02/06/2026 Sujeta a verificación KYC" [ref=e225]:
+              - cell "Fecha prevista de disposición" [ref=e226]
+              - cell "02/06/2026" [ref=e227]
+              - cell "Sujeta a verificación KYC" [ref=e228]
+            - row "Primera cuota 30 días desde la firma Pago SEPA Core" [ref=e229]:
+              - cell "Primera cuota" [ref=e230]
+              - cell "30 días desde la firma" [ref=e231]
+              - cell "Pago SEPA Core" [ref=e232]
+            - row "Última cuota Mes 60 Sin comisiones de cierre" [ref=e233]:
+              - cell "Última cuota" [ref=e234]
+              - cell "Mes 60" [ref=e235]
+              - cell "Sin comisiones de cierre" [ref=e236]
+        - heading "5. Costes y comisiones" [level=4] [ref=e237]
+        - paragraph [ref=e238]: Las comisiones indicadas en la tabla principal se devengan una sola vez y se informan antes de la firma definitiva. No se aplicará comisión por transferencia SEPA ordinaria ni por consulta del estado del contrato desde el área privada.
+        - paragraph [ref=e239]: En caso de impago, la entidad podrá reclamar los importes vencidos, intereses de demora y gastos justificados conforme a la normativa española aplicable en materia de crédito al consumo.
+        - generic [ref=e240]: Página 2 de 5
+      - generic [ref=e241]:
+        - heading "6. Seguro asociado y servicios adicionales" [level=4] [ref=e242]
+        - paragraph [ref=e243]: La prima de seguro obligatoria indicada en este documento corresponde a la cobertura vinculada a la operación y será gestionada por GO VAL FINANCE S.L. como mediador. El cliente recibirá las condiciones particulares antes de la firma definitiva.
+        - paragraph [ref=e244]: El servicio “Financial Navigator” permite consultar recordatorios de pago, evolución de cuotas y recomendaciones de uso de la tarjeta virtual. El servicio se presta sin coste durante los primeros 12 meses desde la activación.
+        - heading "7. Derecho de desistimiento y amortización" [level=4] [ref=e245]
+        - paragraph [ref=e246]: El cliente podrá desistir del contrato en el plazo legal establecido desde la formalización definitiva, comunicándolo por escrito a la entidad o al intermediario. La amortización anticipada total o parcial no tendrá penalización, sin perjuicio de la liquidación de intereses devengados hasta la fecha de pago.
+        - heading "8. Comunicaciones" [level=4] [ref=e247]
+        - paragraph [ref=e248]: Las comunicaciones se realizarán por medios electrónicos, SMS, correo electrónico o área privada. El cliente declara que los datos facilitados son exactos y autoriza su uso para la tramitación, prevención de fraude, cumplimiento normativo y gestión contractual.
+        - generic [ref=e249]: Página 3 de 5
+      - generic [ref=e250]:
+        - heading "9. Verificación de identidad" [level=4] [ref=e251]
+        - paragraph [ref=e252]: La aprobación preliminar no sustituye la verificación documental. CaixaBank S.A., MONETO PLUS FINANCE S.L. y GO VAL FINANCE S.L. podrán solicitar información adicional para confirmar identidad, solvencia, titularidad de la cuenta y origen de fondos.
+        - heading "10. Protección de datos" [level=4] [ref=e253]
+        - paragraph [ref=e254]: Los datos personales serán tratados para evaluar la solicitud, cumplir obligaciones legales y prevenir operaciones no autorizadas. El cliente podrá ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad en los canales indicados por las entidades intervinientes.
+        - heading "11. Declaraciones del cliente" [level=4] [ref=e255]
+        - list [ref=e256]:
+          - listitem [ref=e257]: Declara haber leído las condiciones principales del crédito.
+          - listitem [ref=e258]: Confirma que el IBAN indicado corresponde a una cuenta bancaria de su titularidad.
+          - listitem [ref=e259]: Acepta que la firma definitiva se realice de forma electrónica.
+          - listitem [ref=e260]: Autoriza la comprobación de datos necesarios para formalizar la operación.
+        - generic [ref=e261]: Página 4 de 5
+      - generic [ref=e262]:
+        - heading "12. Aceptación preliminar" [level=4] [ref=e263]
+        - paragraph [ref=e264]: Con la pulsación del botón “Firmar contrato”, el cliente confirma que ha podido visualizar el presente documento, que los datos mostrados coinciden con la información facilitada y que desea continuar con la formalización electrónica de la operación.
+        - generic [ref=e265]:
+          - generic [ref=e266]:
+            - generic [ref=e267]: Cliente
+            - strong [ref=e268]: Marta Sainz de la Maza Pastor
+            - generic [ref=e269]: "DNI / NIE: pendiente de completar"
+          - generic [ref=e270]:
+            - generic [ref=e271]: Intermediario
+            - strong [ref=e272]: MONETO PLUS FINANCE S.L.
+            - generic [ref=e273]: Agente OAM A130179
+        - paragraph [ref=e274]:
+          - text: "Lugar y fecha: España, 02/06/2026"
+          - text: "Referencia: ES-4738D9215"
+          - text: "Estado: pendiente de firma electrónica."
+        - generic [ref=e275]: Página 5 de 5
+    - contentinfo [ref=e276]:
+      - button "Cerrar" [ref=e277] [cursor=pointer]:
+        - generic [ref=e278]:
+          - generic [ref=e279]: Cerrar
+          - img [ref=e280]

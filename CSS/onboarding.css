@@ -1,0 +1,269 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "DM Sans", sans-serif;
+  background: #FAFAFA;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container */
+.onboarding-container {
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  height: 100dvh;
+  background: #FAFAFA;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Content Section */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px; /* вместо 0 4% */
+  gap: 5.95vh;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5%;
+  bottom: 4%;
+}
+
+
+/* Illustration Section */
+.illustration {
+  width: 78.7%;
+  max-width: 345px;
+  height: 35.1vh;
+  max-height: 307px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.illustration-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Text Content Wrapper */
+.content > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 6.86vh;
+  width: 100%;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+/* Text Block */
+.text-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 2.75vh;
+  width: 100%;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.title {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 45px;
+  color: #0F0F0F;
+  width: 100%;
+  margin: 0;
+}
+
+.description {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #787878;
+  width: 100%;
+  margin: 0;
+}
+
+/* Button Block */
+.button-block {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  width: calc(100% - 40px);
+  z-index: 1000;
+}
+
+.btn-primary {
+  padding-block: 20px;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  width: 100%;
+  max-width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 31, 1) 0%,
+    rgba(255, 119, 215, 1) 100%
+  );
+
+  /* fix text+icon alignment */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-primary span {
+}
+
+.btn-primary svg {
+  flex: 0 0 auto;
+  display: block;
+  width: 21px;
+  height: 21px;
+}
+
+.btn-light {
+  padding-block: 20px;
+  border: 1px solid #E7E7E7;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+/* Mobile Optimization - All devices */
+@media screen and (max-width: 480px) {
+  .onboarding-container {
+    max-width: 100%;
+  }
+}
+
+/* Small mobile devices */
+@media screen and (max-width: 375px) {
+  .title {
+    font-size: 26px;
+    line-height: 39px;
+  }
+  
+  .description {
+    font-size: 14px;
+    line-height: 21px;
+  }
+}
+
+/* Very small mobile devices */
+@media screen and (max-width: 360px) {
+  .title {
+    font-size: 24px;
+    line-height: 36px;
+  }
+}
+
+/* Landscape mode for mobile */
+@media screen and (max-height: 667px) and (orientation: landscape) {
+  .content {
+    top: 8vh;
+    gap: 4vh;
+  }
+  
+  .illustration {
+    height: 28vh;
+  }
+  
+  .title {
+    font-size: 24px;
+    line-height: 36px;
+  }
+  
+  .description {
+    font-size: 14px;
+    line-height: 21px;
+  }
+  
+  .text-block {
+    gap: 2vh;
+  }
+  
+  .button-block {
+    gap: 2.5vh;
+  }
+  
+  .content > div:last-child {
+    gap: 5vh;
+  }
+}
+
+/* Extra small landscape */
+@media screen and (max-height: 568px) and (orientation: landscape) {
+  .content {
+    top: 6vh;
+    gap: 3vh;
+  }
+  
+  .illustration {
+    height: 25vh;
+  }
+  
+  .title {
+    font-size: 22px;
+    line-height: 33px;
+  }
+  
+  .description {
+    font-size: 13px;
+    line-height: 19px;
+  }
+  
+  .text-block {
+    gap: 1.5vh;
+  }
+  
+  .button-block {
+    gap: 2vh;
+  }
+  
+  .content > div:last-child {
+    gap: 4vh;
+  }
+}

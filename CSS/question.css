@@ -1,0 +1,989 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #fafafa;
+  font-family: "DM Sans", sans-serif;
+}
+
+.layout {
+  margin-inline: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.header__bar {
+  height: 4px;
+  width: 100%;
+  background-color: #ededed;
+}
+
+.header__back {
+  border: none;
+  background: none;
+}
+
+.header__skip {
+  color: #fa6c12;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hidden {
+  display: none;
+}
+
+.main {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: calc(100vh - 43px - 70px - 50px - 36px);
+  padding-bottom: 16px;
+}
+
+.btn {
+  margin-top: auto;
+}
+
+.main__content {
+  display: block;
+}
+
+.main__content-2 {
+  display: none;
+  margin-bottom: 46px;
+}
+
+.main__content-3 {
+  display: none;
+  /* фиксированный отступ от последнего поля до кнопки на 3 экране */
+  margin-bottom: 46px;
+}
+
+.main__content-4 {
+  display: none;
+  margin-bottom: 46px;
+}
+
+.main__content-5 {
+  display: none;
+  margin-bottom: 46px;
+}
+
+.main__content-6 {
+  display: none;
+  margin-bottom: 46px;
+}
+
+.main__content-7 {
+  display: none;
+  margin-bottom: 46px;
+}
+
+.main__page {
+  text-align: center;
+  font-size: 14px;
+  color: #9a9a9a;
+}
+
+.current-page {
+  color: #fa6c12;
+  font-weight: 600;
+}
+
+.main__text {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.main__text-title {
+  font-size: 24px;
+}
+
+.main__text-desc {
+  font-size: 16px;
+  color: #787878;
+  margin-top: 12px;
+}
+
+.main__form {
+  display: flex;
+  gap: 12px;
+  border: 1px solid #dfdfdf;
+  border-radius: 14px;
+  background: #fff;
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-top: 40px;
+}
+
+.main__form.active {
+  border: 1px solid #fa6c12;
+}
+
+.main__form.main__form--error {
+  border: 1px solid #d92d20;
+}
+
+.main__input {
+  padding-block: 16px;
+  border: none;
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+}
+
+.main__field-error {
+  display: block;
+  margin-top: 8px;
+  color: #d92d20;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.main__field-error:empty {
+  display: none;
+}
+
+.btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 0 20px 20px;
+  background-color: #fafafa;
+  border: 1px solid #fafafa;
+  box-shadow: none;
+  z-index: 1000;
+}
+
+.footer__btn,
+.footer__btn-not {
+  padding-block: 20px;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  width: 100%;
+  max-width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.footer__btn {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 31, 1) 0%,
+    rgba(255, 119, 215, 1) 100%
+  );
+}
+
+.footer__btn-not {
+  background: linear-gradient(
+    90deg,
+    rgba(180, 180, 180, 1) 0%,
+    rgba(200, 200, 200, 1) 100%
+  );
+}
+
+
+
+
+.footer__btn-not {
+  display: none;
+  padding-block: 20px;
+  border: 1px solid #E7E7E7;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  background: none;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.purpose {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.purpose__choose {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fff;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.purpose__choose.active {
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(
+      90deg,
+      rgba(255, 118, 31, 1) 0%,
+      rgba(255, 119, 215, 1) 100%
+    );
+}
+
+.amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.amout__title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.amount__desc {
+  color: #9a9a9a;
+  margin-top: 4px;
+}
+
+.amount__block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-block: 16px;
+  padding-inline: 24px;
+  background: #fff;
+  border-radius: 14px;
+  margin-top: 16px;
+}
+
+.amount__text {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.euro {
+  color: #ff77c2;
+}
+
+.amount__block-plus {
+  cursor: pointer;
+}
+
+.amount__block-minus {
+  cursor: pointer;
+}
+
+.balance {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #fff;
+  margin-top: 0;
+  border-radius: 16px;
+  margin-inline: 16px;
+}
+
+.balance__title {
+  font-size: 14px;
+  font-weight: 400;
+  color: #787878;
+  text-align: center;
+}
+
+.balance__amount {
+  font-size: 30px;
+  font-weight: 700;
+  color: #000;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.balance__amount span {
+  color: #ff77d7;
+}
+
+.balance__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  padding-block: 12px;
+  border: none;
+  border-radius: 14px;
+  margin-top: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 119, 218, 1) 21%,
+    rgba(250, 108, 18, 1) 100%
+  );
+}
+
+.balance__update {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #787878;
+  text-align: center;
+}
+
+.balance__update span {
+  font-weight: 600;
+  color: #fa6c12;
+}
+
+.balance__banks {
+  position: relative;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bank {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 338px;
+  margin-inline: 16px;
+  background-color: #fafafa;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border-radius: 14px;
+  position: relative;
+}
+
+@media (min-width: 402px) {
+}
+
+.bank__info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bank__info-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bank__info-number {
+  font-size: 10px;
+  color: #787878;
+}
+
+.bank__balance-amount {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bank__close {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  right: 16px;
+  top: -5px;
+  object-fit: contain;
+}
+
+/* 7-й экран: карточка баланса по макету (только здесь, link.css не трогаем) */
+.main__content-7 .balance {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 20px;
+  /* ширина визуально как у кнопки (.btn width: calc(100% - 40px)) с учётом отступов .layout */
+  width: calc(100% - 8px);
+  max-width: calc(100% - 8px);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.main__content-7 .balance__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  width: 100%;
+  max-width: 338px;
+}
+
+.main__content-7 .balance__title {
+  width: 100%;
+  max-width: 338px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #787878;
+  text-align: center;
+}
+
+.main__content-7 .balance__amount {
+  width: auto;
+  max-width: 338px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 45px;
+  text-align: center;
+  color: #0F0F0F;
+}
+
+.main__content-7 .balance__amount span {
+  background: linear-gradient(360deg, #FF77D7 0%, #FA6C12 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.main__content-7 .balance__banks {
+  width: 100%;
+  max-width: 338px;
+  margin-top: 0;
+  gap: 8px;
+}
+
+.main__content-7 .bank {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 338px;
+  min-width: 0;
+  height: 60px;
+  background: #FAFAFA;
+  border-radius: 14px;
+  padding-block: 12px;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}
+
+.main__content-7 .bank__balance-amount {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 21px;
+  text-align: right;
+  color: #0F0F0F;
+}
+
+.main__content-7 .bank__update {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 338px;
+  margin-top: 0;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #787878;
+}
+
+.main__content-7 .bank__update-link {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  color: #FA6C12;
+  text-decoration: underline;
+}
+
+.outstanding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.outstanding__title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.outstanding__desc {
+  color: #9a9a9a;
+  margin-top: 4px;
+}
+
+.outstanding__block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-block: 16px;
+  padding-inline: 24px;
+  background: #fff;
+  border-radius: 14px;
+  margin-top: 16px;
+}
+
+.outstanding__text {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.euro {
+  color: #ff77c2;
+}
+
+.outstanding__block-plus {
+  cursor: pointer;
+}
+
+.outstanding__block-minus {
+  cursor: pointer;
+}
+
+.outstanding__debt {
+  font-size: 16px;
+  margin-top: 16px;
+}
+
+.dollar {
+  font-weight: 600;
+  color: #fa6c12;
+}
+
+.outstanding__debt-sum {
+  font-weight: 600;
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+}
+
+.category {
+    display: flex;
+    gap: 8px;
+    border: 1px solid #E7E7E7;
+    border-radius: 12px;
+    padding-block: 12px;
+    padding-inline: 14px;
+    cursor: pointer;
+}
+
+
+.monthly {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.monthly__title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.monthly__desc {
+  color: #9a9a9a;
+  margin-top: 4px;
+}
+
+.monthly__block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-block: 16px;
+  padding-inline: 24px;
+  background: #fff;
+  border-radius: 14px;
+  margin-top: 16px;
+}
+
+.monthly__text {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.euro {
+  color: #ff77c2;
+}
+
+.monthly__block-plus {
+  cursor: pointer;
+}
+
+.monthly__block-minus {
+  cursor: pointer;
+}
+
+.monthly__debt {
+  font-size: 16px;
+  margin-top: 16px;
+}
+
+.monthly__debt span {
+    font-weight: 700;
+}
+
+.footer__btn {
+    cursor: pointer;
+}
+
+.header__back {
+    cursor: pointer;
+}
+
+.connect {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-inline: 20px;
+    margin-top: 70px;
+    height: calc(100vh - 70px);
+}
+
+.connect__title {
+    font-size: 16px;
+    text-align: center;
+}
+
+.connect-img {
+  display: none;
+}
+
+.connect__block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.conntect__block-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 32px;
+}
+
+.connect__block-desc {
+    font-size: 16px;
+    font-weight: 400;
+    color: #787878;
+}
+
+.void {
+    height: 4px;
+}
+
+.connect__span {
+    color: #FA6C12;
+    font-weight: 700;
+}
+
+.connect__btn {
+  cursor: pointer;
+  display: none;
+  padding-block: 12px;
+  border: none;
+  border-radius: 14px;
+  margin-top: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 31, 1) 0%,
+    rgba(255, 119, 215, 1) 100%
+  );
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loader__points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.loader__points-or {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loader__points-pur {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.privacy-link {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #9a9a9a;
+  text-align: center;
+}
+
+.privacy-link a {
+  color: #FF77D7;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-container {
+  position: relative;
+  width: 84%;
+  max-width: 338px;
+  height: auto;
+  aspect-ratio: 338 / 401;
+  max-height: 90vh;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.progress-indicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgb(255, 0, 179);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 3;
+  transition: opacity 0.5s ease;
+}
+
+#scratchCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  touch-action: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.final-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 1;
+}
+
+/* Шаг 2 (main__content-2): карточка «Aprobación preliminar» — копирует стиль 7-го экрана */
+.main__content-2 .balance {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 20px;
+  width: calc(100% - 8px);
+  max-width: calc(100% - 8px);
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.main__content-2 .balance__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  width: 100%;
+  max-width: 338px;
+}
+
+.main__content-2 .balance__title {
+  width: 100%;
+  max-width: 338px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #787878;
+  text-align: center;
+}
+
+.main__content-2 .balance__amount {
+  width: auto;
+  max-width: 338px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 45px;
+  text-align: center;
+  color: #0F0F0F;
+}
+
+/* Только знак € — градиент */
+.main__content-2 .balance__amount span:first-child {
+  background: linear-gradient(360deg, #FF77D7 0%, #FA6C12 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Цифры — чёрные */
+.main__content-2 .balance__amount span:last-child {
+  background: none;
+  -webkit-text-fill-color: #0F0F0F;
+  color: #0F0F0F;
+}
+
+.main__content-2 .balance__banks {
+  width: 100%;
+  max-width: 338px;
+  margin-top: 0;
+  gap: 8px;
+}
+
+.main__content-2 .bank {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 338px;
+  min-width: 0;
+  height: 60px;
+  background: #FAFAFA;
+  border-radius: 14px;
+  padding-block: 12px;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}
+
+.main__content-2 .bank__balance-amount {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 21px;
+  text-align: right;
+  color: #0F0F0F;
+}
+
+.main__content-2 .bank__update {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 338px;
+  margin-top: 0;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #787878;
+}
+
+.main__content-2 .bank__update-link {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  color: #FA6C12;
+  text-decoration: none;
+}
+
+.bank__actualizar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  color: #FA6C12;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+@keyframes balance-pulse {
+  0%   { opacity: 1; }
+  36%  { opacity: 0; }
+  64%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.balance--pulsing {
+  animation: balance-pulse 1.35s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+/* Замок внутри серой карточки шага 2 — верхний правый угол, не выходит за края */
+.main__content-2 .bank__close {
+  top: 6px;
+  right: 6px;
+  transform: none;
+}
+
+/* Отступ справа у цены — чтобы не перекрывалась замком */
+.main__content-2 .bank__balance {
+  padding-right: 20px;
+}

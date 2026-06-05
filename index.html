@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./CSS/onboarding.css" />
+    <title>Onboarding - Step 1</title>
+    <script src="./js/app-guard.js?v=20260518-1"></script>
+    <script src="./js/flow-guard.js?v=20260527-1"></script>
+  </head>
+  <body>
+    <div class="onboarding-container">
+      <!-- Content -->
+      <div class="content">
+        <!-- Illustration -->
+        <div class="illustration">
+          <img
+            src="./assets/onboarding-1.jpg"
+            alt="Manage Your Money"
+            class="illustration-img"
+          />
+        </div>
+
+        <!-- Text and Button Wrapper -->
+        <div>
+          <!-- Text -->
+          <div class="text-block">
+            <h1 class="title">Encontramos la mejor opción para tu situación</h1>
+            <p class="description">
+              Responde a unas preguntas sencillas y recibe un informe estadístico que te ayudará a entender mejor tus resultados.
+            </p>
+          </div>
+
+          <!-- Button -->
+          <div class="button-block">
+            <button class="btn-primary" id="btn">
+              <span>Continuar</span>
+            </button>
+            <button class="btn-light" id="skip">Seguir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      btn.onclick = function () {
+        location.replace("./profile-plan.html");
+      };
+      skip.onclick = function () {
+        location.replace("./profile-plan.html");
+      };
+    </script>
+  </body>
+</html>

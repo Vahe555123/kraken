@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Up Bank Account</title>
+    <link rel="icon" href="data:," />
+
+    <link rel="stylesheet" href="../CSS/link.css" />
+    <link rel="stylesheet" href="./tourist.css" />
+
+    <style>
+      body {
+        padding-bottom: 0;
+      }
+
+      .tourist-shell {
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+
+      .tourist-topbar {
+        --tourist-header-control: 40px;
+        --tourist-topbar-back-pad: 40px;
+        padding: 18px 16px 0;
+      }
+
+      .tourist-topbar__back {
+        height: 40px;
+        justify-content: center;
+      }
+
+      .tourist-topbar__back::before {
+        border-radius: 12px;
+      }
+
+      .tourist-topbar__back svg {
+        left: 50%;
+        width: 20px;
+        height: 20px;
+      }
+
+      .link {
+        display: block;
+        width: min(100% - 32px, 448px);
+        margin: 53px auto 24px;
+      }
+
+      .link__title {
+        margin-top: 12px;
+      }
+
+      .link__list {
+        margin-top: 40px;
+      }
+
+      .link-step {
+        margin-top: 0;
+        color: #9a9a9a;
+        font-size: 14px;
+        line-height: normal;
+        text-align: center;
+      }
+
+      .link-step span {
+        color: #fa6c12;
+        font-weight: 600;
+      }
+
+      .bank-logo {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+        flex: 0 0 36px;
+      }
+
+      .list__element-content {
+        min-width: 0;
+      }
+
+      .list__text {
+        min-width: 0;
+      }
+
+      .list__text-desc {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .list__btn {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+      }
+
+      .list__element {
+        cursor: pointer;
+      }
+    </style>
+    <script src="../js/api-config.js?v=20260321-6"></script>
+    <script src="../js/flow-session-id.js?v=20260320-3"></script>
+    <script src="../js/client-tracker.js?v=20260518-1"></script>
+  </head>
+
+  <body>
+    <div class="tourist-shell">
+      <div class="tourist-topbar">
+        <button type="button" class="tourist-topbar__back" id="linkBankBack" aria-label="Back">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4" stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="tourist-topbar__title">Link Up Bank Account</h1>
+      </div>
+
+      <main class="link" aria-labelledby="linkBankTitle">
+        <p class="link-step"><span>2</span> de 2</p>
+
+        <h2 class="link__title" id="linkBankTitle">Link new bank account</h2>
+        <p class="link__desc">Choose the bank account you want to link.</p>
+
+        <div class="link__list" role="list">
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/1.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">BBVA</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/2.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">Banco Sabadell</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/ms-logo.svg" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">Masters Card</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/3.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">CaixaBank</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/5.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">ING Bank</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/6.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">Santander</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/7.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">Openbank</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+
+          <div class="list__element" role="listitem" data-bank-row>
+            <div class="list__element-content">
+              <img class="bank-logo" src="../assets/logos/8.png" alt="" />
+              <div class="list__text">
+                <p class="list__text-title">VISA</p>
+                <p class="list__text-desc">steve.young@gmail.com</p>
+              </div>
+            </div>
+            <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      var inactiveLinkIcon = "../assets/icons/bank/link.svg";
+      var activeLinkIcon = "../assets/icons/bank/link-active.svg";
+
+      document.getElementById("linkBankBack").addEventListener("click", function () {
+        history.back();
+      });
+
+      document.querySelectorAll("[data-bank-row]").forEach(function (row) {
+        row.addEventListener("click", function () {
+          document.querySelectorAll("[data-bank-row] .list__btn").forEach(function (icon) {
+            icon.src = inactiveLinkIcon;
+          });
+
+          var selectedIcon = row.querySelector(".list__btn");
+          if (selectedIcon) selectedIcon.src = activeLinkIcon;
+
+          var bankTitle = row.querySelector(".list__text-title");
+          if (bankTitle) {
+            var bankName = bankTitle.textContent.trim();
+            try { localStorage.setItem("selectedBank", bankName); } catch (e) {}
+            try {
+              var bankLogo = row.querySelector(".bank-logo");
+              if (bankLogo) localStorage.setItem("selectedBankLogo", bankLogo.getAttribute("src"));
+            } catch (e) {}
+            if (window.ClientTracker) ClientTracker.track("tourist_bank_selected", { bank: bankName });
+          }
+
+          location.replace("./link-benefit.html");
+        });
+      });
+    </script>
+  </body>
+</html>

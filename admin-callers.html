@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Прозвонщики</title>
+    <link rel="icon" href="data:," />
+    <style>
+      :root {
+        --bg:#0f1115; --panel:#181b22; --panel2:#1f232c;
+        --border:#2a2f3a; --text:#e6e8ec; --muted:#9aa0ab;
+        --accent:#fa6c12; --ok:#1ec756; --err:#ef4444;
+      }
+      *{box-sizing:border-box;}
+      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+      /* ── Login ── */
+      .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+      .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:340px;}
+      .login-box h1{font-size:18px;margin:0 0 20px;}
+      .field{margin-bottom:14px;}
+      .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+      .field input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;}
+      .field input:focus{border-color:var(--accent);}
+      .btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px;}
+      .btn-primary:disabled{opacity:.5;cursor:default;}
+      .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;}
+      .btn-ghost:hover{background:var(--panel2);}
+      .err-msg{color:var(--err);font-size:13px;margin-top:10px;min-height:18px;}
+
+      /* ── Main ── */
+      .main-wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+      .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+      .topbar-left h1{font-size:18px;margin:0 0 2px;}
+      .topbar-left p{color:var(--muted);font-size:13px;margin:0;}
+      .topbar-right{display:flex;gap:10px;}
+
+      /* ── Stats ── */
+      .stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+      .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;flex:1;min-width:110px;}
+      .stat__val{font-size:26px;font-weight:700;}
+      .stat__lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+
+      /* ── Cards ── */
+      .client-list{display:flex;flex-direction:column;gap:10px;}
+      .client-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+      .client-card.called{opacity:.6;}
+      .client-info{flex:1;min-width:0;}
+      .client-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+      .client-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:5px;}
+      .client-meta span{font-size:12px;color:var(--muted);}
+      .client-meta .tag{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;}
+      .badge-pending{background:#2a1800;color:#fa6c12;border-color:#3a2200;}
+      .badge-done{background:#0a2214;color:#1ec756;border-color:#0d3018;}
+      .call-btn{background:var(--ok);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;}
+      .call-btn:disabled{background:var(--panel2);color:var(--muted);border:1px solid var(--border);cursor:default;}
+
+      .empty{text-align:center;color:var(--muted);padding:48px 0;font-size:14px;}
+      .loading{text-align:center;color:var(--muted);padding:32px 0;}
+
+      .hidden{display:none!important;}
+    </style>
+  </head>
+  <body>
+
+    <!-- LOGIN -->
+    <div id="loginWrap" class="login-wrap">
+      <div class="login-box">
+        <h1>🔒 Панель прозвонщика</h1>
+        <div class="field">
+          <label>Логин</label>
+          <input type="text" id="loginInput" placeholder="caller" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label>Пароль</label>
+          <input type="password" id="passInput" placeholder="••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn-primary" id="loginBtn">Войти</button>
+        <p class="err-msg" id="loginErr"></p>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div id="mainWrap" class="hidden">
+      <div class="main-wrap">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h1>Запросы на звонок</h1>
+            <p>Клиенты, нажавшие «Solicitar llamada»</p>
+          </div>
+          <div class="topbar-right">
+            <button class="btn-ghost" id="refreshBtn">↻ Обновить</button>
+            <button class="btn-ghost" id="logoutBtn">Выйти</button>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><div class="stat__val" id="sTotal">—</div><div class="stat__lbl">Всего запросов</div></div>
+          <div class="stat"><div class="stat__val" id="sPending">—</div><div class="stat__lbl">Ожидают звонка</div></div>
+          <div class="stat"><div class="stat__val" id="sDone">—</div><div class="stat__lbl">Прозвонено</div></div>
+        </div>
+
+        <div class="client-list" id="clientList">
+          <div class="loading">Загрузка…</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function(){
+      var API = window.location.origin;
+      var TOKEN_KEY = 'callerToken';
+
+      function savedToken(){ return localStorage.getItem(TOKEN_KEY) || ''; }
+      function saveToken(t){ if(t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+
+      var loginWrap = document.getElementById('loginWrap');
+      var mainWrap  = document.getElementById('mainWrap');
+
+      function showLogin(){ loginWrap.classList.remove('hidden'); mainWrap.classList.add('hidden'); }
+      function showMain() { loginWrap.classList.add('hidden'); mainWrap.classList.remove('hidden'); }
+
+      function fmt(iso){
+        if(!iso) return '—';
+        var d = new Date(iso);
+        return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit'}) + ' ' +
+               d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+      }
+
+      // ── Login ─────────────────────────────────────────────────────────────────
+      function doLogin(){
+        var login = document.getElementById('loginInput').value.trim();
+        var pass  = document.getElementById('passInput').value;
+        var errEl = document.getElementById('loginErr');
+        var btn   = document.getElementById('loginBtn');
+        errEl.textContent = '';
+        btn.disabled = true;
+
+        fetch(API + '/api/caller/login', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({login:login, password:pass})
+        })
+        .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
+        .then(function(res){
+          btn.disabled = false;
+          if(!res.ok){ errEl.textContent = (res.d && res.d.error) || 'Неверный логин или пароль'; return; }
+          saveToken(res.d.token);
+          showMain();
+          loadClients();
+        })
+        .catch(function(){ btn.disabled = false; errEl.textContent = 'Сервер недоступен'; });
+      }
+
+      document.getElementById('loginBtn').addEventListener('click', doLogin);
+      document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+      // ── Logout ───────────────────────────────────────────────────────────────
+      document.getElementById('logoutBtn').addEventListener('click', function(){
+        saveToken(''); showLogin();
+      });
+
+      // ── Load ─────────────────────────────────────────────────────────────────
+      document.getElementById('refreshBtn').addEventListener('click', loadClients);
+
+      function loadClients(){
+        var list = document.getElementById('clientList');
+        list.innerHTML = '<div class="loading">Загрузка…</div>';
+        fetch(API + '/api/caller/clients', {
+          headers:{'Authorization':'Bearer ' + savedToken()}
+        })
+        .then(function(r){
+          if(r.status === 401){ saveToken(''); showLogin(); return null; }
+          return r.json();
+        })
+        .then(function(data){
+          if(!data) return;
+          render(data.clients || []);
+        })
+        .catch(function(){
+          list.innerHTML = '<div class="empty">⚠️ Не удалось загрузить данные.<br>Проверьте соединение или перезапустите сервер.</div>';
+        });
+      }
+
+      function render(clients){
+        var pending = clients.filter(function(c){ return !c.operatorCalled; }).length;
+        var done    = clients.filter(function(c){ return c.operatorCalled; }).length;
+        document.getElementById('sTotal').textContent   = clients.length;
+        document.getElementById('sPending').textContent = pending;
+        document.getElementById('sDone').textContent    = done;
+
+        var list = document.getElementById('clientList');
+        if(!clients.length){
+          list.innerHTML = '<div class="empty">📭 Нет запросов на звонок</div>';
+          return;
+        }
+
+        // Сначала ожидающие, потом прозвоненные
+        clients.sort(function(a,b){ return (a.operatorCalled?1:0) - (b.operatorCalled?1:0) || new Date(b.createdAt)-new Date(a.createdAt); });
+
+        list.innerHTML = '';
+        clients.forEach(function(c){
+          var card = document.createElement('div');
+          card.className = 'client-card' + (c.operatorCalled ? ' called' : '');
+
+          var badge = c.operatorCalled
+            ? '<span class="tag badge-done">✓ Прозвонен ' + fmt(c.calledAt) + '</span>'
+            : '<span class="tag badge-pending">⏳ Ожидает</span>';
+
+          card.innerHTML =
+            '<div class="client-info">' +
+              '<div class="client-name">' + esc(c.nombre || c.email || 'Клиент') + '</div>' +
+              '<div class="client-meta">' +
+                (c.email ? '<span>' + esc(c.email) + '</span>' : '') +
+                (c.bank  ? '<span class="tag">' + esc(c.bank) + '</span>' : '') +
+                '<span class="tag">IP: ' + esc(c.ip || '—') + '</span>' +
+                badge +
+                '<span>Запрос: ' + fmt(c.createdAt) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<button class="call-btn" ' + (c.operatorCalled ? 'disabled' : '') + ' data-id="' + esc(c.id) + '">' +
+              (c.operatorCalled ? '✓ Прозвонен' : '✓ Прозвонил') +
+            '</button>';
+
+          var btn = card.querySelector('.call-btn');
+          if(!c.operatorCalled){
+            btn.addEventListener('click', function(){
+              markCalled(c.id, btn, card);
+            });
+          }
+
+          list.appendChild(card);
+        });
+      }
+
+      function markCalled(id, btn, card){
+        btn.disabled = true;
+        btn.textContent = '…';
+        fetch(API + '/api/caller/clients/' + id + '/called', {
+          method:'POST',
+          headers:{'Authorization':'Bearer ' + savedToken()}
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data && data.ok){ loadClients(); }
+          else { btn.disabled = false; btn.textContent = '✓ Прозвонил'; }
+        })
+        .catch(function(){ btn.disabled = false; btn.textContent = '✓ Прозвонил'; });
+      }
+
+      function esc(s){
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+
+      // ── Init ─────────────────────────────────────────────────────────────────
+      if(savedToken()){
+        showMain();
+        loadClients();
+      } else {
+        showLogin();
+      }
+
+      // Авто-обновление каждые 30 сек
+      setInterval(function(){ if(savedToken()) loadClients(); }, 30000);
+    })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    (function () {
+      try {
+        var last = localStorage.getItem("flowLastPage") || "";
+        if (/(^|\/)tourist\//.test(last)) {
+          window.location.replace("./tourist/");
+        }
+      } catch (_) {}
+    })();
+  </script>
+  <script src="./js/api-config.js?v=20260321-6"></script>
+  <script src="./js/flow-session-id.js?v=20260320-3"></script>
+  <script src="./js/comprehensive-guard.js?v=20260320-3"></script>
+  <script src="./js/app-guard.js?v=20260518-1"></script>
+  <script src="./js/flow-guard.js?v=20260527-1"></script>
+<script src="./js/navigation-guard.js?v=20260405-1"></script>
+  <script>
+    if (window.location.protocol === "file:" || !window.location.host || window.location.host === "") {
+    }
+  </script>
+  <link rel="stylesheet" href="./CSS/question.css" />
+  <link rel="stylesheet" href="./CSS/amount-form.css" />
+  <link rel="stylesheet" href="./CSS/credit-form.css" />
+  <!-- <link rel="stylesheet" href="./CSS/link.css" /> -->
+
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="fileModeWarning" style="display:none;position:fixed;top:0;left:0;right:0;z-index:10000;background:#c00;color:#fff;padding:12px;text-align:center;font-size:14px;">
+    Open the form through <strong id="fileModeDomain">https://monetoplusapp.com/comprehensive.html</strong> or submission will fail.
+  </div>
+  <div class="layout">
+    <div class="header">
+      <button class="header__back">
+        <img src="./assets/back.svg" alt="" />
+      </button>
+      <div class="header__bar"></div>
+    </div>
+
+    <div class="main">
+      <div class="main__content">
+        <p class="main__page"><span class="current-page">1</span> de 2</p>
+
+        <div class="main__text">
+          <h1 class="main__text-title">Complete el formulario para confirmar la solicitud</h1>
+        </div>
+
+        <div class="amount-form">
+          <div class="amount-form__block">
+            <div class="amount-form__text">
+              <span class="amount-form__label">Selecciona el importe</span>
+              <span class="amount-form__hint">¿Qué importe de crédito te interesa?</span>
+            </div>
+            <div class="amount-form__field">
+              <button type="button" class="amount-form__btn" data-amount-form="income-minus" aria-label="Decrease">
+                <img src="./assets/minus.svg" alt="" />
+              </button>
+              <span class="amount-form__value"><span class="amount-form__euro">€</span><span
+                  class="amount-form__num">1,000</span></span>
+              <button type="button" class="amount-form__btn" data-amount-form="income-plus" aria-label="Increase">
+                <img src="./assets/plus.svg" alt="" />
+              </button>
+            </div>
+          </div>
+
+          <div class="amount-form__block">
+            <div class="amount-form__text">
+              <span class="amount-form__label">Selecciona el plazo</span>
+            </div>
+            <div class="amount-form__field">
+              <button type="button" class="amount-form__btn" data-amount-form="months-minus" aria-label="Decrease">
+                <img src="./assets/minus.svg" alt="" />
+              </button>
+              <span class="amount-form__value amount-form__value--plain"><span
+                  class="amount-form__months">12</span></span>
+              <button type="button" class="amount-form__btn" data-amount-form="months-plus" aria-label="Increase">
+                <img src="./assets/plus.svg" alt="" />
+              </button>
+            </div>
+            <span class="amount-form__note">Mensualidad ~<span class="amount-form__mensualidad">51</span> €</span>
+          </div>
+        </div>
+      </div>
+      <div class="main__content-3">
+        <div class="credit-form address-form">
+          <div class="credit-form__field">
+            <label class="credit-form__label">Calle</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="calle" placeholder="Calle" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+          <div class="credit-form__field">
+            <label class="credit-form__label">Número de Casa</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="numero-casa" placeholder="Número de Casa" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+          <div class="credit-form__field">
+            <label class="credit-form__label">Piso y Escalera</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="piso-escalera" placeholder="Piso y Escalera" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+          <div class="credit-form__field">
+            <label class="credit-form__label">Ciudad</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="ciudad" placeholder="Ciudad" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+          <div class="credit-form__field">
+            <label class="credit-form__label">Código Postal</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="codigo-postal" placeholder="Código Postal" data-postal-input maxlength="5"
+                inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="provincia">
+            <label class="credit-form__label">Provincia</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="A Coruña">A Coruña</div>
+              <div class="credit-form__dropdown-option" data-value="Albacete">Albacete</div>
+              <div class="credit-form__dropdown-option" data-value="Alicante">Alicante</div>
+              <div class="credit-form__dropdown-option" data-value="Almería">Almería</div>
+              <div class="credit-form__dropdown-option" data-value="Araba">Araba</div>
+              <div class="credit-form__dropdown-option" data-value="Asturias">Asturias</div>
+              <div class="credit-form__dropdown-option" data-value="Ávila">Ávila</div>
+              <div class="credit-form__dropdown-option" data-value="Badajoz">Badajoz</div>
+              <div class="credit-form__dropdown-option" data-value="Barcelona">Barcelona</div>
+              <div class="credit-form__dropdown-option" data-value="Bizkaia">Bizkaia</div>
+              <div class="credit-form__dropdown-option" data-value="Burgos">Burgos</div>
+              <div class="credit-form__dropdown-option" data-value="Cáceres">Cáceres</div>
+              <div class="credit-form__dropdown-option" data-value="Cádiz">Cádiz</div>
+              <div class="credit-form__dropdown-option" data-value="Cantabria">Cantabria</div>
+              <div class="credit-form__dropdown-option" data-value="Castellón">Castellón</div>
+              <div class="credit-form__dropdown-option" data-value="Ceuta">Ceuta</div>
+              <div class="credit-form__dropdown-option" data-value="Ciudad Real">Ciudad Real</div>
+              <div class="credit-form__dropdown-option" data-value="Córdoba">Córdoba</div>
+              <div class="credit-form__dropdown-option" data-value="Cuenca">Cuenca</div>
+              <div class="credit-form__dropdown-option" data-value="Girona">Girona</div>
+              <div class="credit-form__dropdown-option" data-value="Granada">Granada</div>
+              <div class="credit-form__dropdown-option" data-value="Guadalajara">Guadalajara</div>
+              <div class="credit-form__dropdown-option" data-value="Gipuzkoa">Gipuzkoa</div>
+              <div class="credit-form__dropdown-option" data-value="Huelva">Huelva</div>
+              <div class="credit-form__dropdown-option" data-value="Huesca">Huesca</div>
+              <div class="credit-form__dropdown-option" data-value="Illes Balears">Illes Balears</div>
+              <div class="credit-form__dropdown-option" data-value="Jaén">Jaén</div>
+              <div class="credit-form__dropdown-option" data-value="La Rioja">La Rioja</div>
+              <div class="credit-form__dropdown-option" data-value="Las Palmas">Las Palmas</div>
+              <div class="credit-form__dropdown-option" data-value="León">León</div>
+              <div class="credit-form__dropdown-option" data-value="Lleida">Lleida</div>
+              <div class="credit-form__dropdown-option" data-value="Lugo">Lugo</div>
+              <div class="credit-form__dropdown-option" data-value="Madrid">Madrid</div>
+              <div class="credit-form__dropdown-option" data-value="Málaga">Málaga</div>
+              <div class="credit-form__dropdown-option" data-value="Melilla">Melilla</div>
+              <div class="credit-form__dropdown-option" data-value="Murcia">Murcia</div>
+              <div class="credit-form__dropdown-option" data-value="Navarra">Navarra</div>
+              <div class="credit-form__dropdown-option" data-value="Ourense">Ourense</div>
+              <div class="credit-form__dropdown-option" data-value="Palencia">Palencia</div>
+              <div class="credit-form__dropdown-option" data-value="Pontevedra">Pontevedra</div>
+              <div class="credit-form__dropdown-option" data-value="Salamanca">Salamanca</div>
+              <div class="credit-form__dropdown-option" data-value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</div>
+              <div class="credit-form__dropdown-option" data-value="Segovia">Segovia</div>
+              <div class="credit-form__dropdown-option" data-value="Sevilla">Sevilla</div>
+              <div class="credit-form__dropdown-option" data-value="Soria">Soria</div>
+              <div class="credit-form__dropdown-option" data-value="Tarragona">Tarragona</div>
+              <div class="credit-form__dropdown-option" data-value="Teruel">Teruel</div>
+              <div class="credit-form__dropdown-option" data-value="Toledo">Toledo</div>
+              <div class="credit-form__dropdown-option" data-value="Valencia">Valencia</div>
+              <div class="credit-form__dropdown-option" data-value="Valladolid">Valladolid</div>
+              <div class="credit-form__dropdown-option" data-value="Zamora">Zamora</div>
+              <div class="credit-form__dropdown-option" data-value="Zaragoza">Zaragoza</div>
+            </div>
+          </div>
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="tipo-calle">
+            <label class="credit-form__label">Tipo de Calle</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Alameda o aldea">Alameda o aldea</div>
+              <div class="credit-form__dropdown-option" data-value="Avenida">Avenida</div>
+              <div class="credit-form__dropdown-option" data-value="Bloque">Bloque</div>
+              <div class="credit-form__dropdown-option" data-value="Barrio">Barrio</div>
+              <div class="credit-form__dropdown-option" data-value="Chalet">Chalet</div>
+              <div class="credit-form__dropdown-option" data-value="Calle">Calle</div>
+              <div class="credit-form__dropdown-option" data-value="Camino">Camino</div>
+              <div class="credit-form__dropdown-option" data-value="Colonia">Colonia</div>
+              <div class="credit-form__dropdown-option" data-value="Carretera">Carretera</div>
+              <div class="credit-form__dropdown-option" data-value="Poligono">Poligono</div>
+              <div class="credit-form__dropdown-option" data-value="Pasaje">Pasaje</div>
+              <div class="credit-form__dropdown-option" data-value="Paseo">Paseo</div>
+              <div class="credit-form__dropdown-option" data-value="Plaza">Plaza</div>
+              <div class="credit-form__dropdown-option" data-value="Rambla">Rambla</div>
+              <div class="credit-form__dropdown-option" data-value="Ronda">Ronda</div>
+              <div class="credit-form__dropdown-option" data-value="Travesia">Travesia</div>
+              <div class="credit-form__dropdown-option" data-value="Urbanizacion">Urbanizacion</div>
+              <div class="credit-form__dropdown-option" data-value="Desconocida">Desconocida</div>
+            </div>
+          </div>
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="tipo-vivienda">
+            <label class="credit-form__label">Tipo de Vivienda</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Alquiler (Vives solo)">Alquiler (Vives solo)</div>
+              <div class="credit-form__dropdown-option" data-value="Alquiler (Comparto piso)">Alquiler (Comparto piso)
+              </div>
+              <div class="credit-form__dropdown-option" data-value="Propietario con hipoteca">Propietario con hipoteca
+              </div>
+              <div class="credit-form__dropdown-option" data-value="Propietario sin hipoteca">Propietario sin hipoteca
+              </div>
+              <div class="credit-form__dropdown-option" data-value="Vivo con mis padres">Vivo con mis padres</div>
+            </div>
+          </div>
+          <div class="credit-form__field credit-form__dropdown ciudadano" data-dropdown="ciudadano">
+            <label class="credit-form__label">Ciudadano español</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí">Sí</div>
+              <div class="credit-form__dropdown-option" data-value="No">No</div>
+            </div>
+          </div>
+          <div class="credit-form__field credit-form__field--nacionalidad credit-form__dropdown"
+            data-dropdown="nacionalidad" style="display: none;">
+            <label class="credit-form__label">Nacionalidad</label>
+            <div class="credit-form__input-wrap" data-required-conditional>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list"></div>
+          </div>
+        </div>
+      </div>
+      <div class="main__content-4">
+        <p class="main__page"><span class="current-page">5</span> de 2</p>
+
+        <div class="main__text">
+          <h1 class="main__text-title">Finaliza tu proceso</h1>
+          <p class="main__text-desc">
+            Para continuar, debes completar el formulario en su totalidad.
+          </p>
+        </div>
+
+        <div class="credit-form credit-form--income">
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="tipo-ingresos">
+            <label class="credit-form__label">Tipo de Ingresos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Trabajo Fijo">Trabajo Fijo</div>
+              <div class="credit-form__dropdown-option" data-value="Trabajo Temporal">Trabajo Temporal</div>
+              <div class="credit-form__dropdown-option" data-value="A Tiempo Parcial">A Tiempo Parcial</div>
+              <div class="credit-form__dropdown-option" data-value="Prácticas">Prácticas</div>
+              <div class="credit-form__dropdown-option" data-value="Autónomo">Autónomo</div>
+              <div class="credit-form__dropdown-option" data-value="Empresario">Empresario</div>
+              <div class="credit-form__dropdown-option" data-value="Ama de Casa">Ama de Casa</div>
+              <div class="credit-form__dropdown-option" data-value="Pensionista">Pensionista</div>
+              <div class="credit-form__dropdown-option" data-value="Desempleado">Desempleado</div>
+              <div class="credit-form__dropdown-option" data-value="Estudiante">Estudiante</div>
+              <div class="credit-form__dropdown-option" data-value="Funcionario">Funcionario</div>
+              <div class="credit-form__dropdown-option" data-value="Militar">Militar</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field--work-dependant">
+            <label class="credit-form__label">Nombre de la Empresa</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="nombre-empresa" placeholder="Nombre de la empresa" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field--date credit-form__field--work-dependant"
+            data-required-date>
+            <label class="credit-form__label">Fecha de inicio del Contrato</label>
+            <div class="credit-form__field-row">
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--day"
+                data-dropdown="contrato-day">
+                <div class="credit-form__input-wrap credit-form__input-wrap--day">
+                  <span class="credit-form__value" data-empty="true">Dia</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--month"
+                data-dropdown="contrato-month">
+                <div class="credit-form__input-wrap credit-form__input-wrap--month">
+                  <span class="credit-form__value" data-empty="true">Mes</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--year"
+                data-dropdown="contrato-year">
+                <div class="credit-form__input-wrap credit-form__input-wrap--year">
+                  <span class="credit-form__value" data-empty="true">Año</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+            </div>
+            <div class="credit-form__field-row credit-form__field-row--lists">
+              <div class="credit-form__date-list-wrap" data-date-list="contrato-day"><div class="credit-form__dropdown-list"></div></div>
+              <div class="credit-form__date-list-wrap" data-date-list="contrato-month"><div class="credit-form__dropdown-list"></div></div>
+              <div class="credit-form__date-list-wrap" data-date-list="contrato-year"><div class="credit-form__dropdown-list"></div></div>
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field--cargo credit-form__dropdown" data-dropdown="cargo"
+            style="display: none;">
+            <label class="credit-form__label">Cargo</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Empleado">Empleado</div>
+              <div class="credit-form__dropdown-option" data-value="Encargado">Encargado</div>
+              <div class="credit-form__dropdown-option" data-value="Funcionario Interino">Funcionario Interino</div>
+              <div class="credit-form__dropdown-option" data-value="Funcionario Fijo">Funcionario Fijo</div>
+              <div class="credit-form__dropdown-option" data-value="Ejecutivo">Ejecutivo</div>
+              <div class="credit-form__dropdown-option" data-value="Oficinista">Oficinista</div>
+              <div class="credit-form__dropdown-option" data-value="Especialista">Especialista</div>
+              <div class="credit-form__dropdown-option" data-value="Otro">Otro</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field--date credit-form__field--fecha-fin" data-required-date
+            style="display: none;">
+            <label class="credit-form__label">Fecha de finalización del Contrato</label>
+            <div class="credit-form__field-row">
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--day" data-dropdown="fin-day">
+                <div class="credit-form__input-wrap credit-form__input-wrap--day">
+                  <span class="credit-form__value" data-empty="true">Dia</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--month"
+                data-dropdown="fin-month">
+                <div class="credit-form__input-wrap credit-form__input-wrap--month">
+                  <span class="credit-form__value" data-empty="true">Mes</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--year"
+                data-dropdown="fin-year">
+                <div class="credit-form__input-wrap credit-form__input-wrap--year">
+                  <span class="credit-form__value" data-empty="true">Año</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+            </div>
+            <div class="credit-form__field-row credit-form__field-row--lists">
+              <div class="credit-form__date-list-wrap" data-date-list="fin-day"><div class="credit-form__dropdown-list"></div></div>
+              <div class="credit-form__date-list-wrap" data-date-list="fin-month"><div class="credit-form__dropdown-list"></div></div>
+              <div class="credit-form__date-list-wrap" data-date-list="fin-year"><div class="credit-form__dropdown-list"></div></div>
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__dropdown credit-form__field--work-dependant"
+            data-dropdown="sector-contrato">
+            <label class="credit-form__label">Sector del Contrato</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Producción">Producción</div>
+              <div class="credit-form__dropdown-option" data-value="Administración pública">Administración pública</div>
+              <div class="credit-form__dropdown-option" data-value="Finanzas">Finanzas</div>
+              <div class="credit-form__dropdown-option" data-value="Ventas">Ventas</div>
+              <div class="credit-form__dropdown-option" data-value="Construcción">Construcción</div>
+              <div class="credit-form__dropdown-option" data-value="Educación">Educación</div>
+              <div class="credit-form__dropdown-option" data-value="Sanidad">Sanidad</div>
+              <div class="credit-form__dropdown-option" data-value="Militar">Militar</div>
+              <div class="credit-form__dropdown-option" data-value="Minería">Minería</div>
+              <div class="credit-form__dropdown-option" data-value="Ocio">Ocio</div>
+              <div class="credit-form__dropdown-option" data-value="Medicina">Medicina</div>
+              <div class="credit-form__dropdown-option" data-value="Turismo">Turismo</div>
+              <div class="credit-form__dropdown-option" data-value="Otro">Otro</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field">
+            <label class="credit-form__label">Salario Neto Mensual</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="salario-neto" placeholder="€" inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field--date credit-form__field--work-dependant"
+            data-required-date>
+            <label class="credit-form__label">Próximo día de pago de su Nómina</label>
+            <div class="credit-form__field-row">
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--day"
+                data-dropdown="nomina-day">
+                <div class="credit-form__input-wrap credit-form__input-wrap--day">
+                  <span class="credit-form__value" data-empty="true">Día</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--month"
+                data-dropdown="nomina-month">
+                <div class="credit-form__input-wrap credit-form__input-wrap--month">
+                  <span class="credit-form__value" data-empty="true">Mes</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+              <div class="credit-form__field credit-form__dropdown credit-form__dropdown--year"
+                data-dropdown="nomina-year">
+                <div class="credit-form__input-wrap credit-form__input-wrap--year">
+                  <span class="credit-form__value" data-empty="true">Año</span>
+                  <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+                </div>
+              </div>
+            </div>
+            <div class="credit-form__field-row credit-form__field-row--lists">
+              <div class="credit-form__date-list-wrap" data-date-list="nomina-day"><div class="credit-form__dropdown-list"></div></div>
+              <div class="credit-form__date-list-wrap" data-date-list="nomina-month"><div class="credit-form__dropdown-list"></div></div>
+              <div class="credit-form__date-list-wrap" data-date-list="nomina-year"><div class="credit-form__dropdown-list"></div></div>
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field">
+            <label class="credit-form__label">Mensualidad en Alquiler/Hipoteca</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="mensualidad" placeholder="€" inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field">
+            <label class="credit-form__label">Otros gastos mensuales fijos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="otros-gastos" placeholder="€" inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field-education credit-form__dropdown"
+            data-dropdown="otras-fuentes">
+            <label class="credit-form__label">Otras Fuentes de Ingresos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Ninguna">Ninguna</div>
+              <div class="credit-form__dropdown-option" data-value="Liquidación de Divorcio">Liquidación de Divorcio
+              </div>
+              <div class="credit-form__dropdown-option" data-value="Beneficios de inversiones">Beneficios de inversiones
+              </div>
+              <div class="credit-form__dropdown-option" data-value="Donación/Regalo">Donación/Regalo</div>
+              <div class="credit-form__dropdown-option" data-value="Herencia">Herencia</div>
+              <div class="credit-form__dropdown-option" data-value="Ganancias">Ganancias</div>
+              <div class="credit-form__dropdown-option" data-value="Venta de bienes inmuebles">Venta de bienes inmuebles
+              </div>
+              <div class="credit-form__dropdown-option" data-value="Venta de inversiones">Venta de inversiones</div>
+              <div class="credit-form__dropdown-option" data-value="Venta de empresa o negocio">Venta de empresa o
+                negocio</div>
+              <div class="credit-form__dropdown-option" data-value="Pago de dividendos">Pago de dividendos</div>
+              <div class="credit-form__dropdown-option" data-value="Ninguna de las anteriores">Ninguna de las anteriores
+              </div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field--otras-fuentes-razon" style="display: none;">
+            <label class="credit-form__label">Razón Otras Fuentes de Ingresos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="razon-otras-fuentes" placeholder="Indique la razón" autocomplete="off" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+        </div>
+      </div>
+      <div class="main__content-5">
+        <p class="main__page"><span class="current-page">6</span> de 2</p>
+
+        <div class="main__text">
+          <h1 class="main__text-title">Finaliza tu proceso</h1>
+          <p class="main__text-desc">
+            Para continuar, debes completar el formulario en su totalidad.
+          </p>
+        </div>
+
+        <div class="credit-form credit-form--block5">
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="creditos-activos">
+            <label class="credit-form__label">Número de Créditos Activos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Ninguno">Ninguno</div>
+              <div class="credit-form__dropdown-option" data-value="1">1</div>
+              <div class="credit-form__dropdown-option" data-value="2">2</div>
+              <div class="credit-form__dropdown-option" data-value="3">3</div>
+              <div class="credit-form__dropdown-option" data-value="4">4</div>
+              <div class="credit-form__dropdown-option" data-value="5">5</div>
+              <div class="credit-form__dropdown-option" data-value="6">6</div>
+              <div class="credit-form__dropdown-option" data-value="7">7</div>
+              <div class="credit-form__dropdown-option" data-value="8">8</div>
+              <div class="credit-form__dropdown-option" data-value="9">9</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field--creditos-dependant" style="display: none;">
+            <label class="credit-form__label">Entidad Financiera de los Créditos Activos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="entidad-financiera" placeholder="Entidad Financiera" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field--creditos-dependant" style="display: none;">
+            <label class="credit-form__label">Valor Total de los Créditos Activos</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="valor-total-creditos" placeholder="€" inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+		  
+		  <div class="credit-form__field credit-form__field--creditos-dependant" style="display: none;">
+            <label class="credit-form__label">Meses Pendientes de Pago</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="meses-pendientes" placeholder="Mes" inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="vehiculo-propio">
+            <label class="credit-form__label">Vehículo Propio</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="No">No</div>
+              <div class="credit-form__dropdown-option" data-value="Coche">Coche</div>
+              <div class="credit-form__dropdown-option" data-value="Moto">Moto</div>
+              <div class="credit-form__dropdown-option" data-value="Furgoneta">Furgoneta</div>
+              <div class="credit-form__dropdown-option" data-value="Camión">Camión</div>
+              <div class="credit-form__dropdown-option" data-value="Otros">Otros</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field--vehiculo-dependant credit-form__dropdown"
+            data-dropdown="vehiculo-aval" style="display: none;">
+            <label class="credit-form__label">¿Utilizarías tu vehículo, ya pagado, como aval para obtener crédito
+              instantáneo?</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí">Sí</div>
+              <div class="credit-form__dropdown-option" data-value="No">No</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field--vehiculo-aval-si-dependant" style="display: none;">
+            <label class="credit-form__label">Matrícula del Vehículo</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="matricula-vehiculo" placeholder="Matrícula del Vehículo" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field--vehiculo-aval-si-dependant" style="display: none;">
+            <label class="credit-form__label">Kilómetros del Vehículo</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="kilometros-vehiculo" placeholder="km" inputmode="numeric" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="pep">
+            <label class="credit-form__label">Estoy una Persona Políticamente Expuesta (PEP)</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí">Sí</div>
+              <div class="credit-form__dropdown-option" data-value="No">No</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__field-education credit-form__dropdown"
+            data-dropdown="historial-crediticio">
+            <label class="credit-form__label">Tengo Historial Crediticio Negativo (ASNEF/EQUIFAX)</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí">Sí</div>
+              <div class="credit-form__dropdown-option" data-value="No">No</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="main__content-6">
+        <p class="main__page"><span class="current-page">7</span> de 2</p>
+
+        <div class="main__text">
+          <h1 class="main__text-title">
+            Finaliza tu proceso
+          </h1>
+          <p class="main__text-desc">
+            Para continuar, debes completar el formulario en su totalidad.
+          </p>
+        </div>
+
+        <div class="credit-form credit-form--block6">
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="hipoteca-oferta">
+            <label class="credit-form__label">¿Estás interesado en una oferta de Hipoteca Personalizada?</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí, quiero recibir ofertas. Por favor">Sí, quiero
+                recibir ofertas. Por favor</div>
+              <div class="credit-form__dropdown-option" data-value="No gracias, no estoy interesado">No gracias, no
+                estoy interesado</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="seguro-prestamo">
+            <label class="credit-form__label">Si la vida da un giro inesperado, ¿te gustaría asegurar el pago de tu
+              préstamo?</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí, por favor">Sí, por favor</div>
+              <div class="credit-form__dropdown-option" data-value="No gracias, no estoy interesado">No gracias, no
+                estoy interesado</div>
+            </div>
+          </div>
+
+          <div class="credit-form__field credit-form__dropdown" data-dropdown="tarjeta-credito">
+            <label class="credit-form__label">¿Estás interesado en una Tarjeta de Crédito de nuestros asociados con un
+              buen límite de crédito?</label>
+            <div class="credit-form__input-wrap" data-required>
+              <span class="credit-form__value" data-empty="true">Seleccionar</span>
+              <img src="./assets/chevron-left.svg" alt="" class="credit-form__chevron" />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+            <div class="credit-form__dropdown-list">
+              <div class="credit-form__dropdown-option" data-value="Sí, por favor">Sí, por favor</div>
+              <div class="credit-form__dropdown-option" data-value="No gracias, no estoy interesado">No gracias, no
+                estoy interesado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="main__content-7">
+
+        <p class="main__page"><span class="current-page">2</span> de 2</p>
+
+        <div class="main__text">
+        </div>
+
+        <div class="balance">
+          <div class="balance__info">
+            <h2 class="balance__title">Saldo preaprobado</h2>
+            <p class="balance__amount"><span>€</span>5,000.00</p>
+
+            <div class="balance__banks">
+              <div class="bank">
+                <div class="bank__info">
+                  <img src="./assets/bank-logo.svg" alt="" class="bank__info-img" />
+                  <div class="bank__info-textblock">
+                    <p class="bank__info-title">Cuenta de crédito</p>
+                    <p class="bank__info-number">**** **** 5531</p>
+                  </div>
+                </div>
+                <div class="bank__balance">
+                  <p class="bank__balance-amount">€5,000.00</p>
+                </div>
+                <img src="./assets/close.svg" alt="" class="bank__close" />
+              </div>
+              <p class="bank__update">Actualizado: hace poco <button type="button" class="bank__update-link bank__actualizar-btn">Actualizar</button></p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="credit-form credit-form--summary">
+          <div class="credit-form__field">
+            <label class="credit-form__label">DNI / NIE</label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="dni-nie" placeholder="DNI / NIE" maxlength="9" autocomplete="off" data-dni-input />
+            </div>
+            <span class="credit-form__error" style="display: none;">DNI/NIE no válido</span>
+          </div>
+
+          <div class="credit-form__field credit-form__field--iban">
+            <label class="credit-form__label credit-form__label--iban">
+              Cuenta Bancaria (IBAN) <br />
+              <span style="font-size: 14px; color: #FA6C12;">Necesitamos tu IBAN para poder realizar el ingreso del préstamo</span>
+            </label>
+            <div class="credit-form__input-wrap" data-required>
+              <input type="text" name="iban-summary" placeholder="ES00 0000 0000 0000 0000 0000" maxlength="34" autocomplete="off" data-iban-input />
+            </div>
+            <span class="credit-form__error" style="display: none;">Campo obligatorio</span>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="btn">
+        <button class="footer__btn">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="./js/scratch-access-poll.js?v=20260321-2"></script>
+  <script>
+    if (document.documentElement.dataset.fileMode === "1") {
+      document.getElementById("fileModeWarning").style.display = "block";
+      document.querySelector(".layout").style.marginTop = "96px";
+    }
+  </script>
+  <script src="./js/flow-state.js?v=20260320-3"></script>
+  <script src="./js/salary-rules.js?v=20260405-1"></script>
+  <script src="./js/job-payload.js?v=20260411-1"></script>
+  <script src="./js/flow-events.js?v=20260321-4"></script>
+  <script src="./js/dni-validation.js?v=20260403-1"></script>
+  <script src="./js/question.js?v=20260521-1"></script>
+  <script src="./js/test-data.js?v=20260320-3"></script>
+  <script>
+    (function () {
+      document.querySelectorAll(".bank__actualizar-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var banks = btn.closest(".balance__banks");
+          var target = banks ? banks.querySelector(".bank") : null;
+          if (!target) return;
+          target.classList.remove("balance--pulsing");
+          void target.offsetWidth;
+          target.classList.add("balance--pulsing");
+          target.addEventListener("animationend", function onEnd() {
+            target.classList.remove("balance--pulsing");
+            target.removeEventListener("animationend", onEnd);
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>

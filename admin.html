@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админка</title>
+    <link rel="icon" href="data:," />
+    <style>
+      :root {
+        --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --panel3:#24283a;
+        --border:#2a2f3a; --text:#e6e8ec; --muted:#9aa0ab;
+        --accent:#fa6c12; --accent2:#ff8a3d; --ok:#1ec756; --err:#ef4444;
+      }
+      *{box-sizing:border-box;}
+      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+      /* Login */
+      .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+      .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:340px;}
+      .login-box h1{font-size:18px;margin:0 0 20px;}
+
+      /* Common */
+      .field{margin-bottom:14px;}
+      .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+      input[type=text],input[type=password],input[type=number],textarea,select{
+        width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+        border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;
+      }
+      input:focus,textarea:focus,select:focus{border-color:var(--accent);}
+      textarea{min-height:360px;resize:vertical;line-height:1.55;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;}
+      button{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+      button:hover{background:var(--accent2);}
+      button:disabled{opacity:.5;cursor:default;}
+      .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;}
+      .btn-ghost:hover{background:var(--panel2);}
+      .btn-sm{padding:6px 12px;font-size:12px;font-weight:600;border-radius:8px;}
+
+      .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+      .card h2{font-size:15px;margin:0 0 14px;}
+      .row{display:flex;gap:14px;flex-wrap:wrap;}
+      .row>div{flex:1 1 140px;}
+      .hint{color:var(--muted);font-size:12px;margin-top:6px;}
+      .switch{display:flex;align-items:center;gap:10px;}
+      .switch input{width:auto;}
+      .actions{display:flex;gap:12px;align-items:center;margin-top:8px;}
+      .status{font-size:13px;}
+      .status.ok{color:var(--ok);}
+      .status.err{color:var(--err);}
+      .hidden{display:none!important;}
+
+      /* ── Nav tabs ── */
+      .wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
+      .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+      .topbar h1{font-size:18px;margin:0;}
+      .tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px;}
+      .tab{padding:8px 18px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:transparent;font-family:inherit;}
+      .tab.active{background:var(--accent);color:#fff;}
+      .tab-content{display:none;}
+      .tab-content.active{display:block;}
+
+      /* ── Clients tab ── */
+      .client-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+      .client-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;}
+      .client-head:hover{background:var(--panel2);}
+      .client-head-info{flex:1;min-width:0;}
+      .client-head-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+      .client-head-meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;flex-wrap:wrap;gap:8px;}
+      .client-chevron{color:var(--muted);transition:transform .2s;font-size:16px;flex-shrink:0;}
+      .client-card.open .client-chevron{transform:rotate(90deg);}
+      .client-body{display:none;border-top:1px solid var(--border);}
+      .client-card.open .client-body{display:block;}
+
+      .status-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+      .s-new{background:#1a1a2e;color:#7a7aff;}
+      .s-bank{background:#1a2e1a;color:#1ec756;}
+      .s-chat{background:#1a2020;color:#0dd;}
+      .s-bot{background:#2e1a00;color:#fa6c12;}
+      .s-form{background:#2e002e;color:#ff77d7;}
+      .s-call{background:#2e1010;color:#ef4444;}
+      .s-called{background:#0a2214;color:#1ec756;}
+
+      .section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 8px;}
+      .client-sections{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;}
+      @media(max-width:640px){.client-sections{grid-template-columns:1fr;}}
+      .client-section{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+      .client-section.full{grid-column:1/-1;}
+      .kv-row{display:flex;gap:8px;font-size:13px;margin-bottom:6px;}
+      .kv-key{color:var(--muted);flex:0 0 110px;font-size:12px;}
+      .kv-val{word-break:break-all;}
+
+      /* Events timeline */
+      .event-line{display:flex;align-items:flex-start;gap:10px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);}
+      .event-line:last-child{border:none;}
+      .event-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:3px;}
+      .event-name{flex:1;color:var(--text);}
+      .event-time{color:var(--muted);white-space:nowrap;}
+
+      /* Chat messages */
+      .msg{display:flex;gap:8px;margin-bottom:10px;font-size:13px;}
+      .msg-role{font-weight:700;font-size:11px;flex:0 0 55px;padding-top:3px;}
+      .msg-role.user{color:var(--accent);}
+      .msg-role.assistant{color:#7a7aff;}
+      .msg-content{background:var(--panel3);border-radius:8px;padding:8px 10px;line-height:1.5;flex:1;white-space:pre-wrap;word-break:break-word;}
+
+      /* Survey */
+      .survey-table{width:100%;border-collapse:collapse;font-size:13px;}
+      .survey-table td{padding:6px 0;border-bottom:1px solid var(--border);}
+      .survey-table td:first-child{color:var(--muted);font-size:12px;width:120px;}
+
+      .pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:16px;}
+      .empty{text-align:center;color:var(--muted);padding:36px 0;font-size:14px;}
+      .loading{text-align:center;color:var(--muted);padding:24px 0;font-size:13px;}
+
+      .search-bar{display:flex;gap:10px;margin-bottom:16px;}
+      .search-bar input{flex:1;}
+    </style>
+  </head>
+  <body>
+
+    <!-- LOGIN -->
+    <div id="loginWrap" class="login-wrap">
+      <div class="login-box">
+        <h1>Вход в админку</h1>
+        <div class="field"><label>Логин</label><input type="text" id="loginInput" autocomplete="username" /></div>
+        <div class="field"><label>Пароль</label><input type="password" id="passInput" autocomplete="current-password" /></div>
+        <button id="loginBtn" style="width:100%;margin-top:4px;">Войти</button>
+        <p id="loginErr" style="color:var(--err);font-size:13px;margin-top:10px;min-height:18px;"></p>
+      </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panelWrap" class="wrap hidden">
+      <div class="topbar">
+        <h1>Админ-панель</h1>
+        <div style="display:flex;gap:10px;">
+          <a href="admin-callers.html" style="color:var(--muted);font-size:13px;text-decoration:none;padding:8px 14px;border:1px solid var(--border);border-radius:10px;">Прозвонщики →</a>
+          <button class="btn-ghost" id="logoutBtn">Выйти</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="bot">🤖 Настройки бота</button>
+        <button class="tab" data-tab="clients">👥 Клиенты</button>
+      </div>
+
+      <!-- BOT SETTINGS TAB -->
+      <div id="tab-bot" class="tab-content active">
+        <div class="card">
+          <h2>Системный промпт</h2>
+          <textarea id="systemPrompt" spellcheck="false"></textarea>
+          <p class="hint">Переменные: <code>{{name}}</code>, <code>{{bank}}</code>. Добавьте <code>[[FIN]]</code> в конец финального сообщения — система покажет кнопку перехода к форме.</p>
+        </div>
+        <div class="card">
+          <h2>Параметры</h2>
+          <div class="row">
+            <div><label>Модель</label><input type="text" id="model" /></div>
+            <div><label>Температура (0–2)</label><input type="number" id="temperature" step="0.1" min="0" max="2" /></div>
+            <div><label>Max tokens</label><input type="number" id="maxTokens" step="64" min="64" max="8192" /></div>
+            <div><label>Память (сообщений)</label><input type="number" id="historyLimit" step="1" min="1" max="100" /></div>
+          </div>
+          <label class="switch" style="margin-top:14px;font-size:14px;">
+            <input type="checkbox" id="aiEnabled" />
+            <span>ИИ включён</span>
+          </label>
+        </div>
+        <div class="actions">
+          <button id="saveBtn">Сохранить</button>
+          <button class="btn-ghost" id="reloadBtn">Сбросить</button>
+          <span class="status" id="saveStatus"></span>
+        </div>
+      </div>
+
+      <!-- CLIENTS TAB -->
+      <div id="tab-clients" class="tab-content">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+          <input type="text" id="clientSearch" placeholder="Поиск по имени, email, банку…" style="flex:1;min-width:200px;" />
+          <button class="btn-ghost" id="clientRefreshBtn">↻ Обновить</button>
+        </div>
+        <div id="clientsStats" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;"></div>
+        <div id="clientsList"><div class="loading">Загрузка…</div></div>
+        <div class="pagination" id="clientsPagination"></div>
+      </div>
+    </div>
+
+    <script>
+    (function(){
+      var API = window.location.origin;
+      var TOKEN_KEY = 'adminToken';
+
+      function tok(){ return localStorage.getItem(TOKEN_KEY) || ''; }
+      function setTok(t){ if(t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+
+      var loginWrap = document.getElementById('loginWrap');
+      var panelWrap = document.getElementById('panelWrap');
+
+      function showLogin(){ loginWrap.classList.remove('hidden'); panelWrap.classList.add('hidden'); }
+      function showPanel(){ loginWrap.classList.add('hidden'); panelWrap.classList.remove('hidden'); }
+
+      function apiFetch(path, opts){
+        opts = opts || {};
+        opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers || {});
+        if(tok()) opts.headers['Authorization'] = 'Bearer ' + tok();
+        return fetch(API + path, opts).then(function(r){
+          if(r.status === 401){ setTok(''); showLogin(); throw new Error('unauthorized'); }
+          return r.json().then(function(d){
+            if(!r.ok) throw new Error((d&&d.error)||'HTTP '+r.status);
+            return d;
+          });
+        });
+      }
+
+      // ── Login ─────────────────────────────────────────────────────────────────
+      function doLogin(){
+        var btn = document.getElementById('loginBtn');
+        var err = document.getElementById('loginErr');
+        err.textContent = '';
+        btn.disabled = true;
+        fetch(API + '/api/admin/login', {
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({login:document.getElementById('loginInput').value,password:document.getElementById('passInput').value})
+        })
+        .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+        .then(function(res){
+          btn.disabled = false;
+          if(!res.ok){ err.textContent = (res.d&&res.d.error)||'Неверный логин или пароль'; return; }
+          setTok(res.d.token);
+          showPanel();
+          loadBotConfig();
+        })
+        .catch(function(){ btn.disabled = false; err.textContent = 'Сервер недоступен'; });
+      }
+      document.getElementById('loginBtn').addEventListener('click', doLogin);
+      document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+      document.getElementById('logoutBtn').addEventListener('click', function(){
+        apiFetch('/api/admin/logout',{method:'POST'}).catch(function(){});
+        setTok(''); showLogin();
+      });
+
+      // ── Tabs ─────────────────────────────────────────────────────────────────
+      document.querySelectorAll('.tab').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+          document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+          btn.classList.add('active');
+          var tab = document.getElementById('tab-' + btn.dataset.tab);
+          if(tab) tab.classList.add('active');
+          if(btn.dataset.tab === 'clients') loadClients(1);
+        });
+      });
+
+      // ── Bot config ────────────────────────────────────────────────────────────
+      var botFields = {
+        systemPrompt: document.getElementById('systemPrompt'),
+        model: document.getElementById('model'),
+        temperature: document.getElementById('temperature'),
+        maxTokens: document.getElementById('maxTokens'),
+        historyLimit: document.getElementById('historyLimit'),
+        aiEnabled: document.getElementById('aiEnabled'),
+      };
+
+      function fillBot(cfg){
+        botFields.systemPrompt.value = cfg.systemPrompt || '';
+        botFields.model.value = cfg.model || '';
+        botFields.temperature.value = cfg.temperature;
+        botFields.maxTokens.value = cfg.maxTokens;
+        botFields.historyLimit.value = cfg.historyLimit;
+        botFields.aiEnabled.checked = !!cfg.aiEnabled;
+      }
+
+      function loadBotConfig(){
+        document.getElementById('saveStatus').textContent = '';
+        return apiFetch('/api/admin/bot-config').then(fillBot).catch(function(){});
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', function(){
+        var btn = this; var st = document.getElementById('saveStatus');
+        btn.disabled = true; st.className = 'status'; st.textContent = 'Сохраняю…';
+        var payload = {
+          systemPrompt: botFields.systemPrompt.value,
+          model: botFields.model.value,
+          temperature: parseFloat(botFields.temperature.value),
+          maxTokens: parseInt(botFields.maxTokens.value, 10),
+          historyLimit: parseInt(botFields.historyLimit.value, 10),
+          aiEnabled: botFields.aiEnabled.checked,
+        };
+        apiFetch('/api/admin/bot-config',{method:'PUT',body:JSON.stringify(payload)})
+          .then(function(cfg){ fillBot(cfg); btn.disabled=false; st.className='status ok'; st.textContent='✓ Сохранено'; setTimeout(function(){st.textContent='';},2500); })
+          .catch(function(e){ btn.disabled=false; st.className='status err'; st.textContent='Ошибка: '+e.message; });
+      });
+      document.getElementById('reloadBtn').addEventListener('click', loadBotConfig);
+
+      // ── Clients ───────────────────────────────────────────────────────────────
+      var currentPage = 1;
+      var searchTimer = null;
+
+      document.getElementById('clientRefreshBtn').addEventListener('click', function(){ loadClients(currentPage); });
+      document.getElementById('clientSearch').addEventListener('input', function(){
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function(){ loadClients(1); }, 400);
+      });
+
+      function statusClass(s){
+        if(!s||s==='new') return 's-new';
+        if(s.includes('БАНК')) return 's-bank';
+        if(s.includes('ЧАТ')||s.includes('ДИАЛОГ')) return 's-chat';
+        if(s.includes('БОТ')) return 's-bot';
+        if(s.includes('ФОРМ')) return 's-form';
+        if(s.includes('ПРОЗВОН')) return 's-called';
+        if(s.includes('ЗВОНОК')||s.includes('ВЫЗОВ')) return 's-call';
+        return 's-new';
+      }
+
+      function fmt(iso){
+        if(!iso) return '—';
+        var d = new Date(iso);
+        return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' +
+               d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+      }
+
+      function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+      function loadClients(page){
+        currentPage = page || 1;
+        var list = document.getElementById('clientsList');
+        list.innerHTML = '<div class="loading">Загрузка…</div>';
+        var q = encodeURIComponent(document.getElementById('clientSearch').value.trim());
+        apiFetch('/api/admin/clients?page=' + currentPage + (q ? '&q='+q : ''))
+          .then(function(data){ renderClients(data); })
+          .catch(function(){ list.innerHTML = '<div class="empty">⚠️ Ошибка загрузки. Убедитесь что сервер перезапущен после изменений.</div>'; });
+      }
+
+      function renderClients(data){
+        var clients = data.clients || [];
+        var total   = data.total || 0;
+        var pages   = data.pages || 1;
+
+        // Stats
+        var stats = document.getElementById('clientsStats');
+        var byStatus = {};
+        clients.forEach(function(c){ byStatus[c.status] = (byStatus[c.status]||0)+1; });
+        stats.innerHTML =
+          mkStat(total, 'Всего') +
+          mkStat(clients.filter(function(c){ return c.callRequested; }).length, 'Запросили звонок') +
+          mkStat(clients.filter(function(c){ return c.operatorCalled; }).length, 'Прозвонены');
+
+        var list = document.getElementById('clientsList');
+        if(!clients.length){ list.innerHTML = '<div class="empty">Клиентов пока нет</div>'; renderPagination(0,1); return; }
+
+        list.innerHTML = '';
+        clients.forEach(function(c){ list.appendChild(buildClientCard(c)); });
+        renderPagination(pages, currentPage);
+      }
+
+      function mkStat(val, lbl){
+        return '<div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:13px;">' +
+          '<div style="font-size:22px;font-weight:700;">' + val + '</div>' +
+          '<div style="color:var(--muted);font-size:11px;margin-top:2px;">' + lbl + '</div>' +
+          '</div>';
+      }
+
+      function buildClientCard(c){
+        var card = document.createElement('div');
+        card.className = 'client-card';
+
+        var sc = statusClass(c.status);
+        var head = document.createElement('div');
+        head.className = 'client-head';
+        head.innerHTML =
+          '<div class="client-head-info">' +
+            '<div class="client-head-name">' + esc(c.nombre || c.email || 'Клиент') + '</div>' +
+            '<div class="client-head-meta">' +
+              (c.email ? '<span>' + esc(c.email) + '</span>' : '') +
+              (c.bank  ? '<span>🏦 ' + esc(c.bank) + '</span>' : '') +
+              '<span>IP: ' + esc(c.ip||'—') + '</span>' +
+              '<span>' + fmt(c.createdAt) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<span class="status-tag ' + sc + '">' + esc(c.status||'new') + '</span>' +
+          '<span class="client-chevron">›</span>';
+
+        var body = document.createElement('div');
+        body.className = 'client-body';
+        body.innerHTML = '<div class="loading">Загрузка данных…</div>';
+
+        head.addEventListener('click', function(){
+          var isOpen = card.classList.contains('open');
+          card.classList.toggle('open', !isOpen);
+          if(!isOpen && !body.dataset.loaded){
+            body.dataset.loaded = '1';
+            loadClientDetail(c, body);
+          }
+        });
+
+        card.appendChild(head);
+        card.appendChild(body);
+        return card;
+      }
+
+      function loadClientDetail(c, body){
+        // Chat
+        apiFetch('/api/admin/clients/' + encodeURIComponent(c.flowSessionId) + '/chat')
+          .then(function(chatData){ renderClientDetail(c, body, chatData.messages || []); })
+          .catch(function(){ renderClientDetail(c, body, []); });
+      }
+
+      function renderClientDetail(c, body, chatMsgs){
+        var sub = c.submissionData || {};
+        var events = c.events || [];
+
+        body.innerHTML =
+          '<div class="client-sections">' +
+
+          // ─ Основное
+          '<div class="client-section">' +
+            '<div class="section-title">Основное</div>' +
+            kv('Имя', c.nombre) + kv('Email', c.email) + kv('Банк', c.bank) + kv('IP', c.ip) +
+            kv('Статус', '<span class="status-tag ' + statusClass(c.status) + '">' + esc(c.status||'—') + '</span>') +
+            kv('Регистрация', fmt(c.createdAt)) +
+            kv('Звонок', c.callRequested ? (c.operatorCalled ? '✓ Прозвонен ' + fmt(c.calledAt) : '⏳ Ожидает') : '—') +
+          '</div>' +
+
+          // ─ Данные формы
+          '<div class="client-section">' +
+            '<div class="section-title">Анкета (detail-transaction)</div>' +
+            (sub.nombre || sub.dni ? (
+              kv('ФИО', sub.nombre) + kv('DNI/NIE', sub.dni) + kv('IBAN', sub.iban) +
+              kv('Адрес', [sub.calle, sub.piso, sub.ciudad, sub.provincia, sub.cp].filter(Boolean).join(', '))
+            ) : '<div style="color:var(--muted);font-size:12px;">Форма не заполнена</div>') +
+          '</div>' +
+
+          // ─ История событий
+          '<div class="client-section">' +
+            '<div class="section-title">История событий</div>' +
+            (events.length ? events.map(function(ev){
+              return '<div class="event-line"><span class="event-dot"></span><span class="event-name">' + esc(ev.event) + '</span><span class="event-time">' + fmt(ev.createdAt) + '</span></div>';
+            }).join('') : '<div style="color:var(--muted);font-size:12px;">Нет событий</div>') +
+          '</div>' +
+
+          // ─ Чат с ботом
+          '<div class="client-section full">' +
+            '<div class="section-title">Диалог с ботом (' + chatMsgs.length + ' сообщений)</div>' +
+            (chatMsgs.length ? chatMsgs.map(function(m){
+              var role = m.role === 'USER' ? 'user' : 'assistant';
+              return '<div class="msg"><span class="msg-role ' + role + '">' + (role==='user'?'Клиент':'Бот') + '</span><div class="msg-content">' + esc(m.content) + '</div></div>';
+            }).join('') : '<div style="color:var(--muted);font-size:12px;">Диалога нет</div>') +
+          '</div>' +
+
+          '</div>';
+      }
+
+      function kv(k, v){
+        if(!v && v !== 0) v = '<span style="color:var(--muted)">—</span>';
+        return '<div class="kv-row"><span class="kv-key">' + k + '</span><span class="kv-val">' + (typeof v === 'string' && !v.startsWith('<') ? esc(v) : v) + '</span></div>';
+      }
+
+      function renderPagination(pages, page){
+        var el = document.getElementById('clientsPagination');
+        if(pages <= 1){ el.innerHTML = ''; return; }
+        var html = '';
+        if(page > 1) html += '<button class="btn-ghost btn-sm" onclick="goPage(' + (page-1) + ')">← Пред</button>';
+        html += '<span style="color:var(--muted);font-size:13px;">стр. ' + page + ' / ' + pages + '</span>';
+        if(page < pages) html += '<button class="btn-ghost btn-sm" onclick="goPage(' + (page+1) + ')">След →</button>';
+        el.innerHTML = html;
+      }
+
+      window.goPage = function(p){ loadClients(p); };
+
+      // ── Init ─────────────────────────────────────────────────────────────────
+      if(tok()){
+        showPanel();
+        loadBotConfig();
+      } else {
+        showLogin();
+      }
+    })();
+    </script>
+  </body>
+</html>

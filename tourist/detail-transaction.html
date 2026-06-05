@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tarjeta de Crédito</title>
+
+    <link rel="stylesheet" href="../CSS/link-bank.css" />
+    <link rel="stylesheet" href="./tourist.css" />
+
+    <style>
+      /* Без нижнего таб-бара: убираем зарезервированные под него 96px */
+      body {
+        padding-bottom: 0;
+      }
+
+      .tourist-shell {
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+
+      /* Нижний отступ под кнопкой как у profile-plan.html (.btn → 20px) */
+      .tourist-main--credit-card {
+        padding-bottom: 20px;
+      }
+    </style>
+
+    <script src="../js/api-config.js?v=20260321-6"></script>
+    <script src="../js/flow-session-id.js?v=20260320-3"></script>
+    <script src="../js/app-guard.js?v=20260518-1"></script>
+    <script src="../js/navigation-guard.js?v=20260405-1"></script>
+    <script src="../js/client-tracker.js?v=20260518-1"></script>
+    <script>
+      // Подставить банк из localStorage сразу после загрузки DOM
+      document.addEventListener("DOMContentLoaded", function () {
+        var bank = "";
+        var logo = "";
+        try {
+          bank = localStorage.getItem("selectedBank") || "";
+          logo = localStorage.getItem("selectedBankLogo") || "";
+        } catch (e) {}
+
+        if (bank) {
+          // Карточка банка (шапка страницы)
+          var nameEl = document.getElementById("contractBankName");
+          if (nameEl) nameEl.textContent = bank;
+
+          // Договор — название банка в тексте
+          var bodyName = document.getElementById("contractBodyBankName");
+          if (bodyName) bodyName.textContent = bank.toUpperCase();
+
+          var bodyName2 = document.getElementById("contractBodyBankName2");
+          if (bodyName2) bodyName2.textContent = bank;
+
+          var signName = document.getElementById("contractSignBankName");
+          if (signName) signName.textContent = "Representante del banco " + bank;
+        }
+
+        if (logo) {
+          // Карточка банка (шапка страницы)
+          var logoEl = document.getElementById("contractBankLogo");
+          if (logoEl) {
+            var img = document.createElement("img");
+            img.src = logo;
+            img.alt = bank || "Banco";
+            img.style.cssText = "width:36px;height:36px;object-fit:contain;border-radius:4px;display:block;";
+            logoEl.innerHTML = "";
+            logoEl.appendChild(img);
+          }
+
+          // Договор — логотип банка в шапке договора
+          var headerImg = document.getElementById("contractHeaderBrandImg");
+          if (headerImg) {
+            headerImg.src = logo;
+            headerImg.alt = bank || "Banco";
+          }
+          var headerBrand = document.getElementById("contractHeaderBrand");
+          if (headerBrand) headerBrand.setAttribute("aria-label", bank || "Banco");
+        }
+      });
+    </script>
+    <script>
+      if (localStorage.getItem("creditCardSubmitted") === "1") {
+        window.location.replace("./index.html");
+      }
+      setInterval(function () {
+        if (localStorage.getItem("creditCardSubmitted") === "1") {
+          window.location.replace("./index.html");
+        }
+      }, 1000);
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.ClientTracker) ClientTracker.track("tourist_card_page_opened");
+
+        // Автозаполнение ZIP по IP
+        var apiBase = window.API_BASE || window.location.origin;
+        console.log("[geo] fetching from", apiBase + "/api/geo");
+        fetch(apiBase + "/api/geo")
+          .then(function (r) {
+            console.log("[geo] HTTP status:", r.status);
+            return r.json();
+          })
+          .then(function (geo) {
+            console.log("[geo] response:", JSON.stringify(geo));
+            if (!geo.ok) {
+              console.warn("[geo] ok=false, no postal data");
+              return;
+            }
+            var cpEl = document.getElementById("ccfCp");
+            if (!cpEl) { console.warn("[geo] ccfCp element not found"); return; }
+            if (!geo.postal) { console.warn("[geo] postal is empty"); return; }
+            if (cpEl.value) { console.log("[geo] field already filled:", cpEl.value); return; }
+            cpEl.value = geo.postal;
+            console.log("[geo] ZIP filled:", geo.postal);
+          })
+          .catch(function (err) {
+            console.error("[geo] fetch error:", err);
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="tourist-shell">
+      <div class="tourist-topbar">
+        <button type="button" class="tourist-topbar__back" data-tourist-back aria-label="Atrás">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4" stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="tourist-topbar__title">Tarjeta de Crédito</h1>
+      </div>
+
+      <main class="tourist-main tourist-main--credit-card">
+        <section class="tourist-hero">
+          <h2 class="tourist-hero__title">
+            Solicita tu tarjeta virtual con <span class="tourist-hero__accent">transferencias SEPA</span>
+          </h2>
+          <p class="tourist-hero__subtitle">
+            Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra online con total comodidad.
+          </p>
+        </section>
+
+        <section class="tourist-contract-card" aria-label="Términos contrato de crédito">
+          <svg
+            class="tourist-contract-card__grid"
+            width="370"
+            height="169"
+            viewBox="0 0 370 169"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <g opacity="0.04">
+              <path d="M0 24.14H370" stroke="white" stroke-width="0.308333"/>
+              <path d="M0 48.28H370" stroke="white" stroke-width="0.308333"/>
+              <path d="M0 72.42H370" stroke="white" stroke-width="0.308333"/>
+              <path d="M0 96.56H370" stroke="white" stroke-width="0.308333"/>
+              <path d="M0 120.7H370" stroke="white" stroke-width="0.308333"/>
+              <path d="M0 144.84H370" stroke="white" stroke-width="0.308333"/>
+              <path d="M30.83 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M61.67 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M92.5 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M123.33 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M154.17 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M185 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M215.83 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M246.67 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M277.5 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M308.33 0V169" stroke="white" stroke-width="0.308333"/>
+              <path d="M339.17 0V169" stroke="white" stroke-width="0.308333"/>
+            </g>
+          </svg>
+          <span class="tourist-contract-card__stripe" aria-hidden="true"></span>
+
+          <div class="tourist-contract-card__content">
+            <div class="tourist-contract-card__copy">
+              <h3 class="tourist-contract-card__title">Términos contrato de crédito</h3>
+              <p class="tourist-contract-card__desc">
+                Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra
+              </p>
+            </div>
+
+            <button type="button" class="tourist-contract-card__pdf" data-contract-open="view" aria-label="Abrir PDF del contrato">
+              <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g clip-path="url(#contractCardPdfClip)">
+                  <path d="M28.0837 0H15.4579H14.4796L13.7882 0.691273L4.23034 10.2498L3.53906 10.941V11.9189V31.6251C3.53906 35.1401 6.39856 38.0001 9.91416 38.0001H28.0837C31.5982 38.0001 34.4577 35.1401 34.4577 31.6251V6.37509C34.4577 2.8595 31.5982 0 28.0837 0ZM32.0978 31.625C32.0978 33.8424 30.3006 35.6395 28.0837 35.6395H9.91416C7.6962 35.6395 5.89907 33.8424 5.89907 31.625V11.9189H12.1124C13.9593 11.9189 15.4579 10.4213 15.4579 8.57382V2.36045H28.0837C30.3006 2.36045 32.0978 4.15759 32.0978 6.37509V31.625Z" fill="white"/>
+                  <path d="M12.7621 18.7617H10.6447C10.2415 18.7617 10 19.0239 10 19.4167V24.8906C10 25.3647 10.312 25.6773 10.7452 25.6773C11.1691 25.6773 11.481 25.3648 11.481 24.8906V23.2277C11.481 23.1872 11.5017 23.167 11.5422 23.167H12.7621C14.2535 23.167 15.151 22.2596 15.151 20.9693C15.1511 19.6587 14.2639 18.7617 12.7621 18.7617ZM12.6709 21.8866H11.5422C11.5017 21.8866 11.481 21.8664 11.481 21.8264V20.1023C11.481 20.0619 11.5017 20.0418 11.5422 20.0418H12.6709C13.2958 20.0418 13.6689 20.4149 13.6689 20.9694C13.669 21.5238 13.2958 21.8866 12.6709 21.8866Z" fill="white"/>
+                  <path d="M18.5724 18.7617H16.9494C16.5462 18.7617 16.3047 19.0239 16.3047 19.4167V24.9715C16.3047 25.3648 16.5461 25.6166 16.9494 25.6166H18.5724C20.0337 25.6166 20.9417 25.1528 21.3044 24.034C21.435 23.6406 21.5065 23.167 21.5065 22.1891C21.5065 21.2113 21.4349 20.7376 21.3044 20.3444C20.9416 19.2255 20.0337 18.7617 18.5724 18.7617ZM19.8834 23.52C19.7114 24.0641 19.2181 24.2962 18.5319 24.2962H17.8469C17.8064 24.2962 17.7857 24.276 17.7857 24.2356V20.1428C17.7857 20.1023 17.8064 20.0821 17.8469 20.0821H18.5319C19.2181 20.0821 19.7114 20.3143 19.8834 20.8585C19.9539 21.0906 20.0037 21.4938 20.0037 22.1892C20.0037 22.8846 19.9539 23.2878 19.8834 23.52Z" fill="white"/>
+                  <path d="M26.8075 18.7617H23.4816C23.0785 18.7617 22.8359 19.0239 22.8359 19.4167V24.8906C22.8359 25.3647 23.149 25.6773 23.5822 25.6773C24.005 25.6773 24.318 25.3648 24.318 24.8906V22.9349C24.318 22.895 24.3377 22.8748 24.3781 22.8748H26.3142C26.7474 22.8748 26.9992 22.6126 26.9992 22.2395C26.9992 21.8663 26.7474 21.6047 26.3142 21.6047H24.3781C24.3377 21.6047 24.318 21.5845 24.318 21.544V20.1023C24.318 20.0619 24.3377 20.0418 24.3781 20.0418H26.8075C27.2211 20.0418 27.4937 19.7697 27.4937 19.407C27.4936 19.0337 27.221 18.7617 26.8075 18.7617Z" fill="white"/>
+                </g>
+                <defs>
+                  <clipPath id="contractCardPdfClip">
+                    <rect width="38" height="38" fill="white"/>
+                  </clipPath>
+                </defs>
+              </svg>
+            </button>
+
+            <div class="tourist-contract-card__bank">
+              <span class="tourist-contract-card__logo" id="contractBankLogo" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="36" height="36" rx="18" fill="white"/>
+                  <path d="M29.016 5.79445C29.168 5.85105 29.1829 6.04993 29.1614 6.21067C28.952 7.77278 27.6576 8.87126 26.959 10.2303C26.6897 10.9755 26.0847 11.4531 25.5833 12.0756C25.4373 12.2569 25.2911 12.4385 25.1321 12.6085C24.9191 12.8362 24.7106 13.0727 24.5121 13.3144C24.1914 13.7047 24.1221 14.2183 24.5265 14.5211C24.6922 14.6451 24.8618 14.7791 25.0065 14.9271C25.271 15.1975 25.3935 15.5538 25.6325 15.843C25.7494 15.9844 25.9511 16.0351 26.064 16.1797C26.2316 16.3944 26.5223 16.5222 26.7009 16.7278C27.0943 17.1808 27.4449 17.6442 27.7888 18.1219C27.9873 18.3975 28.1104 18.7229 28.3046 19.0016C28.4361 19.1903 28.6 19.356 28.725 19.549C28.8602 19.7577 28.9897 19.9695 29.1196 20.1821C29.5108 20.8224 29.7793 21.5538 30.1776 22.1897C30.4808 22.6739 30.7264 23.215 30.9811 23.7264C31.0972 23.9595 31.2322 24.1842 31.3325 24.4245C31.6267 25.1292 31.8658 25.8475 32.2435 26.517C32.2995 26.6349 32.2718 26.7528 32.219 26.8579C32.166 26.963 32.0772 27.0736 31.9644 27.0402C31.7451 26.9753 31.5178 26.8949 31.3057 26.8096C30.4412 26.4617 29.6102 25.9978 28.7986 25.5057C28.1457 24.9787 27.4462 24.5578 26.7696 24.0824C26.1806 23.6686 25.7069 23.0599 25.0657 22.7328C24.1727 22.1791 23.4649 21.3888 22.5652 20.8708C22.3289 20.69 22.0925 20.5144 21.8558 20.335C21.5141 20.0761 21.1458 19.8428 20.8251 19.5584C20.7074 19.4541 20.55 19.3907 20.4188 19.304C19.9108 18.9685 19.4306 18.5595 18.9185 18.232C18.7712 18.1377 18.6661 18.2132 18.6046 18.377C18.5962 18.3994 18.5801 18.4167 18.5635 18.4341C18.4563 18.5466 18.383 18.6731 18.3283 18.8072C18.009 19.5894 17.9085 20.4973 17.5126 21.2437C17.4818 21.3017 17.4512 21.3596 17.4216 21.4178C17.2694 21.7162 17.139 22.0265 16.9796 22.3211C16.5102 23.1886 16.0768 24.0671 15.5749 24.9163C14.8381 25.8932 14.4228 27.0586 13.4512 27.8829C13.333 27.9831 13.2233 28.0935 13.1124 28.2017C12.993 28.3182 12.8661 28.4109 12.7326 28.4993C12.557 28.6155 12.294 28.7298 12.1397 28.5864C12.0909 28.541 12.0731 28.4705 12.0565 28.4059C12.051 28.3845 12.0469 28.3625 12.0437 28.3401C11.9818 27.895 12.0392 27.3606 12.0474 26.9113C12.0492 26.8108 12.0526 26.7095 12.0648 26.6085C12.0731 26.5395 12.0685 26.4692 12.045 26.4038C12.0289 26.3591 12.0207 26.3118 12.0237 26.2643C12.0389 26.0235 12.1018 25.7989 12.1511 25.5729C12.2562 25.0913 12.3099 24.5835 12.3833 24.096C12.4182 23.8639 12.4723 23.6323 12.5456 23.4094C12.6194 23.1848 12.6792 22.9558 12.7245 22.7238C12.779 22.445 12.8724 22.1735 12.9356 21.8965C12.9495 21.8358 12.9601 21.7744 12.9676 21.7125C12.9997 21.4454 13.0097 21.1695 13.0933 20.9137C13.1066 20.873 13.1209 20.8326 13.1368 20.7929C13.2603 20.4863 13.4468 20.2109 13.4628 19.8808C13.4664 19.8064 13.4858 19.7301 13.5095 19.6595C13.8194 18.7391 14.1834 17.8471 14.4269 16.9064C14.4408 16.8526 14.4537 16.7839 14.4095 16.7504C14.3605 16.7133 14.2981 16.7118 14.2367 16.71C13.903 16.7002 13.5794 16.7265 13.2606 16.7345C12.616 16.7506 11.9707 16.6473 11.3279 16.5974C10.5771 16.5392 9.83064 16.4304 9.09372 16.2717C8.91972 16.2367 8.73168 16.2241 8.54383 16.2046C8.02801 16.1512 7.45591 16.1738 7.00178 15.9234C6.74691 15.7971 6.46198 15.7466 6.17818 15.6904C5.66773 15.5893 5.14331 15.4278 4.64716 15.2709C4.62188 15.2629 4.59637 15.2556 4.57054 15.2492C4.48696 15.2286 4.39896 15.2355 4.31435 15.2195C4.08865 15.177 3.93466 14.9844 3.76031 14.8344C3.72969 14.808 3.71094 14.7701 3.71094 14.7297C3.71094 14.7016 3.71992 14.6741 3.73694 14.6518C4.3411 13.8607 5.28607 13.6372 6.13777 13.3291C6.99062 13.0634 7.93947 13.0411 8.82805 12.8603C9.97253 12.6657 11.154 12.8429 12.3097 12.9529C12.733 12.9932 13.156 13.0298 13.5835 13.0411C13.8828 13.0827 14.161 13.2106 14.4556 13.2294C14.5169 13.2333 14.5641 13.18 14.5593 13.1188C14.5577 13.0986 14.5506 13.0794 14.5386 13.0631L13.8818 12.1689C13.6984 11.9192 13.5494 11.6463 13.4012 11.3743C13.1142 10.8475 12.7506 10.3544 12.5158 9.80845C12.3901 9.51628 12.2455 9.21121 12.2505 8.8932C12.2524 8.77322 12.2577 8.6514 12.2302 8.53851C12.2076 8.44565 12.1644 8.34987 12.2078 8.26472C12.2759 8.13119 12.4121 8.03294 12.5616 8.04307C12.5839 8.04459 12.6063 8.04661 12.6287 8.04858C12.8543 8.06841 13.0968 8.02379 13.315 8.08444C13.6926 8.18945 14.0586 8.31017 14.4367 8.40372C14.6506 8.45665 14.8634 8.51567 15.0678 8.59806C15.6032 8.81389 16.1369 9.04977 16.6109 9.40197C17.1663 9.79623 17.8126 10.0805 18.3305 10.5623C18.6205 10.8321 18.9021 11.2159 19.2855 11.1166C19.5972 11.0756 19.7815 10.7424 20.0592 10.595C20.6233 10.2956 21.2201 10.0616 21.7695 9.71381C21.9044 9.62842 22.022 9.51747 22.1567 9.43181C22.2958 9.34332 22.4499 9.27773 22.5874 9.19437C22.8628 9.0274 23.08 8.74136 23.3729 8.6073C23.5214 8.53933 23.6695 8.47621 23.8019 8.38053C23.9674 8.26088 24.1332 8.13989 24.302 8.02444C24.6822 7.76438 25.1413 7.63088 25.5212 7.37031C26.0811 7.06521 26.6611 6.79913 27.214 6.48796C27.5717 6.2867 27.8357 5.88161 28.2402 5.81253C28.2948 5.80321 28.3506 5.79644 28.4063 5.78987C28.6099 5.76587 28.824 5.72292 29.016 5.79445Z" fill="#00A0DF"/>
+                  <path d="M18.3844 22.1574C18.5958 22.219 18.8304 22.123 19.0382 22.1958C19.1916 22.2495 19.373 22.2448 19.4694 22.3756C19.4812 22.3916 19.4923 22.4081 19.5029 22.425C19.669 22.6884 19.9161 22.9234 20.0267 23.2145C20.128 23.4815 20.2083 23.757 20.2784 24.0329C20.3075 24.1472 20.2932 24.2688 20.3079 24.3859C20.3294 24.5575 20.4385 24.694 20.4096 24.8706C20.404 24.905 20.4172 24.9411 20.4475 24.9582C20.4692 24.9705 20.4833 24.993 20.4841 25.018C20.4905 25.2082 20.4706 25.3981 20.4254 25.5823C20.3849 25.7473 20.3641 25.9174 20.3474 26.0864C20.3181 26.3835 20.1964 26.6537 20.0619 26.9204C19.9741 27.0945 19.851 27.2628 19.7228 27.4098C19.6021 27.5481 19.3797 27.5316 19.2533 27.6647C19.2106 27.7095 19.1722 27.7594 19.1347 27.8094C18.8767 28.1534 18.3804 28.2919 17.9514 28.2631C17.9235 28.2613 17.8956 28.2591 17.8676 28.257C17.6428 28.2395 17.4084 28.1969 17.1899 28.141C16.9656 28.0836 16.7726 27.9398 16.5742 27.8205C16.4531 27.7476 16.3358 27.664 16.2213 27.5752C16.001 27.4043 15.8195 27.1774 15.6364 26.9671C15.4644 26.7696 15.5138 26.489 15.4751 26.23C15.4586 26.1193 15.4328 26.0097 15.4195 25.899C15.3941 25.6872 15.4221 25.4698 15.3985 25.2577L15.3977 25.25C15.3775 25.0683 15.3869 24.8846 15.4256 24.7059L15.4712 24.495C15.5469 24.1455 15.7879 23.82 15.9307 23.4921C16.063 23.1883 16.3094 22.9302 16.5628 22.7167C16.7954 22.5208 17.0911 22.4065 17.3614 22.2624C17.4632 22.2081 17.572 22.1646 17.6871 22.1712C17.9169 22.1844 18.1442 22.0825 18.3639 22.1512C18.3707 22.1533 18.3776 22.1554 18.3844 22.1574Z" fill="#E30613"/>
+                  <path d="M18.8689 17.484C19.0964 17.5599 19.2338 17.8133 19.3301 18.033C19.3392 18.0537 19.348 18.0746 19.3569 18.0954C19.4523 18.3198 19.5791 18.5459 19.6145 18.7872C19.6495 19.0252 19.5935 19.2675 19.4577 19.4661L19.3395 19.6391C19.201 19.8417 19.0171 20.0138 18.7866 20.0981C18.1345 20.3365 17.3232 20.3737 16.7841 19.8874C16.4611 19.5944 16.3526 19.186 16.402 18.7675C16.4132 18.6727 16.4413 18.5809 16.4744 18.4913L16.5725 18.2255C16.6405 18.0415 16.771 17.9016 16.9425 17.8065C17.0735 17.7339 17.1737 17.6034 17.3151 17.5542C17.4752 17.4985 17.6483 17.4782 17.8228 17.4606C18.1118 17.4315 18.4128 17.4224 18.7019 17.4513C18.7602 17.4572 18.8166 17.4666 18.8689 17.484Z" fill="#FFCC00"/>
+                </svg>
+              </span>
+              <span class="tourist-contract-card__bank-text">
+                <strong id="contractBankName">Caixa Bank</strong>
+                <span>Contrato Nº ES-4738D9215</span>
+              </span>
+            </div>
+
+            <button type="button" class="tourist-contract-card__button" data-contract-open="view">
+              Abrir PDF
+            </button>
+          </div>
+        </section>
+
+        <section class="tourist-stats" aria-label="Beneficios del plan">
+          <div class="tourist-stats__item">
+            <span class="tourist-stats__icon" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M27.4922 13.4375H2.49219C1.97969 13.4375 1.55469 13.0125 1.55469 12.5C1.55469 11.9875 1.97969 11.5625 2.49219 11.5625H27.4922C28.0047 11.5625 28.4297 11.9875 28.4297 12.5C28.4297 13.0125 28.0047 13.4375 27.4922 13.4375Z" fill="url(#ccStatAnu0)"/>
+                <path d="M14.4422 26.5656H8.0547C3.0797 26.5656 1.55469 25.0656 1.55469 20.1406V9.86563C1.55469 5.92813 2.39218 3.74063 6.85467 3.47813C7.22967 3.46563 7.6297 3.45312 8.0547 3.45312H21.9422C26.9172 3.45312 28.4422 4.95312 28.4422 9.87812V15.3906C28.4422 15.9031 28.0172 16.3281 27.5047 16.3281C26.9922 16.3281 26.5672 15.9031 26.5672 15.3906V9.87812C26.5672 6.01562 25.8797 5.32812 21.9422 5.32812H8.0547C7.6547 5.32812 7.29218 5.34063 6.94218 5.35313C4.22968 5.51563 3.42969 6.12812 3.42969 9.87812V20.1531C3.42969 24.0156 4.1172 24.7031 8.0547 24.7031H14.4422C14.9547 24.7031 15.3797 25.1281 15.3797 25.6406C15.3797 26.1531 14.9672 26.5656 14.4422 26.5656Z" fill="url(#ccStatAnu1)"/>
+                <path d="M12.5 20.9375H7.5C6.9875 20.9375 6.5625 20.5125 6.5625 20C6.5625 19.4875 6.9875 19.0625 7.5 19.0625H12.5C13.0125 19.0625 13.4375 19.4875 13.4375 20C13.4375 20.5125 13.0125 20.9375 12.5 20.9375Z" fill="url(#ccStatAnu2)"/>
+                <path d="M22.4922 28.4375C20.4172 28.4375 18.4672 27.3375 17.4172 25.55C16.8547 24.65 16.5547 23.5875 16.5547 22.5C16.5547 19.225 19.2172 16.5625 22.4922 16.5625C25.7672 16.5625 28.4297 19.225 28.4297 22.5C28.4297 23.5875 28.1297 24.65 27.5672 25.5625C26.5172 27.3375 24.5672 28.4375 22.4922 28.4375ZM22.4922 18.4375C20.2547 18.4375 18.4297 20.2625 18.4297 22.5C18.4297 23.2375 18.6297 23.9625 19.0172 24.5875C19.7422 25.8125 21.0797 26.5625 22.4922 26.5625C23.9047 26.5625 25.2422 25.8125 25.9672 24.6C26.3547 23.9625 26.5547 23.25 26.5547 22.5C26.5547 20.2625 24.7297 18.4375 22.4922 18.4375Z" fill="url(#ccStatAnu3)"/>
+                <path d="M21.7891 24.675C21.5516 24.675 21.3141 24.5875 21.1266 24.4L19.8891 23.1624C19.5266 22.7999 19.5266 22.1999 19.8891 21.8374C20.2516 21.4749 20.8516 21.4749 21.2141 21.8374L21.8141 22.4374L23.8141 20.5874C24.1891 20.2374 24.7891 20.2624 25.1391 20.6374C25.4891 21.0124 25.4641 21.6125 25.0891 21.9625L22.4266 24.4249C22.2391 24.5874 22.0141 24.675 21.7891 24.675Z" fill="url(#ccStatAnu4)"/>
+                <defs>
+                  <linearGradient id="ccStatAnu0" x1="14.9922" y1="11.5625" x2="14.9922" y2="13.4375" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatAnu1" x1="14.9984" y1="3.45312" x2="14.9984" y2="26.5656" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatAnu2" x1="10" y1="19.0625" x2="10" y2="20.9375" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatAnu3" x1="22.4922" y1="16.5625" x2="22.4922" y2="28.4375" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatAnu4" x1="22.5019" y1="20.3398" x2="22.5019" y2="24.675" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </span>
+            <span class="tourist-stats__title">Flexible</span>
+            <span class="tourist-stats__sub">Uso inmediato</span>
+          </div>
+
+          <span class="tourist-stats__divider" aria-hidden="true"></span>
+
+          <div class="tourist-stats__item">
+            <span class="tourist-stats__icon" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 28.4406C14.125 28.4406 13.2375 28.1031 12.575 27.4406L10.4375 25.3281C9.90001 24.8031 9.19999 24.5156 8.44999 24.5156H7.5C4.9125 24.5156 2.8125 22.4281 2.8125 19.8656V6.22809C2.8125 3.66559 4.9125 1.57812 7.5 1.57812H22.5C25.0875 1.57812 27.1875 3.66559 27.1875 6.22809V19.8656C27.1875 22.4281 25.0875 24.5156 22.5 24.5156H21.55C20.8 24.5156 20.0875 24.8031 19.5625 25.3281L17.425 27.4406C16.7625 28.1031 15.875 28.4406 15 28.4406ZM7.5 3.44061C5.95 3.44061 4.6875 4.69058 4.6875 6.21558V19.8531C4.6875 21.3906 5.95 22.6281 7.5 22.6281H8.44999C9.69999 22.6281 10.875 23.1155 11.7625 23.9905L13.9 26.1031C14.5125 26.7031 15.5 26.7031 16.1125 26.1031L18.25 23.9905C19.1375 23.1155 20.3125 22.6281 21.5625 22.6281H22.5C24.05 22.6281 25.3125 21.3781 25.3125 19.8531V6.21558C25.3125 4.67808 24.05 3.44061 22.5 3.44061H7.5Z" fill="url(#ccStatCal0)"/>
+                <path d="M12.9719 18.1368H9.62186C9.07186 18.1368 8.55936 17.8742 8.23436 17.4242C7.92186 16.9992 7.84686 16.4743 7.99686 15.9743C8.43436 14.6368 9.50936 13.9117 10.4594 13.2617C11.4594 12.5867 12.0219 12.1618 12.0219 11.4368C12.0219 10.7868 11.4969 10.2617 10.8469 10.2617C10.1969 10.2617 9.67188 10.7868 9.67188 11.4368C9.67188 11.9493 9.24688 12.3743 8.73438 12.3743C8.22188 12.3743 7.79688 11.9493 7.79688 11.4368C7.79688 9.7618 9.15936 8.38672 10.8469 8.38672C12.5344 8.38672 13.8969 9.7493 13.8969 11.4368C13.8969 13.1993 12.5719 14.0992 11.5094 14.8242C10.8469 15.2742 10.2219 15.6993 9.90936 16.2618H12.9594C13.4719 16.2618 13.8969 16.6868 13.8969 17.1993C13.8969 17.7118 13.4844 18.1368 12.9719 18.1368Z" fill="url(#ccStatCal1)"/>
+                <path d="M20.0594 18.1362C19.5469 18.1362 19.1219 17.7112 19.1219 17.1987V16.3361H16.6719C16.6719 16.3361 16.6719 16.3361 16.6594 16.3361C16.0469 16.3361 15.4844 16.0112 15.1719 15.4862C14.8594 14.9487 14.8594 14.2862 15.1719 13.7612C16.0219 12.2987 17.0094 10.6362 17.9094 9.18617C18.3094 8.54867 19.0719 8.26122 19.7844 8.46122C20.4969 8.67372 20.9969 9.32377 20.9844 10.0738V14.4736H21.2594C21.7719 14.4736 22.1969 14.8986 22.1969 15.4111C22.1969 15.9236 21.7719 16.3486 21.2594 16.3486H20.9969V17.2112C20.9969 17.7237 20.5844 18.1362 20.0594 18.1362ZM19.1219 10.7987C18.3844 11.9987 17.6219 13.2861 16.9344 14.4611H19.1219V10.7987Z" fill="url(#ccStatCal2)"/>
+                <defs>
+                  <linearGradient id="ccStatCal0" x1="15" y1="1.57812" x2="15" y2="28.4406" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatCal1" x1="10.8469" y1="8.38672" x2="10.8469" y2="18.1368" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatCal2" x1="18.5672" y1="8.39844" x2="18.5672" y2="18.1362" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </span>
+            <span class="tourist-stats__title">24/7</span>
+            <span class="tourist-stats__sub">Soporte activo</span>
+          </div>
+
+          <span class="tourist-stats__divider" aria-hidden="true"></span>
+
+          <div class="tourist-stats__item">
+            <span class="tourist-stats__icon" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 28.4375C7.5875 28.4375 1.5625 22.4125 1.5625 15C1.5625 7.5875 7.5875 1.5625 15 1.5625C22.4125 1.5625 28.4375 7.5875 28.4375 15C28.4375 22.4125 22.4125 28.4375 15 28.4375ZM15 3.4375C8.625 3.4375 3.4375 8.625 3.4375 15C3.4375 21.375 8.625 26.5625 15 26.5625C21.375 26.5625 26.5625 21.375 26.5625 15C26.5625 8.625 21.375 3.4375 15 3.4375Z" fill="url(#ccStatGlob0)"/>
+                <path d="M11.2547 27.1875H10.0047C9.49219 27.1875 9.06719 26.7625 9.06719 26.25C9.06719 25.7375 9.46719 25.325 9.97969 25.3125C8.01719 18.6125 8.01719 11.3875 9.97969 4.6875C9.46719 4.675 9.06719 4.2625 9.06719 3.75C9.06719 3.2375 9.49219 2.8125 10.0047 2.8125H11.2547C11.5547 2.8125 11.8422 2.9625 12.0172 3.2C12.1922 3.45 12.2422 3.7625 12.1422 4.05C9.79219 11.1125 9.79219 18.8875 12.1422 25.9625C12.2422 26.25 12.1922 26.5625 12.0172 26.8125C11.8422 27.0375 11.5547 27.1875 11.2547 27.1875Z" fill="url(#ccStatGlob1)"/>
+                <path d="M18.7529 27.1903C18.6529 27.1903 18.5529 27.1778 18.4529 27.1403C17.9654 26.9778 17.6904 26.4403 17.8654 25.9528C20.2154 18.8903 20.2154 11.1153 17.8654 4.04029C17.7029 3.55279 17.9654 3.01529 18.4529 2.85279C18.9529 2.69029 19.4779 2.95279 19.6404 3.44029C22.1279 10.8903 22.1279 19.0903 19.6404 26.5278C19.5154 26.9403 19.1404 27.1903 18.7529 27.1903Z" fill="url(#ccStatGlob2)"/>
+                <path d="M15 21.501C11.5125 21.501 8.0375 21.0135 4.6875 20.026C4.675 20.526 4.2625 20.9385 3.75 20.9385C3.2375 20.9385 2.8125 20.5135 2.8125 20.001V18.751C2.8125 18.451 2.9625 18.1635 3.2 17.9885C3.45 17.8135 3.7625 17.7635 4.05 17.8635C11.1125 20.2135 18.9 20.2135 25.9625 17.8635C26.25 17.7635 26.5625 17.8135 26.8125 17.9885C27.0625 18.1635 27.2 18.451 27.2 18.751V20.001C27.2 20.5135 26.775 20.9385 26.2625 20.9385C25.75 20.9385 25.3375 20.5385 25.325 20.026C21.9625 21.0135 18.4875 21.501 15 21.501Z" fill="url(#ccStatGlob3)"/>
+                <path d="M26.2546 12.1867C26.1546 12.1867 26.0546 12.1742 25.9546 12.1367C18.8921 9.78672 11.1046 9.78672 4.04211 12.1367C3.54211 12.2992 3.01711 12.0367 2.85461 11.5492C2.70461 11.0492 2.96711 10.5242 3.45461 10.3617C10.9046 7.87422 19.1046 7.87422 26.5421 10.3617C27.0296 10.5242 27.3046 11.0617 27.1296 11.5492C27.0171 11.9367 26.6421 12.1867 26.2546 12.1867Z" fill="url(#ccStatGlob4)"/>
+                <defs>
+                  <linearGradient id="ccStatGlob0" x1="15" y1="1.5625" x2="15" y2="28.4375" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatGlob1" x1="10.3505" y1="2.8125" x2="10.3505" y2="27.1875" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatGlob2" x1="19.6593" y1="2.80469" x2="19.6593" y2="27.1903" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatGlob3" x1="15.0063" y1="17.8125" x2="15.0063" y2="21.501" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                  <linearGradient id="ccStatGlob4" x1="14.9975" y1="8.49609" x2="14.9975" y2="12.1867" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7"/>
+                    <stop offset="1" stop-color="#FA6C12"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </span>
+            <span class="tourist-stats__title">Global</span>
+            <span class="tourist-stats__sub">Pagos mundiales</span>
+          </div>
+        </section>
+
+        <div class="tourist-eta-banner">
+          <span class="tourist-eta-banner__icon" aria-hidden="true">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" rx="18" fill="white"/>
+              <path d="M22.3576 10.262V8.83203C22.3576 8.4562 22.046 8.14453 21.6701 8.14453C21.2943 8.14453 20.9826 8.4562 20.9826 8.83203V10.207H15.0243V8.83203C15.0243 8.4562 14.7126 8.14453 14.3368 8.14453C13.961 8.14453 13.6493 8.4562 13.6493 8.83203V10.262C11.1743 10.4912 9.97347 11.967 9.79013 14.1579C9.7718 14.4237 9.9918 14.6437 10.2485 14.6437H25.7585C26.0243 14.6437 26.2443 14.4145 26.2168 14.1579C26.0335 11.967 24.8326 10.4912 22.3576 10.262Z" fill="#FA6D2E"/>
+              <path d="M24.4167 20.75C22.3908 20.75 20.75 22.3908 20.75 24.4167C20.75 25.1042 20.9425 25.755 21.2817 26.305C21.9142 27.3683 23.0783 28.0833 24.4167 28.0833C25.755 28.0833 26.9192 27.3683 27.5517 26.305C27.8908 25.755 28.0833 25.1042 28.0833 24.4167C28.0833 22.3908 26.4425 20.75 24.4167 20.75ZM26.3142 24.0225L24.3617 25.8283C24.2333 25.9475 24.0592 26.0117 23.8942 26.0117C23.72 26.0117 23.5458 25.9475 23.4083 25.81L22.5008 24.9025C22.235 24.6367 22.235 24.1967 22.5008 23.9308C22.7667 23.665 23.2067 23.665 23.4725 23.9308L23.9125 24.3708L25.3792 23.0142C25.6542 22.7575 26.0942 22.7758 26.3508 23.0508C26.6075 23.3258 26.5892 23.7567 26.3142 24.0225Z" fill="#FA6D2E"/>
+              <path d="M25.3333 16.0195H10.6667C10.1625 16.0195 9.75 16.432 9.75 16.9362V22.5829C9.75 25.3329 11.125 27.1662 14.3333 27.1662H18.8525C19.485 27.1662 19.925 26.552 19.7233 25.9562C19.54 25.4245 19.3842 24.8379 19.3842 24.4162C19.3842 21.6387 21.6483 19.3745 24.4258 19.3745C24.6917 19.3745 24.9575 19.3929 25.2142 19.4387C25.7642 19.5212 26.2592 19.0904 26.2592 18.5404V16.9454C26.25 16.432 25.8375 16.0195 25.3333 16.0195ZM15.4425 23.692C15.2683 23.857 15.03 23.9579 14.7917 23.9579C14.5533 23.9579 14.315 23.857 14.1408 23.692C13.9758 23.5179 13.875 23.2795 13.875 23.0412C13.875 22.8029 13.9758 22.5645 14.1408 22.3904C14.2325 22.3079 14.3242 22.2437 14.4433 22.1979C14.7825 22.0512 15.1858 22.1337 15.4425 22.3904C15.6075 22.5645 15.7083 22.8029 15.7083 23.0412C15.7083 23.2795 15.6075 23.5179 15.4425 23.692ZM15.4425 20.4837C15.3967 20.5204 15.3508 20.557 15.305 20.5937C15.25 20.6304 15.195 20.6579 15.14 20.6762C15.085 20.7037 15.03 20.722 14.975 20.7312C14.9108 20.7404 14.8467 20.7495 14.7917 20.7495C14.5533 20.7495 14.315 20.6487 14.1408 20.4837C13.9758 20.3095 13.875 20.0712 13.875 19.8329C13.875 19.5945 13.9758 19.3562 14.1408 19.182C14.3517 18.9712 14.6725 18.8704 14.975 18.9345C15.03 18.9437 15.085 18.962 15.14 18.9895C15.195 19.0079 15.25 19.0354 15.305 19.072C15.3508 19.1087 15.3967 19.1454 15.4425 19.182C15.6075 19.3562 15.7083 19.5945 15.7083 19.8329C15.7083 20.0712 15.6075 20.3095 15.4425 20.4837ZM18.6508 20.4837C18.4767 20.6487 18.2383 20.7495 18 20.7495C17.7617 20.7495 17.5233 20.6487 17.3492 20.4837C17.1842 20.3095 17.0833 20.0712 17.0833 19.8329C17.0833 19.5945 17.1842 19.3562 17.3492 19.182C17.6975 18.8429 18.3117 18.8429 18.6508 19.182C18.8158 19.3562 18.9167 19.5945 18.9167 19.8329C18.9167 20.0712 18.8158 20.3095 18.6508 20.4837Z" fill="#FA6D2E"/>
+            </svg>
+          </span>
+          <div class="tourist-eta-banner__text">
+            <p class="tourist-eta-banner__title">Tu tarjeta estará lista en 15 minutos</p>
+            <p class="tourist-eta-banner__caption">tras completar la solicitud.</p>
+          </div>
+        </div>
+
+        <form
+          class="tourist-form"
+          id="creditCardForm"
+          novalidate
+        >
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfNombre">Nombre</label>
+            <input class="tourist-form-field__input" id="ccfNombre" name="nombre" type="text" autocomplete="name" />
+          </div>
+
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfDni">DNI / NIE</label>
+            <input class="tourist-form-field__input" id="ccfDni" name="dni" type="text" autocomplete="off" />
+          </div>
+
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfIban">Cuenta Bancaria (IBAN)</label>
+            <p class="tourist-form-field__hint">Podrás retirar fondos de tu tarjeta únicamente a este IBAN.</p>
+            <input class="tourist-form-field__input" id="ccfIban" name="iban" type="text" autocomplete="off" placeholder="ES00 0000 0000 0000 0000 0000" />
+          </div>
+
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfCalle">Calle</label>
+            <input class="tourist-form-field__input" id="ccfCalle" name="calle" type="text" autocomplete="address-line1" />
+          </div>
+
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfPiso">Piso y Escalera</label>
+            <input class="tourist-form-field__input" id="ccfPiso" name="piso" type="text" autocomplete="address-line2" />
+          </div>
+
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfCiudad">Ciudad</label>
+            <input class="tourist-form-field__input" id="ccfCiudad" name="ciudad" type="text" autocomplete="address-level2" />
+          </div>
+
+          <div class="tourist-form-field tourist-form-field--select">
+            <label class="tourist-form-field__label" for="ccfProvincia">Provincia</label>
+            <div class="tourist-form-field__box">
+              <select class="tourist-form-field__input tourist-form-field__select" id="ccfProvincia" name="provincia" autocomplete="address-level1">
+                <option value="" selected disabled hidden></option>
+                <option value="A Coruña">A Coruña</option>
+                <option value="Álava">Álava</option>
+                <option value="Albacete">Albacete</option>
+                <option value="Alicante">Alicante</option>
+                <option value="Almería">Almería</option>
+                <option value="Asturias">Asturias</option>
+                <option value="Ávila">Ávila</option>
+                <option value="Badajoz">Badajoz</option>
+                <option value="Barcelona">Barcelona</option>
+                <option value="Burgos">Burgos</option>
+                <option value="Cáceres">Cáceres</option>
+                <option value="Cádiz">Cádiz</option>
+                <option value="Cantabria">Cantabria</option>
+                <option value="Castellón">Castellón</option>
+                <option value="Ciudad Real">Ciudad Real</option>
+                <option value="Córdoba">Córdoba</option>
+                <option value="Cuenca">Cuenca</option>
+                <option value="Girona">Girona</option>
+                <option value="Granada">Granada</option>
+                <option value="Guadalajara">Guadalajara</option>
+                <option value="Guipúzcoa">Guipúzcoa</option>
+                <option value="Huelva">Huelva</option>
+                <option value="Huesca">Huesca</option>
+                <option value="Islas Baleares">Islas Baleares</option>
+                <option value="Jaén">Jaén</option>
+                <option value="La Rioja">La Rioja</option>
+                <option value="Las Palmas">Las Palmas</option>
+                <option value="León">León</option>
+                <option value="Lleida">Lleida</option>
+                <option value="Lugo">Lugo</option>
+                <option value="Madrid">Madrid</option>
+                <option value="Málaga">Málaga</option>
+                <option value="Murcia">Murcia</option>
+                <option value="Navarra">Navarra</option>
+                <option value="Ourense">Ourense</option>
+                <option value="Palencia">Palencia</option>
+                <option value="Pontevedra">Pontevedra</option>
+                <option value="Salamanca">Salamanca</option>
+                <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
+                <option value="Segovia">Segovia</option>
+                <option value="Sevilla">Sevilla</option>
+                <option value="Soria">Soria</option>
+                <option value="Tarragona">Tarragona</option>
+                <option value="Teruel">Teruel</option>
+                <option value="Toledo">Toledo</option>
+                <option value="Valencia">Valencia</option>
+                <option value="Valladolid">Valladolid</option>
+                <option value="Vizcaya">Vizcaya</option>
+                <option value="Zamora">Zamora</option>
+                <option value="Zaragoza">Zaragoza</option>
+              </select>
+              <span class="tourist-form-field__chevron" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m4 6 4 4 4-4" stroke="#C6C6C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="tourist-form-field">
+            <label class="tourist-form-field__label" for="ccfCp">Código Postal</label>
+            <input class="tourist-form-field__input" id="ccfCp" name="cp" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="5" />
+          </div>
+
+          <button
+            type="button"
+            class="tourist-btn tourist-btn--gradient tourist-btn--block tourist-btn--credit-pay"
+            id="creditCardSubmit"
+            aria-busy="false"
+            data-contract-open="sign"
+          >
+            <span class="tourist-btn__default-content">
+              <span>Firmar contrato</span>
+              <svg class="tourist-btn__icon tourist-btn__icon--contract" width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9.566 2.32 2.78 9.107a2.23 2.23 0 0 0-.573 1l-.667 2.667a.55.55 0 0 0 .667.667l2.667-.667a2.23 2.23 0 0 0 1-.573l6.786-6.787a2.19 2.19 0 0 0-3.094-3.094Z" fill="white"/>
+                <path d="M8.727 3.16a4.42 4.42 0 0 0 3.093 3.093" stroke="#FA6C12" stroke-width="1.1" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="tourist-btn__loading-content" aria-hidden="true">
+              <svg class="tourist-btn__spinner" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-opacity="0.35"/>
+                <path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+              <span>Procesando</span>
+            </span>
+          </button>
+        </form>
+      </main>
+    </div>
+
+    <div class="tourist-contract-modal" id="contractModal" aria-hidden="true">
+      <div class="tourist-contract-modal__backdrop" data-contract-close tabindex="-1"></div>
+      <section
+        class="tourist-contract-modal__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contractModalTitle"
+      >
+        <header class="tourist-contract-modal__header">
+          <div class="tourist-contract-modal__heading">
+            <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
+            <h2 class="tourist-contract-modal__title" id="contractModalTitle">Tarjeta de Crédito</h2>
+          </div>
+        </header>
+
+        <div class="tourist-contract-modal__body" tabindex="0">
+          <article class="credit-contract" aria-label="Contrato preliminar de crédito">
+            <!-- ============ PÁGINA 1 ============ -->
+            <section class="credit-contract__page">
+              <header class="credit-contract__masthead">
+                <div class="credit-contract__caixa-brand" id="contractHeaderBrand" aria-label="CaixaBank">
+                  <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" id="contractHeaderBrandImg" class="credit-contract__caixa-logo">
+                </div>
+                <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
+                  <img src="../assets/Go Val.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
+                </div>
+              </header>
+
+              <p class="credit-contract__mono">
+                <strong id="contractBodyBankName">CAIXABANK S.A.</strong><br>
+                Sede social: Calle Pintor Sorolla, 2-4, 46002 Valencia, España.<br>
+                NIF (CIF): A-08663619<br>
+                Capital social: € 7.085.565.456 (representado por 7.085.565.456 acciones de €1 cada una).<br>
+                Inscrita en el Registro Mercantil de Valencia (Tomo 10370, Hoja 1, Página V-178351).<br>
+                Inscrita en el Registro Especial del Banco de España con el nº 2100.
+              </p>
+
+              <h3 class="credit-contract__doc-title">CONTRATO PRELIMINAR DE CRÉDITO</h3>
+              <p class="credit-contract__doc-subtitle">(Aviso sobre las condiciones de crédito)</p>
+
+              <p class="credit-contract__mono">
+                Cliente: <span data-contract-field="nombre">Marta Sainz de la Maza Pastor</span><br>
+                La empresa <strong>GO VAL FINANCE S.L.</strong>, actuando como intermediario de crédito
+                (Agente en actividad financiera – OAM A130179), confirma la mediación de la operación.
+              </p>
+
+              <p class="credit-contract__mono">
+                El banco <span id="contractBodyBankName2">CaixaBank S.A.</span> confirma la aprobación de la concesión del crédito.<br>
+                El presente documento constituye una notificación preliminar de las condiciones y no
+                genera efectos jurídicos hasta la firma del contrato definitivo.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">1. Condiciones principales del crédito</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+
+              <table class="credit-contract__table">
+                <thead>
+                  <tr>
+                    <th>Parametro</th>
+                    <th>Dettagli</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Importe del crédito:</td><td>5 000.00</td></tr>
+                  <tr><td>Tasa Anual Nominal (TAN):</td><td>7.86%</td></tr>
+                  <tr><td>Tasa Anual Equivalente Global (TAEG):</td><td>8.30%</td></tr>
+                  <tr><td>Plazo del crédito:</td><td>60 mes</td></tr>
+                  <tr><td>Cuota mensual*:</td><td>101.05</td></tr>
+                  <tr><td>Comisión de cobro:</td><td>€ 0</td></tr>
+                  <tr><td>Comisión administrativa (GO VAL FINANCE S.L.):</td><td>€ 90,00</td></tr>
+                  <tr><td>Prima de seguro obligatoria (GO VAL FINANCE S.L.):</td><td>€ 195,00</td></tr>
+                </tbody>
+              </table>
+
+              <p class="credit-contract__note">(*) cálculo efectuado en la fecha de la oferta.</p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">2. Beneficios para el cliente</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+
+              <ul class="credit-contract__list">
+                <li>Suspensión de hasta 3 cuotas consecutivas.</li>
+                <li>Amortización anticipada sin penalizaciones.</li>
+                <li>Reducción del TAN de 0,10 p.p. cada 12 cuotas puntuales (hasta el 2,80 %).</li>
+                <li>CashBack del 1 % en cada cuota pagada.</li>
+                <li>Servicio gratuito “Financial Navigator” por 12 meses.</li>
+                <li>Transferencias SEPA y SDD sin costes adicionales.</li>
+              </ul>
+
+              <footer class="credit-contract__page-footer">1</footer>
+            </section>
+
+            <!-- ============ PÁGINA 2 ============ -->
+            <section class="credit-contract__page">
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">3. Penalizaciones e intereses de demora</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <ul class="credit-contract__list">
+                <li>Retraso superior a 5 días: TAN + 2 p.p.</li>
+                <li>Aviso: € 10 en papel / € 5 en digital.</li>
+                <li>2 cuotas impagadas = resolución del contrato e inicio del procedimiento de recuperación.</li>
+                <li>Revocación de la póliza = obligación de restablecimiento en un plazo de 15 días.</li>
+              </ul>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">4. Comunicaciones y servicios del intermediario</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <ul class="credit-contract__list">
+                <li>Todas las comunicaciones entre cliente y banco serán gestionadas por GO VAL FINANCE S.L.</li>
+                <li>Contrato y anexos enviados en PDF por Telegram.</li>
+                <li>Servicios de GO VAL FINANCE – tarifa fija de € 90 (no es comisión bancaria), pago por SEPA / SEPA Instant a un contable independiente.</li>
+                <li>Para reclamaciones, el cliente puede dirigirse al Banco de España o al sistema de resolución de conflictos competente.</li>
+              </ul>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">5. Información legal</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <ul class="credit-contract__list">
+                <li>El cliente tiene derecho a recibir el formulario SECCI y el plan de amortización completo antes de la firma.</li>
+                <li>Condiciones reguladas por la Ley 16/2011, de contratos de crédito al consumo, y por el Código Civil Español.</li>
+                <li>Tratamiento de datos personales conforme al Reglamento General de Protección de Datos (RGPD).</li>
+              </ul>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">6. Plan de pagos</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                Tasa mensual: 0,006550000000<br>
+                Cuota mensual: 101.05<br>
+                Importe total de pagos: 6 062.71<br>
+                Importe de sobrepago: 1 062.71
+              </p>
+
+              <table class="credit-contract__table credit-contract__table--schedule">
+                <thead>
+                  <tr>
+                    <th>Mes</th>
+                    <th>Cuota</th>
+                    <th>Intereses</th>
+                    <th>Amortización</th>
+                    <th>Saldo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>€ 101.05</td><td>€ 32.75</td><td>€ 68.30</td><td>€ 4 931.70</td></tr>
+                  <tr><td>2</td><td>€ 101.05</td><td>€ 32.30</td><td>€ 68.75</td><td>€ 4 862.95</td></tr>
+                  <tr><td>3</td><td>€ 101.05</td><td>€ 31.85</td><td>€ 69.20</td><td>€ 4 793.75</td></tr>
+                  <tr><td>4</td><td>€ 101.05</td><td>€ 31.40</td><td>€ 69.65</td><td>€ 4 724.10</td></tr>
+                  <tr><td>5</td><td>€ 101.05</td><td>€ 30.94</td><td>€ 70.11</td><td>€ 4 653.99</td></tr>
+                  <tr><td>6</td><td>€ 101.05</td><td>€ 30.48</td><td>€ 70.57</td><td>€ 4 583.42</td></tr>
+                  <tr><td>7</td><td>€ 101.05</td><td>€ 30.02</td><td>€ 71.03</td><td>€ 4 512.39</td></tr>
+                  <tr><td>8</td><td>€ 101.05</td><td>€ 29.56</td><td>€ 71.49</td><td>€ 4 440.90</td></tr>
+                  <tr><td>9</td><td>€ 101.05</td><td>€ 29.09</td><td>€ 71.96</td><td>€ 4 368.94</td></tr>
+                  <tr><td>10</td><td>€ 101.05</td><td>€ 28.62</td><td>€ 72.43</td><td>€ 4 296.51</td></tr>
+                  <tr><td>11</td><td>€ 101.05</td><td>€ 28.14</td><td>€ 72.91</td><td>€ 4 223.60</td></tr>
+                  <tr><td>12</td><td>€ 101.05</td><td>€ 27.66</td><td>€ 73.39</td><td>€ 4 150.21</td></tr>
+                </tbody>
+              </table>
+
+              <footer class="credit-contract__page-footer">2</footer>
+            </section>
+
+            <!-- ============ PÁGINA 3 ============ -->
+            <section class="credit-contract__page">
+              <table class="credit-contract__table credit-contract__table--schedule">
+                <thead>
+                  <tr>
+                    <th>Mes</th>
+                    <th>Cuota</th>
+                    <th>Intereses</th>
+                    <th>Amortización</th>
+                    <th>Saldo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>13</td><td>€ 101.05</td><td>€ 27.18</td><td>€ 73.87</td><td>€ 4 076.34</td></tr>
+                  <tr><td>14</td><td>€ 101.05</td><td>€ 26.70</td><td>€ 74.35</td><td>€ 4 001.99</td></tr>
+                  <tr><td>15</td><td>€ 101.05</td><td>€ 26.21</td><td>€ 74.84</td><td>€ 3 927.15</td></tr>
+                  <tr><td>16</td><td>€ 101.05</td><td>€ 25.72</td><td>€ 75.33</td><td>€ 3 851.82</td></tr>
+                  <tr><td>17</td><td>€ 101.05</td><td>€ 25.23</td><td>€ 75.82</td><td>€ 3 776.00</td></tr>
+                  <tr><td>18</td><td>€ 101.05</td><td>€ 24.73</td><td>€ 76.32</td><td>€ 3 699.68</td></tr>
+                  <tr><td>19</td><td>€ 101.05</td><td>€ 24.23</td><td>€ 76.82</td><td>€ 3 622.86</td></tr>
+                  <tr><td>20</td><td>€ 101.05</td><td>€ 23.73</td><td>€ 77.32</td><td>€ 3 545.54</td></tr>
+                  <tr><td>21</td><td>€ 101.05</td><td>€ 23.22</td><td>€ 77.83</td><td>€ 3 467.71</td></tr>
+                  <tr><td>22</td><td>€ 101.05</td><td>€ 22.71</td><td>€ 78.34</td><td>€ 3 389.37</td></tr>
+                  <tr><td>23</td><td>€ 101.05</td><td>€ 22.20</td><td>€ 78.85</td><td>€ 3 310.52</td></tr>
+                  <tr><td>24</td><td>€ 101.05</td><td>€ 21.68</td><td>€ 79.37</td><td>€ 3 231.15</td></tr>
+                  <tr><td>25</td><td>€ 101.05</td><td>€ 21.16</td><td>€ 79.89</td><td>€ 3 151.26</td></tr>
+                  <tr><td>26</td><td>€ 101.05</td><td>€ 20.64</td><td>€ 80.41</td><td>€ 3 070.85</td></tr>
+                  <tr><td>27</td><td>€ 101.05</td><td>€ 20.11</td><td>€ 80.94</td><td>€ 2 989.91</td></tr>
+                  <tr><td>28</td><td>€ 101.05</td><td>€ 19.58</td><td>€ 81.47</td><td>€ 2 908.44</td></tr>
+                  <tr><td>29</td><td>€ 101.05</td><td>€ 19.05</td><td>€ 82.00</td><td>€ 2 826.44</td></tr>
+                  <tr><td>30</td><td>€ 101.05</td><td>€ 18.51</td><td>€ 82.54</td><td>€ 2 743.90</td></tr>
+                  <tr><td>31</td><td>€ 101.05</td><td>€ 17.97</td><td>€ 83.08</td><td>€ 2 660.82</td></tr>
+                  <tr><td>32</td><td>€ 101.05</td><td>€ 17.43</td><td>€ 83.62</td><td>€ 2 577.20</td></tr>
+                  <tr><td>33</td><td>€ 101.05</td><td>€ 16.88</td><td>€ 84.17</td><td>€ 2 493.03</td></tr>
+                  <tr><td>34</td><td>€ 101.05</td><td>€ 16.33</td><td>€ 84.72</td><td>€ 2 408.31</td></tr>
+                  <tr><td>35</td><td>€ 101.05</td><td>€ 15.77</td><td>€ 85.28</td><td>€ 2 323.03</td></tr>
+                  <tr><td>36</td><td>€ 101.05</td><td>€ 15.22</td><td>€ 85.83</td><td>€ 2 237.20</td></tr>
+                  <tr><td>37</td><td>€ 101.05</td><td>€ 14.65</td><td>€ 86.40</td><td>€ 2 150.80</td></tr>
+                  <tr><td>38</td><td>€ 101.05</td><td>€ 14.09</td><td>€ 86.96</td><td>€ 2 063.84</td></tr>
+                  <tr><td>39</td><td>€ 101.05</td><td>€ 13.52</td><td>€ 87.53</td><td>€ 1 976.31</td></tr>
+                  <tr><td>40</td><td>€ 101.05</td><td>€ 12.94</td><td>€ 88.11</td><td>€ 1 888.20</td></tr>
+                  <tr><td>41</td><td>€ 101.05</td><td>€ 12.37</td><td>€ 88.68</td><td>€ 1 799.52</td></tr>
+                  <tr><td>42</td><td>€ 101.05</td><td>€ 11.79</td><td>€ 89.26</td><td>€ 1 710.26</td></tr>
+                  <tr><td>43</td><td>€ 101.05</td><td>€ 11.20</td><td>€ 89.85</td><td>€ 1 620.41</td></tr>
+                  <tr><td>44</td><td>€ 101.05</td><td>€ 10.61</td><td>€ 90.44</td><td>€ 1 529.97</td></tr>
+                  <tr><td>45</td><td>€ 101.05</td><td>€ 10.02</td><td>€ 91.03</td><td>€ 1 438.94</td></tr>
+                  <tr><td>46</td><td>€ 101.05</td><td>€ 9.43</td><td>€ 91.62</td><td>€ 1 347.32</td></tr>
+                  <tr><td>47</td><td>€ 101.05</td><td>€ 8.82</td><td>€ 92.23</td><td>€ 1 255.09</td></tr>
+                  <tr><td>48</td><td>€ 101.05</td><td>€ 8.22</td><td>€ 92.83</td><td>€ 1 162.26</td></tr>
+                  <tr><td>49</td><td>€ 101.05</td><td>€ 7.61</td><td>€ 93.44</td><td>€ 1 068.82</td></tr>
+                  <tr><td>50</td><td>€ 101.05</td><td>€ 7.00</td><td>€ 94.05</td><td>€ 974.77</td></tr>
+                  <tr><td>51</td><td>€ 101.05</td><td>€ 6.38</td><td>€ 94.67</td><td>€ 880.10</td></tr>
+                </tbody>
+              </table>
+
+              <footer class="credit-contract__page-footer">3</footer>
+            </section>
+
+            <!-- ============ PÁGINA 4 ============ -->
+            <section class="credit-contract__page">
+              <table class="credit-contract__table credit-contract__table--schedule">
+                <thead>
+                  <tr>
+                    <th>Mes</th>
+                    <th>Cuota</th>
+                    <th>Intereses</th>
+                    <th>Amortización</th>
+                    <th>Saldo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>52</td><td>€ 101.05</td><td>€ 5.76</td><td>€ 95.29</td><td>€ 784.81</td></tr>
+                  <tr><td>53</td><td>€ 101.05</td><td>€ 5.14</td><td>€ 95.91</td><td>€ 688.90</td></tr>
+                  <tr><td>54</td><td>€ 101.05</td><td>€ 4.51</td><td>€ 96.54</td><td>€ 592.36</td></tr>
+                  <tr><td>55</td><td>€ 101.05</td><td>€ 3.88</td><td>€ 97.17</td><td>€ 495.19</td></tr>
+                  <tr><td>56</td><td>€ 101.05</td><td>€ 3.24</td><td>€ 97.81</td><td>€ 397.38</td></tr>
+                  <tr><td>57</td><td>€ 101.05</td><td>€ 2.60</td><td>€ 98.45</td><td>€ 298.93</td></tr>
+                  <tr><td>58</td><td>€ 101.05</td><td>€ 1.96</td><td>€ 99.09</td><td>€ 199.84</td></tr>
+                  <tr><td>59</td><td>€ 101.05</td><td>€ 1.31</td><td>€ 99.74</td><td>€ 100.10</td></tr>
+                  <tr><td>60</td><td>€ 100.76</td><td>€ 0.66</td><td>€ 100.10</td><td>€ 0.00</td></tr>
+                </tbody>
+              </table>
+
+              <footer class="credit-contract__page-footer">4</footer>
+            </section>
+
+            <!-- ============ PÁGINA 5 ============ -->
+            <section class="credit-contract__page">
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">7. Firmas</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+
+              <p class="credit-contract__mono">
+                Lugar y fecha: Valencia (u otra ciudad), 31/05/2026
+              </p>
+
+              <div class="credit-contract__sign-cols">
+                <div class="credit-contract__sign-col" id="contractSignBankName">Representante del banco CaixaBank S.A.</div>
+                <div class="credit-contract__sign-col">Representante del intermediario GO VAL FINANCE S.L.:</div>
+                <div class="credit-contract__sign-col">Cliente: <span data-contract-field="nombre">Marta Sainz de la Maza Pastor</span></div>
+              </div>
+
+              <div class="credit-contract__stamp-area" aria-hidden="true">
+                <img src="../assets/stamp.svg" alt="" class="credit-contract__stamp">
+                <img src="../assets/left-hand.png" alt="" class="credit-contract__signature credit-contract__signature--left">
+                <img src="../assets/right-hand.png" alt="" class="credit-contract__signature credit-contract__signature--right">
+              </div>
+
+              <div class="credit-contract__sign-line" aria-hidden="true"></div>
+
+              <footer class="credit-contract__page-footer">5</footer>
+            </section>
+          </article>
+        </div>
+
+        <footer class="tourist-contract-modal__footer">
+          <button type="button" class="tourist-contract-modal__action" id="contractModalPrimary">
+            <span class="tourist-contract-modal__action-content">
+              <span class="tourist-contract-modal__action-text">Cerrar</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_30675_10442)">
+<path d="M6.68949 5.97848C6.49423 5.78322 6.17764 5.78322 5.98238 5.97848C5.78712 6.17374 5.78712 6.49032 5.98238 6.68556L7.29549 7.9987L5.9824 9.31183C5.78714 9.5071 5.78714 9.82363 5.9824 10.0189C6.17766 10.2142 6.49424 10.2142 6.68949 10.0189L8.00262 8.70583L9.31569 10.0189C9.51096 10.2142 9.82756 10.2142 10.0228 10.0189C10.2181 9.82363 10.2181 9.50703 10.0228 9.31183L8.70969 7.9987L10.0228 6.68556C10.2181 6.49034 10.2181 6.17375 10.0228 5.97849C9.82756 5.78323 9.51096 5.78323 9.31569 5.97849L8.00262 7.29163L6.68949 5.97848Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M8.04087 0.832031H7.96434C6.42543 0.832025 5.2194 0.832018 4.27841 0.958531C3.31525 1.08802 2.55524 1.35825 1.9587 1.95479C1.36216 2.55133 1.09193 3.31134 0.962438 4.2745C0.835924 5.21549 0.835931 6.42151 0.835938 7.96043V8.03696C0.835931 9.5759 0.835924 10.7819 0.962438 11.7229C1.09193 12.686 1.36216 13.4461 1.9587 14.0426C2.55524 14.6392 3.31525 14.9094 4.27841 15.0389C5.2194 15.1654 6.42542 15.1654 7.96434 15.1654H8.04087C9.5798 15.1654 10.7858 15.1654 11.7268 15.0389C12.6899 14.9094 13.45 14.6392 14.0465 14.0426C14.6431 13.4461 14.9133 12.686 15.0428 11.7229C15.1693 10.7819 15.1693 9.5759 15.1693 8.03696V7.96043C15.1693 6.42152 15.1693 5.21549 15.0428 4.2745C14.9133 3.31134 14.6431 2.55133 14.0465 1.95479C13.45 1.35825 12.6899 1.08802 11.7268 0.958531C10.7858 0.832018 9.5798 0.832025 8.04087 0.832031ZM2.6658 2.6619C3.04557 2.28212 3.55938 2.0642 4.41166 1.94961C5.27831 1.83309 6.41712 1.83203 8.0026 1.83203C9.58807 1.83203 10.7269 1.83309 11.5935 1.94961C12.4458 2.0642 12.9596 2.28212 13.3394 2.6619C13.7192 3.04166 13.9371 3.55548 14.0517 4.40775C14.1682 5.2744 14.1693 6.41321 14.1693 7.9987C14.1693 9.58416 14.1682 10.723 14.0517 11.5896C13.9371 12.4419 13.7192 12.9557 13.3394 13.3355C12.9596 13.7153 12.4458 13.9332 11.5935 14.0478C10.7269 14.1643 9.58807 14.1654 8.0026 14.1654C6.41712 14.1654 5.27831 14.1643 4.41166 14.0478C3.55938 13.9332 3.04557 13.7153 2.6658 13.3355C2.28603 12.9557 2.0681 12.4419 1.95352 11.5896C1.837 10.723 1.83594 9.58416 1.83594 7.9987C1.83594 6.41321 1.837 5.2744 1.95352 4.40775C2.0681 3.55548 2.28603 3.04166 2.6658 2.6619Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_30675_10442">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+
+            </span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <script src="./tourist.js?v=20260524-1"></script>
+    <script>
+      (function () {
+        var form = document.getElementById("creditCardForm");
+        var submitBtn = document.getElementById("creditCardSubmit");
+        var REQUIRED_FIELDS = ["ccfNombre", "ccfDni", "ccfIban", "ccfCalle", "ccfCiudad", "ccfProvincia", "ccfCp"];
+
+        function getFieldContainer(el) {
+          var p = el.parentElement;
+          while (p && !p.classList.contains("tourist-form-field")) p = p.parentElement;
+          return p || el.parentElement;
+        }
+
+        function showError(fieldId, msg) {
+          var el = document.getElementById(fieldId);
+          if (!el) return;
+          el.classList.add("tourist-form-field__input--error");
+          var container = getFieldContainer(el);
+          var existing = container.querySelector(".tourist-form-field__error");
+          if (existing) { existing.textContent = msg || "Campo requerido"; return; }
+          var span = document.createElement("span");
+          span.className = "tourist-form-field__error";
+          span.textContent = msg || "Campo requerido";
+          container.appendChild(span);
+        }
+
+        function clearFieldError(el) {
+          el.classList.remove("tourist-form-field__input--error");
+          var container = getFieldContainer(el);
+          var err = container.querySelector(".tourist-form-field__error");
+          if (err) err.parentNode.removeChild(err);
+        }
+
+        function clearErrors() {
+          form.querySelectorAll(".tourist-form-field__input--error").forEach(function (el) {
+            el.classList.remove("tourist-form-field__input--error");
+          });
+          form.querySelectorAll(".tourist-form-field__error").forEach(function (el) {
+            if (el.parentElement) el.parentElement.removeChild(el);
+          });
+        }
+
+        function isValidDni(val) {
+          var v = (val || "").trim().toUpperCase().replace(/[-\s]/g, "");
+          var DNI_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
+          if (/^[0-9]{8}[A-Z]$/.test(v)) {
+            return v[8] === DNI_LETTERS[parseInt(v.slice(0, 8), 10) % 23];
+          }
+          if (/^[XYZ][0-9]{7}[A-Z]$/.test(v)) {
+            var num = v.replace("X","0").replace("Y","1").replace("Z","2");
+            return v[8] === DNI_LETTERS[parseInt(num.slice(0, 8), 10) % 23];
+          }
+          return false;
+        }
+
+        function isValidIban(val) {
+          var iban = (val || "").replace(/\s/g, "").toUpperCase();
+          if (!/^ES\d{22}$/.test(iban)) return false;
+          var rearranged = iban.slice(4) + iban.slice(0, 4);
+          var numeric = rearranged.split("").map(function (c) {
+            var code = c.charCodeAt(0);
+            return code >= 65 ? String(code - 55) : c;
+          }).join("");
+          var remainder = 0;
+          for (var i = 0; i < numeric.length; i++) {
+            remainder = (remainder * 10 + parseInt(numeric[i], 10)) % 97;
+          }
+          return remainder === 1;
+        }
+
+        function validate() {
+          clearErrors();
+          var valid = true;
+          REQUIRED_FIELDS.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el || !el.value.trim()) {
+              showError(id, "Campo requerido");
+              valid = false;
+            }
+          });
+          var dniEl = document.getElementById("ccfDni");
+          if (dniEl && dniEl.value.trim() && !isValidDni(dniEl.value)) {
+            showError("ccfDni", "DNI/NIE no válido");
+            valid = false;
+          }
+          var ibanEl = document.getElementById("ccfIban");
+          if (ibanEl && ibanEl.value.trim() && !isValidIban(ibanEl.value)) {
+            showError("ccfIban", "IBAN no válido (formato ES)");
+            valid = false;
+          }
+          return valid;
+        }
+
+        // Живая валидация при вводе
+        function validateField(id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          var val = el.value.trim();
+
+          if (id === "ccfDni") {
+            if (!val) { showError(id, "Campo requerido"); }
+            else if (!isValidDni(val)) { showError(id, "DNI/NIE no válido"); }
+            else { clearFieldError(el); }
+            return;
+          }
+          if (id === "ccfIban") {
+            if (!val) { showError(id, "Campo requerido"); }
+            else if (!isValidIban(val)) { showError(id, "IBAN no válido (formato ES)"); }
+            else { clearFieldError(el); }
+            return;
+          }
+          if (!val) { showError(id, "Campo requerido"); }
+          else { clearFieldError(el); }
+        }
+
+        REQUIRED_FIELDS.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener("input", function () { validateField(id); });
+          el.addEventListener("change", function () { validateField(id); });
+        });
+
+        function setLoading(loading) {
+          submitBtn.setAttribute("aria-busy", loading ? "true" : "false");
+          submitBtn.disabled = loading;
+          submitBtn.classList.toggle("is-loading", loading);
+          if (contractModalPrimary) {
+            contractModalPrimary.disabled = loading;
+            contractModalPrimary.setAttribute("aria-busy", loading ? "true" : "false");
+            contractModalPrimary.classList.toggle("is-loading", loading);
+            if (activeContractMode === "sign") {
+              setContractPrimaryText(loading ? "Procesando" : "Firmar contrato");
+            }
+          }
+        }
+
+        var contractModal = document.getElementById("contractModal");
+        var contractModalBody = contractModal ? contractModal.querySelector(".tourist-contract-modal__body") : null;
+        var contractModalPrimary = document.getElementById("contractModalPrimary");
+        var contractModalPrimaryText = contractModalPrimary ? contractModalPrimary.querySelector(".tourist-contract-modal__action-text") : null;
+        var activeContractMode = "view";
+
+        function setContractPrimaryText(text) {
+          if (contractModalPrimaryText) {
+            contractModalPrimaryText.textContent = text;
+          } else if (contractModalPrimary) {
+            contractModalPrimary.textContent = text;
+          }
+        }
+
+        function formatDate(date) {
+          var dd = String(date.getDate()).padStart(2, "0");
+          var mm = String(date.getMonth() + 1).padStart(2, "0");
+          return dd + "/" + mm + "/" + date.getFullYear();
+        }
+
+        function setContractField(name, value) {
+          document.querySelectorAll('[data-contract-field="' + name + '"]').forEach(function (el) {
+            el.textContent = value;
+          });
+        }
+
+        function getFormValue(id) {
+          var el = document.getElementById(id);
+          return el && el.value ? el.value.trim() : "";
+        }
+
+        function syncContractFields() {
+          // El único dato variable del contrato es el nombre del cliente,
+          // que aparece en la página 1 (Cliente) y en la página 5 (Firmas).
+          var nombre = getFormValue("ccfNombre") || "Marta Sainz de la Maza Pastor";
+          setContractField("nombre", nombre);
+        }
+
+        function openContractModal(mode) {
+          if (!contractModal) return;
+          activeContractMode = mode === "sign" ? "sign" : "view";
+          syncContractFields();
+          contractModal.classList.toggle("tourist-contract-modal--sign", activeContractMode === "sign");
+          contractModal.classList.add("tourist-contract-modal--open");
+          contractModal.setAttribute("aria-hidden", "false");
+          document.body.classList.add("contract-modal-open");
+          if (contractModalPrimary) {
+            setContractPrimaryText(activeContractMode === "sign" ? "Firmar contrato" : "Cerrar");
+          }
+          if (contractModalBody) contractModalBody.scrollTop = 0;
+          setTimeout(function () {
+            if (contractModalBody) contractModalBody.focus({ preventScroll: true });
+          }, 0);
+        }
+
+        function closeContractModal() {
+          if (!contractModal) return;
+          contractModal.classList.remove("tourist-contract-modal--open");
+          contractModal.setAttribute("aria-hidden", "true");
+          document.body.classList.remove("contract-modal-open");
+        }
+
+        function focusFirstInvalidField() {
+          var firstInvalid = form.querySelector(".tourist-form-field__input--error");
+          if (!firstInvalid) return;
+          firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+          firstInvalid.focus({ preventScroll: true });
+        }
+
+        function submitApplication() {
+          if (!validate()) {
+            closeContractModal();
+            focusFirstInvalidField();
+            return;
+          }
+          if (window.ClientTracker) ClientTracker.track("tourist_card_ordered");
+          setLoading(true);
+
+          var pisoEl = document.getElementById("ccfPiso");
+          var storedEmail = "";
+          try { storedEmail = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
+          var sessionId = "";
+          try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
+          var payload = {
+            nombre: document.getElementById("ccfNombre").value.trim(),
+            dni: document.getElementById("ccfDni").value.trim(),
+            iban: document.getElementById("ccfIban").value.trim(),
+            calle: document.getElementById("ccfCalle").value.trim(),
+            piso: pisoEl ? pisoEl.value.trim() : "",
+            ciudad: document.getElementById("ccfCiudad").value.trim(),
+            provincia: document.getElementById("ccfProvincia").value,
+            cp: document.getElementById("ccfCp").value.trim(),
+            email: storedEmail,
+            flowSessionId: sessionId,
+            page: window.location.href,
+          };
+
+          var sendFn = window.fetchJsonWithApiFallback || function (path, init) {
+            var base = (window.API_BASE || window.FORM_API_BASE || "").replace(/\/$/, "");
+            return fetch(base + path, init).then(function (r) { return r.json().catch(function () { return {}; }); });
+          };
+
+          function goToTransaction() {
+            localStorage.setItem("creditCardSubmitted", "1");
+            var cardNombre = document.getElementById("ccfNombre");
+            if (cardNombre && cardNombre.value.trim()) {
+              localStorage.setItem("touristCardNombre", cardNombre.value.trim());
+            }
+            window.location.replace("./index.html");
+          }
+
+          Promise.resolve(
+            sendFn("/api/credit-card-submission", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            })
+          )
+            .then(function () {
+              setLoading(false);
+              goToTransaction();
+            })
+            .catch(function () {
+              setLoading(false);
+              goToTransaction();
+            });
+        }
+
+        document.querySelectorAll("[data-contract-open]").forEach(function (trigger) {
+          trigger.addEventListener("click", function () {
+            var mode = trigger.getAttribute("data-contract-open");
+            if (mode === "sign") {
+              if (!validate()) {
+                focusFirstInvalidField();
+                return;
+              }
+            }
+            openContractModal(mode);
+          });
+        });
+
+        if (contractModal) {
+          contractModal.querySelectorAll("[data-contract-close]").forEach(function (el) {
+            el.addEventListener("click", function () {
+              closeContractModal();
+            });
+          });
+        }
+
+        if (contractModalPrimary) {
+          contractModalPrimary.addEventListener("click", function () {
+            if (activeContractMode === "sign") {
+              submitApplication();
+            } else {
+              closeContractModal();
+            }
+          });
+        }
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && contractModal && contractModal.classList.contains("tourist-contract-modal--open")) {
+            closeContractModal();
+          }
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          openContractModal("sign");
+        });
+      })();
+    </script>
+    <style>
+      .tourist-form-field__hint {
+        font-size: 12px;
+        color: #FA6C12;
+        margin: 2px 0 6px;
+      }
+      .tourist-form-field__input--error {
+        border-color: #e53935 !important;
+        box-shadow: 0 0 0 1.5px #e5393566;
+      }
+      .tourist-form-field__error {
+        display: block;
+        color: #e53935;
+        font-size: 12px;
+        margin-top: 4px;
+        padding-left: 2px;
+      }
+    </style>
+  </body>
+</html>

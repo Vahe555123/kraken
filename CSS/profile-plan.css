@@ -1,0 +1,648 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "DM Sans", sans-serif;
+  background: #fafafa;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Container */
+.profile-container {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: #fafafa;
+  position: relative;
+}
+
+/* Header Bar */
+.header-bar {
+  width: 100%;
+  background: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin-bottom: 5%;
+}
+
+.header-title {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 16px 100px;
+  gap: 16px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5%; /* ~42px */
+  overflow-y: auto;
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  gap: 5px;
+  width: 100%;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+/* Progress Circle */
+.progress-circle {
+  width: 242px;
+  height: 216px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-svg {
+  width: 242px;
+  height: 242px;
+}
+
+/* Avatar */
+.avatar {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: #ededed;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* User Info */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  gap: 4px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.pro-badge {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 10px 4px 6px;
+  gap: 4px;
+  background: linear-gradient(260.71deg, #fa6c12 0%, #ff77d7 100.22%);
+  border-radius: 360px;
+}
+
+.pro-badge svg {
+  width: 16.5px;
+  height: 16.5px;
+}
+
+.pro-badge span {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  color: #ffffff;
+}
+
+.user-name {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #0f0f0f;
+  width: 100%;
+  margin: 0;
+}
+
+.user-email {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  text-align: center;
+  color: #787878;
+  width: 100%;
+  margin: 0;
+}
+
+/* Card */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  gap: 24px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  flex: none;
+  order: 2;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+/* Card Section */
+.card-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  gap: 12px;
+  width: 100%;
+}
+
+.section-label {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #9a9a9a;
+  width: 100%;
+  margin: 0;
+}
+
+/* Stats Row */
+.stats-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0;
+  gap: 12px;
+  width: 100%;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  flex: 1;
+}
+
+.stat-value {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.stat-label {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: #9a9a9a;
+  margin: 0;
+}
+
+.divider {
+  width: 0;
+  height: 38.5px;
+  border: 1px solid #ededed;
+}
+
+/* Note Section */
+.note-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
+  width: 100%;
+}
+
+.note-text {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #0f0f0f;
+  width: 100%;
+  margin: 0;
+}
+
+/* Goals Section */
+.goals-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 16px 4px;
+  gap: 12px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  flex: none;
+  order: 3;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 6px;
+}
+
+.section-title {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #0f0f0f;
+  margin: 0;
+}
+
+.see-all {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  text-align: right;
+  color: #fa6c12;
+  text-decoration: none;
+}
+
+/* Goals List */
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  width: 100%;
+}
+
+.goal-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  gap: 12px;
+  width: 100%;
+}
+
+.goal-icon {
+  width: 52px;
+  height: 52px;
+  background: #ededed;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.goal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  gap: 4px;
+  flex: 1;
+}
+
+.goal-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0;
+  gap: 4px;
+  width: 100%;
+}
+
+.goal-name {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0f0f0f;
+}
+
+.goal-amount {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  text-align: right;
+  color: #0f0f0f;
+}
+
+.goal-progress {
+  width: 100%;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #ededed;
+  border-radius: 360px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 360px;
+}
+
+.goal-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  gap: 4px;
+  width: 100%;
+}
+
+.goal-saved,
+.goal-percent {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #9a9a9a;
+}
+
+.goal-percent {
+  text-align: right;
+}
+
+/* Bottom Button */
+.bottom-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 16px 28px;
+  width: 100%;
+  max-width: 480px;
+  background: #fafafa;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+.bottom-bg {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 90px;
+  z-index: 999;
+  background: #fafafa;
+}
+.btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: calc(100% - 40px);
+  max-width: 440px;
+  z-index: 1000;
+}
+
+.btn-primary {
+  padding-block: 20px;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  width: 100%;
+  max-width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 118, 31, 1) 0%,
+    rgba(255, 119, 215, 1) 100%
+  );
+}
+
+.btn-primary:active {
+  opacity: 0.8;
+}
+
+/* Responsive - Mobile devices */
+@media screen and (max-width: 480px) {
+  .profile-container {
+    max-width: 100%;
+  }
+}
+
+/* Small mobile devices */
+@media screen and (max-width: 375px) {
+  .progress-circle {
+    width: 200px;
+    height: 180px;
+  }
+
+  .progress-svg {
+    width: 200px;
+    height: 200px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar svg {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+/* Modal Container */
+.modal-container {
+  position: relative;
+  width: 84%;
+  max-width: 338px;
+  height: auto;
+  aspect-ratio: 338 / 401;
+  max-height: 90vh;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgb(255, 0, 179);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 3;
+  transition: opacity 0.5s ease;
+}
+
+/* Scratch Canvas */
+#scratchCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  touch-action: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+/* Final Image */
+.final-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 1;
+}
+
+/* Content dimming when modal is active */
+.profile-container.modal-active .content {
+  pointer-events: none;
+}
+
+/* Hide button when modal is active */
+.profile-container.modal-active .bottom-button {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Very small mobile devices */
+@media screen and (max-width: 360px) {
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .goal-name,
+  .goal-amount {
+    font-size: 13px;
+  }
+}
+
+/* Landscape mode */
+@media screen and (max-height: 667px) and (orientation: landscape) {
+  .content {
+    margin-top: 2vh;
+    gap: 2vh;
+  }
+
+  .progress-circle {
+    width: 180px;
+    height: 160px;
+  }
+
+  .progress-svg {
+    width: 180px;
+    height: 180px;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .avatar svg {
+    width: 35px;
+    height: 35px;
+  }
+}

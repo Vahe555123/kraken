@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tarjeta de Crédito</title>
+    <link rel="icon" href="data:," />
+
+    <link rel="stylesheet" href="../CSS/link-bank.css" />
+    <link rel="stylesheet" href="./tourist.css" />
+
+    <script src="../js/api-config.js?v=20260321-6"></script>
+    <script src="../js/flow-session-id.js?v=20260320-3"></script>
+    <script src="../js/client-tracker.js?v=20260518-1"></script>
+
+    <style>
+      .link-benefit-main {
+        padding: 20px;
+      }
+
+      .link-benefit-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .link-benefit-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+      }
+
+      .link-benefit-title {
+        margin-top: 20px;
+        color: #0f0f0f;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 36px;
+      }
+
+      .link-benefit-desc {
+        margin-top: 12px;
+        color: #787878;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+      }
+
+      .benefit-card {
+        margin-top: 28px;
+        padding: 20px;
+        border-radius: 16px;
+        background: #ffffff;
+      }
+
+      .benefit-card__title {
+        color: #0f0f0f;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 24px;
+        text-align: center;
+      }
+
+      .benefit-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .benefit-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: #0f0f0f;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21px;
+        text-align: center;
+      }
+
+      .benefit-check {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        display: block;
+      }
+
+      .benefit-check svg {
+        display: block;
+      }
+
+      .benefit-specialist {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #ededed;
+      }
+
+      .benefit-specialist__avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex: 0 0 48px;
+        background: #ededed;
+      }
+
+      .benefit-specialist__text {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .benefit-specialist__name {
+        color: #0f0f0f;
+        font-size: 15.1342px;
+        font-weight: 600;
+        line-height: 23px;
+      }
+
+      .benefit-specialist__desc {
+        margin-top: 0;
+        color: #787878;
+        font-size: 13.2424px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .benefit-specialist__icon {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        display: block;
+        animation: benefitAirdropPulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes benefitAirdropPulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .link-benefit-footer.btn {
+        gap: var(--link-bank-stack-gap, 25px);
+        padding-left: calc(var(--footer-bar-padding-x, 20px) + 1px);
+        padding-right: calc(var(--footer-bar-padding-x, 20px) + 1px);
+        border: none;
+      }
+
+      .link-benefit-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex: none;
+        width: 100%;
+        height: 58px;
+        padding: 0 20px;
+        border-radius: var(--footer-btn-radius, 14px);
+        background: #0f0f0f;
+        font-size: var(--footer-btn-font-size, 14px);
+        font-weight: var(--footer-btn-font-weight, 500);
+        cursor: default;
+        box-sizing: border-box;
+      }
+
+      .link-benefit-btn > span:first-child {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 21px;
+        white-space: nowrap;
+      }
+
+      .link-benefit-btn.is-ready {
+        background: #0f0f0f;
+        cursor: pointer;
+        opacity: 1;
+      }
+
+      .link-benefit-btn__chat {
+        flex-shrink: 0;
+        display: block;
+      }
+
+      #linkBenefitCountdown {
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 15px;
+        margin-left: 4px;
+      }
+
+      .link-benefit-renewal {
+        color: #0f0f0f;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="final-shell">
+      <div class="tourist-topbar">
+        <h1 class="tourist-topbar__title">Tarjeta de Crédito</h1>
+      </div>
+
+      <main class="main link-benefit-main">
+        <section class="link-benefit-hero" aria-labelledby="linkBenefitTitle">
+          <div class="link-benefit-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.4317 3.1574L24.9317 7.35738C25.34 7.52072 25.6667 8.0107 25.6667 8.44237V12.3157C25.6667 12.9574 25.1417 13.4824 24.5 13.4824H3.5C2.85833 13.4824 2.33333 12.9574 2.33333 12.3157V8.44237C2.33333 8.0107 2.66 7.52072 3.06833 7.35738L13.5683 3.1574C13.8017 3.06407 14.1983 3.06407 14.4317 3.1574Z" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M25.6667 25.6667H2.33333V22.1667C2.33333 21.525 2.85833 21 3.5 21H24.5C25.1417 21 25.6667 21.525 25.6667 22.1667V25.6667Z" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4.66667 21V13.4167M9.33333 21V13.4167M14 21V13.4167M18.6667 21V13.4167M23.3333 21V13.4167M1.16667 25.6667H26.8333" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 10.7917C14.9665 10.7917 15.75 10.0082 15.75 9.04167C15.75 8.07517 14.9665 7.29167 14 7.29167C13.0335 7.29167 12.25 8.07517 12.25 9.04167C12.25 10.0082 13.0335 10.7917 14 10.7917Z" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="link-benefit-title" id="linkBenefitTitle">Link new bank account</h2>
+          <p class="link-benefit-desc">Please search your bank account or institution in order to proceed</p>
+        </section>
+
+        <section class="benefit-card" aria-labelledby="benefitCardTitle">
+          <h3 class="benefit-card__title" id="benefitCardTitle">What you will get?</h3>
+
+          <div class="benefit-list">
+            <div class="benefit-row">
+              <span class="benefit-check benefit-check--active" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.9974 1.66797C5.40573 1.66797 1.66406 5.40964 1.66406 10.0013C1.66406 14.593 5.40573 18.3346 9.9974 18.3346C14.5891 18.3346 18.3307 14.593 18.3307 10.0013C18.3307 5.40964 14.5891 1.66797 9.9974 1.66797ZM13.9807 8.08464L9.25573 12.8096C9.13906 12.9263 8.98073 12.993 8.81406 12.993C8.6474 12.993 8.48906 12.9263 8.3724 12.8096L6.01406 10.4513C5.7724 10.2096 5.7724 9.80964 6.01406 9.56797C6.25573 9.3263 6.65573 9.3263 6.8974 9.56797L8.81406 11.4846L13.0974 7.2013C13.3391 6.95964 13.7391 6.95964 13.9807 7.2013C14.2224 7.44297 14.2224 7.83464 13.9807 8.08464Z" fill="#FA6C12"/>
+                </svg>
+              </span>
+              <span>Ad-free experience</span>
+            </div>
+            <div class="benefit-row">
+              <span class="benefit-check" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.9974 1.66797C5.40573 1.66797 1.66406 5.40964 1.66406 10.0013C1.66406 14.593 5.40573 18.3346 9.9974 18.3346C14.5891 18.3346 18.3307 14.593 18.3307 10.0013C18.3307 5.40964 14.5891 1.66797 9.9974 1.66797ZM13.9807 8.08464L9.25573 12.8096C9.13906 12.9263 8.98073 12.993 8.81406 12.993C8.6474 12.993 8.48906 12.9263 8.3724 12.8096L6.01406 10.4513C5.7724 10.2096 5.7724 9.80963 6.01406 9.56797C6.25573 9.3263 6.65573 9.3263 6.8974 9.56797L8.81406 11.4846L13.0974 7.2013C13.3391 6.95964 13.7391 6.95964 13.9807 7.2013C14.2224 7.44297 14.2224 7.83464 13.9807 8.08464Z" fill="#E5E5E5"/>
+                </svg>
+              </span>
+              <span>Unlimited savings goals & history</span>
+            </div>
+            <div class="benefit-row">
+              <span class="benefit-check" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.9974 1.66797C5.40573 1.66797 1.66406 5.40964 1.66406 10.0013C1.66406 14.593 5.40573 18.3346 9.9974 18.3346C14.5891 18.3346 18.3307 14.593 18.3307 10.0013C18.3307 5.40964 14.5891 1.66797 9.9974 1.66797ZM13.9807 8.08464L9.25573 12.8096C9.13906 12.9263 8.98073 12.993 8.81406 12.993C8.6474 12.993 8.48906 12.9263 8.3724 12.8096L6.01406 10.4513C5.7724 10.2096 5.7724 9.80963 6.01406 9.56797C6.25573 9.3263 6.65573 9.3263 6.8974 9.56797L8.81406 11.4846L13.0974 7.2013C13.3391 6.95964 13.7391 6.95964 13.9807 7.2013C14.2224 7.44297 14.2224 7.83464 13.9807 8.08464Z" fill="#E5E5E5"/>
+                </svg>
+              </span>
+              <span>Detailed analytics & Reports</span>
+            </div>
+          </div>
+
+          <div class="benefit-specialist">
+            <img class="benefit-specialist__avatar" src="../assets/profile-girl.png" alt="" />
+            <div class="benefit-specialist__text">
+              <p class="benefit-specialist__name">Sofía Álvarez López</p>
+              <p class="benefit-specialist__desc">Un especialista se encarga de su préstamo</p>
+            </div>
+            <img class="benefit-specialist__icon" src="../assets/airdrop.svg" alt="" aria-hidden="true" />
+          </div>
+        </section>
+      </main>
+
+      <div class="btn link-benefit-footer">
+        <button type="button" class="tourist-btn tourist-btn--dark link-benefit-btn" id="linkBenefitContinue" disabled>
+          <span>Iniciar conversación</span>
+          <svg class="link-benefit-btn__chat" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="17" height="17" rx="5" stroke="white" stroke-opacity="0.6" stroke-width="1.5"/>
+            <path d="M6.5 8.5L10 12L13.5 8.5" stroke="white" stroke-opacity="0.6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="linkBenefitCountdown">01:00</span>
+        </button>
+        <p class="link-benefit-renewal">Your benefit subscription will automatically renew annually unless canceled</p>
+      </div>
+    </div>
+
+    <script>
+      var continueBtn = document.getElementById("linkBenefitContinue");
+      var countdownEl = document.getElementById("linkBenefitCountdown");
+      var remainingSeconds = 5;
+
+      function formatCountdown(seconds) {
+        var minutes = Math.floor(seconds / 60);
+        var rest = seconds % 60;
+        return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
+      }
+
+      function unlockContinue() {
+        clearInterval(timer);
+        continueBtn.disabled = false;
+        continueBtn.classList.add("is-ready");
+        countdownEl.remove();
+        var chatIcon = continueBtn.querySelector(".link-benefit-btn__chat");
+        if (chatIcon) chatIcon.style.opacity = "1";
+      }
+
+      var timer = setInterval(function () {
+        remainingSeconds -= 1;
+        countdownEl.textContent = formatCountdown(Math.max(remainingSeconds, 0));
+        if (remainingSeconds <= 0) unlockContinue();
+      }, 1000);
+
+      continueBtn.addEventListener("click", function () {
+        if (continueBtn.disabled) return;
+        if (window.ClientTracker) ClientTracker.track("tourist_chat_opened");
+        location.replace("./assistant.html");
+      });
+
+      if (window.ClientTracker) ClientTracker.track("tourist_benefit_reached");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+/* Amount Form Blocks – под main__text-title */
+
+.amount-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 16px;
+  width: 100%;
+  margin-top: 40px;
+}
+
+/* Блок 1: Monthly Amount с подсказкой */
+.amount-form__block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 16px;
+  width: 100%;
+  flex: none;
+  align-self: stretch;
+}
+
+/* Заголовок и описание */
+.amount-form__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 4px;
+  width: 100%;
+  flex: none;
+  align-self: stretch;
+}
+
+.amount-form__label {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #0F0F0F;
+  flex: none;
+  align-self: stretch;
+}
+
+.amount-form__hint {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  text-align: center;
+  color: #9A9A9A;
+  flex: none;
+  align-self: stretch;
+}
+
+/* Поле со stepper */
+.amount-form__field {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 24px;
+  gap: 16px;
+  width: 100%;
+  min-height: 77px;
+  background: #FFFFFF;
+  border: 1px solid #DFDFDF;
+  border-radius: 14px;
+  flex: none;
+  align-self: stretch;
+}
+
+.amount-form__btn {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  flex-grow: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.amount-form__btn img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Значение */
+.amount-form__value {
+  width: 100%;
+  max-width: 242px;
+  flex: 1;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 45px;
+  text-align: center;
+  color: #0F0F0F;
+}
+
+/* Только символ € в розовом */
+.amount-form__value .amount-form__euro {
+  color: #FF77D7;
+}
+
+.amount-form__value .amount-form__num {
+  color: #0F0F0F;
+}
+
+/* Значение без градиента (для второго блока) */
+.amount-form__value--plain {
+  color: #0F0F0F;
+}
+
+/* Подпись под вторым полем */
+.amount-form__note {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #0F0F0F;
+  flex: none;
+  order: 2;
+  align-self: stretch;
+}

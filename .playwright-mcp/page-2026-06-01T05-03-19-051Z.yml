@@ -1,0 +1,10 @@
+- generic [ref=e3]:
+  - img "Manage Your Money" [ref=e5]
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - heading "Encontramos la mejor opción para tu situación" [level=1] [ref=e8]
+      - paragraph [ref=e9]: Responde a unas preguntas sencillas y recibe un informe estadístico que te ayudará a entender mejor tus resultados.
+    - generic [ref=e10]:
+      - button "Continuar" [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: Continuar
+      - button "Seguir" [ref=e13] [cursor=pointer]

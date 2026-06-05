@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./CSS/profile-plan.css" />
+    <link rel="stylesheet" href="./CSS/card-component.css" />
+    <title>Profile - Pro Plan</title>
+  </head>
+
+  <body>
+    <div class="profile-container">
+      <!-- Content -->
+      <div class="content">
+        <!-- Header Bar -->
+        <div class="header-bar">
+          <h2 class="header-title">Tu perfil</h2>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+          <!-- Progress Circle -->
+          <div class="progress-circle">
+            <img src="assets/progress.png" alt="" />
+          </div>
+
+          <!-- User Info -->
+          <div class="user-info">
+            <div class="pro-badge">
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 17 17"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.39061 1.68441C7.86498 1.27878 8.64186 1.27878 9.12311 1.68441L10.2094 2.61941C10.4156 2.79816 10.8006 2.94253 11.0756 2.94253H12.2444C12.9731 2.94253 13.5712 3.54066 13.5712 4.26941V5.43816C13.5712 5.70628 13.7156 6.09816 13.8944 6.30441L14.8294 7.39066C15.235 7.86503 15.235 8.64191 14.8294 9.12316L13.8944 10.2094C13.7156 10.4157 13.5712 10.8007 13.5712 11.0757V12.2444C13.5712 12.9732 12.9731 13.5713 12.2444 13.5713H11.0756C10.8075 13.5713 10.4156 13.7157 10.2094 13.8944L9.12311 14.8294C8.64873 15.235 7.87186 15.235 7.39061 14.8294L6.30436 13.8944C6.09811 13.7157 5.71311 13.5713 5.43811 13.5713H4.24873C3.51998 13.5713 2.92186 12.9732 2.92186 12.2444V11.0688C2.92186 10.8007 2.77748 10.4157 2.60561 10.2094L1.67748 9.11628C1.27873 8.64191 1.27873 7.87191 1.67748 7.39753L2.60561 6.30441C2.77748 6.09816 2.92186 5.71316 2.92186 5.44503V4.26253C2.92186 3.53378 3.51998 2.93566 4.24873 2.93566H5.43811C5.70623 2.93566 6.09811 2.79128 6.30436 2.61253L7.39061 1.68441Z"
+                  fill="white"
+                />
+                <path
+                  d="M7.41813 10.4294C7.28063 10.4294 7.15001 10.3744 7.05376 10.2781L5.39001 8.61438C5.19063 8.415 5.19063 8.085 5.39001 7.88563C5.58938 7.68625 5.91938 7.68625 6.11876 7.88563L7.41813 9.185L10.3744 6.22875C10.5738 6.02938 10.9038 6.02938 11.1031 6.22875C11.3025 6.42813 11.3025 6.75813 11.1031 6.9575L7.78251 10.2781C7.68626 10.3744 7.55563 10.4294 7.41813 10.4294Z"
+                  fill="url(#paint0_linear_1_1523)"
+                />
+                <defs>
+                  <linearGradient
+                    id="paint0_linear_1_1523"
+                    x1="11.2527"
+                    y1="6.07922"
+                    x2="4.58255"
+                    y2="7.58794"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#FA6C12" />
+                    <stop offset="1" stop-color="#FF77D7" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <span>PRO</span>
+            </div>
+            <h3 class="user-name" id="userName"></h3>
+            <p class="user-email">Tu informe personal breve</p>
+          </div>
+        </div>
+
+        <!-- Savings Card -->
+        <div class="card">
+          <!-- Saving Section -->
+          <div class="card-section">
+            <p class="section-label">Opciones</p>
+            <div class="stats-row">
+              <div class="stat-item">
+                <p class="stat-value" id="random1"></p>
+                <p class="stat-label">Bancos</p>
+              </div>
+              <div class="divider"></div>
+              <div class="stat-item">
+                <p class="stat-value" id="random2"></p>
+                <p class="stat-label">Opciones</p>
+              </div>
+              <div class="divider"></div>
+              <div class="stat-item">
+                <p class="stat-value" id="random3"></p>
+                <p class="stat-label">Adecuadas</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deadline Section -->
+          <div class="card-section">
+            <p class="section-label">Nivel</p>
+            <div class="stats-row">
+              <div class="stat-item">
+                <p class="stat-value currcentAmount"></p>
+                <p class="stat-label">Objetivo</p>
+              </div>
+              <div class="divider"></div>
+              <div class="stat-item">
+                <p class="stat-value">Medio</p>
+                <p class="stat-label">Ingreso</p>
+              </div>
+              <div class="divider"></div>
+              <div class="stat-item">
+                <p class="stat-value" id="random4"></p>
+                <p class="stat-label">Confiabilidad</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Note Section -->
+          <div class="note-section">
+            <p class="section-label">Comentario</p>
+            <p class="note-text">Si necesitas el informe completo, simplemente escríbenos.</p>
+          </div>
+        </div>
+
+        <!-- Goals Section -->
+        <div class="goals-section">
+          <div class="section-header">
+            <div class="header-left">
+              <h3 class="section-title">Predicciones</h3>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle
+                  cx="7"
+                  cy="7"
+                  r="6.25"
+                  stroke="#9A9A9A"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M7 4.5V7.5"
+                  stroke="#9A9A9A"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <circle cx="7" cy="10" r="0.5" fill="#9A9A9A" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Goals List -->
+          <div class="goals-list">
+            <!-- Goal Item 1 -->
+            <div class="goal-item">
+              <div class="goal-icon">
+                <img src="assets/bank.png" alt="" />
+              </div>
+              <div class="goal-content">
+                <div class="goal-header">
+                  <span class="goal-name">Bancos grandes</span>
+                  <span class="goal-amount">Baja probabilidad</span>
+                </div>
+                <div class="goal-progress">
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      style="width: 25%; background: #fa6c12"
+                    ></div>
+                  </div>
+                </div>
+                <div class="goal-footer">
+                  <span class="goal-saved currcentAmount"></span>
+                  <span class="goal-percent">25%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Goal Item 2 -->
+            <div class="goal-item">
+              <div class="goal-icon">
+                <img src="assets/bank.png" alt="" />
+              </div>
+              <div class="goal-content">
+                <div class="goal-header">
+                  <span class="goal-name">Bancos medianos</span>
+                  <span class="goal-amount">Alta probabilidad</span>
+                </div>
+                <div class="goal-progress">
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      style="width: 75%; background: #1ec756"
+                    ></div>
+                  </div>
+                </div>
+                <div class="goal-footer">
+                  <span class="goal-saved currcentAmount"></span>
+                  <span class="goal-percent">75%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Goal Item 3 -->
+            <div class="goal-item">
+              <div class="goal-icon">
+                <img src="assets/bank.png" alt="" />
+              </div>
+              <div class="goal-content">
+                <div class="goal-header">
+                  <span class="goal-name">Créditos rápidos</span>
+                  <span class="goal-amount">Baja probabilidad</span>
+                </div>
+                <div class="goal-progress">
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      style="width: 33%; background: #ff77d7"
+                    ></div>
+                  </div>
+                </div>
+                <div class="goal-footer">
+                  <span class="goal-saved currcentAmount"></span>
+                  <span class="goal-percent">33%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Button (outside content to avoid blur) -->
+      <div class="bottom-bg"></div>
+      <div class="btn">
+        <button class="btn-primary" id="continueBtn">Continuar</button>
+      </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-container">
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+          <span id="progressPercent">0%</span>
+        </div>
+
+        <!-- Scratch Canvas -->
+        <canvas id="scratchCanvas" width="338" height="401"></canvas>
+
+        <!-- Final Image (Hidden initially) -->
+        <div class="final-image" id="finalImage">
+          <div class="card-component">
+            <div class="card-background-wrapper">
+              <img
+                src="./assets/link-bg.png"
+                alt="Card Background"
+                class="card-background"
+              />
+              <div class="card-overlay"></div>
+            </div>
+            <img src="./assets/link-women.png" alt="Woman" class="card-woman" />
+            <div class="card-content">
+              <!-- Save Badge -->
+              <div class="card-badge">
+                <span class="card-badge-text">En línea</span>
+              </div>
+
+              <!-- Text Content -->
+              <div class="card-text-content">
+                <div class="card-text-wrapper">
+                  <h2 class="card-title">Tu Informe Completo</h2>
+                  <p class="card-subtitle">
+                    Solicítalo gratis y recíbelo al instante
+                  </p>
+                </div>
+              </div>
+
+              <!-- Price -->
+              <div class="card-price">
+                <span class="currency">€</span>00.00
+                <span class="year">/ Informe</span>
+              </div>
+
+              <!-- Features List -->
+              <div class="card-list">
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Análisis claro</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Ajuste a tus metas</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Sin compromisos</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Comunicación rápida</span>
+                </div>
+                <div class="card-list-item">
+                  <img src="./assets/icons/tick-circle.svg" alt="" />
+                  <span class="card-list-text">Confidencial</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./js/api-config.js?v=20260321-6"></script>
+    <script src="./js/flow-session-id.js?v=20260320-3"></script>
+    <script src="./js/scratch-access-poll.js?v=20260321-4"></script>
+    <script src="./js/profile-plan.js?v=20260321-4"></script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - button "Back" [ref=e4] [cursor=pointer]:
+      - img [ref=e5]
+    - heading "Link Up Bank Account" [level=1] [ref=e7]
+  - main "Link new bank account" [ref=e8]:
+    - paragraph [ref=e9]: 2 de 2
+    - heading "Link new bank account" [level=2] [ref=e10]
+    - paragraph [ref=e11]: Choose the bank account you want to link.
+    - list [ref=e12]:
+      - listitem [ref=e13]:
+        - generic [ref=e15]:
+          - paragraph [ref=e16]: BBVA
+          - paragraph [ref=e17]: steve.young@gmail.com
+      - listitem [ref=e18]:
+        - generic [ref=e20]:
+          - paragraph [ref=e21]: Banco Sabadell
+          - paragraph [ref=e22]: steve.young@gmail.com
+      - listitem [ref=e23]:
+        - generic [ref=e25]:
+          - paragraph [ref=e26]: Masters Card
+          - paragraph [ref=e27]: steve.young@gmail.com
+      - listitem [ref=e28]:
+        - generic [ref=e30]:
+          - paragraph [ref=e31]: CaixaBank
+          - paragraph [ref=e32]: steve.young@gmail.com
+      - listitem [ref=e33]:
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: ING Bank
+          - paragraph [ref=e37]: steve.young@gmail.com
+      - listitem [ref=e38]:
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: Santander
+          - paragraph [ref=e42]: steve.young@gmail.com
+      - listitem [ref=e43]:
+        - generic [ref=e45]:
+          - paragraph [ref=e46]: Openbank
+          - paragraph [ref=e47]: steve.young@gmail.com
+      - listitem [ref=e48]:
+        - generic [ref=e50]:
+          - paragraph [ref=e51]: VISA
+          - paragraph [ref=e52]: steve.young@gmail.com

@@ -1,0 +1,143 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - button "Atrás" [ref=e4] [cursor=pointer]:
+        - img [ref=e5]
+      - heading "Tarjeta de Crédito" [level=1] [ref=e7]
+    - main [ref=e8]:
+      - generic [ref=e9]:
+        - heading "Solicita tu tarjeta virtual con transferencias SEPA" [level=2] [ref=e10]
+        - paragraph [ref=e11]: Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra online con total comodidad.
+      - region "Términos contrato de crédito" [ref=e12]:
+        - img
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - heading "Términos contrato de crédito" [level=3] [ref=e16]
+            - paragraph [ref=e17]: Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra
+          - button "Abrir PDF del contrato" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - generic [ref=e25]:
+            - img [ref=e27]
+            - generic [ref=e32]:
+              - strong [ref=e33]: Caixa Bank
+              - generic [ref=e34]: Contrato Nº ES-4738D9215
+          - button "Abrir PDF" [ref=e35] [cursor=pointer]
+      - region "Beneficios del plan" [ref=e36]:
+        - generic [ref=e37]:
+          - img [ref=e39]
+          - generic [ref=e45]: Flexible
+          - generic [ref=e46]: Uso inmediato
+        - generic [ref=e48]:
+          - img [ref=e50]
+          - generic [ref=e54]: 24/7
+          - generic [ref=e55]: Soporte activo
+        - generic [ref=e57]:
+          - img [ref=e59]
+          - generic [ref=e65]: Global
+          - generic [ref=e66]: Pagos mundiales
+      - generic [ref=e67]:
+        - img [ref=e69]
+        - generic [ref=e74]:
+          - paragraph [ref=e75]: Tu tarjeta estará lista en 15 minutos
+          - paragraph [ref=e76]: tras completar la solicitud.
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]: Nombre
+          - textbox "Nombre" [ref=e80]
+        - generic [ref=e81]:
+          - generic [ref=e82]: DNI / NIE
+          - textbox "DNI / NIE" [ref=e83]
+        - generic [ref=e84]:
+          - generic [ref=e85]: Cuenta Bancaria (IBAN)
+          - paragraph [ref=e86]: Podrás retirar fondos de tu tarjeta únicamente a este IBAN.
+          - textbox "Cuenta Bancaria (IBAN)" [ref=e87]:
+            - /placeholder: ES00 0000 0000 0000 0000 0000
+        - generic [ref=e88]:
+          - generic [ref=e89]: Calle
+          - textbox "Calle" [ref=e90]
+        - generic [ref=e91]:
+          - generic [ref=e92]: Piso y Escalera
+          - textbox "Piso y Escalera" [ref=e93]
+        - generic [ref=e94]:
+          - generic [ref=e95]: Ciudad
+          - textbox "Ciudad" [ref=e96]
+        - generic [ref=e97]:
+          - generic [ref=e98]: Provincia
+          - generic [ref=e99]:
+            - combobox "Provincia" [ref=e100] [cursor=pointer]:
+              - option "A Coruña"
+              - option "Álava"
+              - option "Albacete"
+              - option "Alicante"
+              - option "Almería"
+              - option "Asturias"
+              - option "Ávila"
+              - option "Badajoz"
+              - option "Barcelona"
+              - option "Burgos"
+              - option "Cáceres"
+              - option "Cádiz"
+              - option "Cantabria"
+              - option "Castellón"
+              - option "Ciudad Real"
+              - option "Córdoba"
+              - option "Cuenca"
+              - option "Girona"
+              - option "Granada"
+              - option "Guadalajara"
+              - option "Guipúzcoa"
+              - option "Huelva"
+              - option "Huesca"
+              - option "Islas Baleares"
+              - option "Jaén"
+              - option "La Rioja"
+              - option "Las Palmas"
+              - option "León"
+              - option "Lleida"
+              - option "Lugo"
+              - option "Madrid"
+              - option "Málaga"
+              - option "Murcia"
+              - option "Navarra"
+              - option "Ourense"
+              - option "Palencia"
+              - option "Pontevedra"
+              - option "Salamanca"
+              - option "Santa Cruz de Tenerife"
+              - option "Segovia"
+              - option "Sevilla"
+              - option "Soria"
+              - option "Tarragona"
+              - option "Teruel"
+              - option "Toledo"
+              - option "Valencia"
+              - option "Valladolid"
+              - option "Vizcaya"
+              - option "Zamora"
+              - option "Zaragoza"
+            - generic:
+              - img
+        - generic [ref=e101]:
+          - generic [ref=e102]: Código Postal
+          - textbox "Código Postal" [ref=e103]
+        - button "Firmar contrato" [ref=e104] [cursor=pointer]:
+          - generic [ref=e105]:
+            - generic [ref=e106]: Firmar contrato
+            - img [ref=e107]
+  - navigation "Menú" [ref=e110]:
+    - link "Home" [ref=e111] [cursor=pointer]:
+      - /url: ./index.html
+      - img [ref=e112]
+      - generic [ref=e116]: Home
+    - link "Objetivos" [ref=e117] [cursor=pointer]:
+      - /url: ./archived-goals.html
+      - img [ref=e118]
+      - generic [ref=e123]: Objetivos
+    - link "Ir a pago — detalles de la transacción" [ref=e124] [cursor=pointer]:
+      - /url: ./transaction-detail.html
+      - img [ref=e125]
+      - generic [ref=e132]: Historial
+    - link "Soporte" [ref=e133] [cursor=pointer]:
+      - /url: ./support.html
+      - img [ref=e134]
+      - generic [ref=e138]: Soporte

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./CSS/privacy-policy.css" />
+    <title>Privacy Policy</title>
+</head>
+<body>
+    <!-- Header Bar Light -->
+    <div class="header-bar">
+        <button class="header-back">
+            <img src="./assets/chevron-left.svg" alt="Back" />
+        </button>
+        <h2 class="header-title">Privacy Policy</h2>
+    </div>
+
+    <!-- Content Container -->
+    <div class="content-container">
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="content">
+                <!-- Effective Date -->
+                <p class="effective-date">Effective Date: January 01, 2026</p>
+
+                <!-- Text Sections -->
+                <div class="text-sections">
+
+                    <!-- Section 1 -->
+                    <div class="section-point">
+                        <h3 class="section-title">1. Introduction</h3>
+                        <p class="section-text">
+                            Moneto Plus is an informational application that provides users with general statistics, analytical forecasts, and informational reports based on user responses. The application does not provide financial services, does not issue loans, and does not act as a lender, broker, or financial intermediary.
+                            <br /><br />
+                            All results shown in the application are for informational purposes only and do not constitute financial advice, guarantees, or loan offers.
+                        </p>
+                    </div>
+
+                    <!-- Section 2 -->
+                    <div class="section-point">
+                        <h3 class="section-title">2. Information We Collect</h3>
+                        <p class="section-text">
+                            Moneto Plus collects only limited information voluntarily entered by the user, including:
+                            <br /><br />
+                            • Name<br />
+                            • Desired loan amount<br />
+                            • Income amount
+                            <br /><br />
+                            No contact details such as email address, phone number, or payment information are collected within the application.
+                        </p>
+                    </div>
+
+                    <!-- Section 3 -->
+                    <div class="section-point">
+                        <h3 class="section-title">3. How We Use Your Information</h3>
+                        <p class="section-text">
+                            The entered information is used to generate statistical analysis and general forecasts regarding potential loan eligibility.
+                            <br /><br />
+                            The user's name and desired loan amount are stored locally on the device to improve user experience. Income information is not stored locally.
+                            <br /><br />
+                            Data required for analysis is transmitted securely to our server for processing and generation of statistical results. The results do not represent approvals, guarantees, or financial commitments.
+                        </p>
+                    </div>
+
+                    <!-- Section 4 -->
+                    <div class="section-point">
+                        <h3 class="section-title">4. Data Storage and Security</h3>
+                        <p class="section-text">
+                            Locally stored data remains on the user’s device. Server-side data is used only for analytical processing and is protected using reasonable technical and organizational security measures.
+                            <br /><br />
+                            While we take appropriate steps to protect information, no method of electronic storage or transmission can be guaranteed to be completely secure.
+                        </p>
+                    </div>
+
+                    <!-- Section 5 -->
+                    <div class="section-point">
+                        <h3 class="section-title">5. Analytics</h3>
+                        <p class="section-text">
+                            Moneto Plus uses Firebase Analytics to collect anonymous usage statistics such as application interactions and performance metrics.
+                            <br /><br />
+                            Firebase Analytics does not provide us with personally identifiable information and is used solely to improve application functionality and stability.
+                        </p>
+                    </div>
+
+                    <!-- Section 6 -->
+                    <div class="section-point">
+                        <h3 class="section-title">6. Third-Party Services and Report Requests</h3>
+                        <p class="section-text">
+                            The application may offer users the option to contact us via WhatsApp to request a free extended informational report.
+                            <br /><br />
+                            Communication via WhatsApp occurs outside the application and is initiated voluntarily by the user. Moneto Plus does not provide consultations, financial advice, or personalized recommendations through third-party communication platforms.
+                        </p>
+                    </div>
+
+                    <!-- Section 7 -->
+                    <div class="section-point">
+                        <h3 class="section-title">7. Your Rights</h3>
+                        <p class="section-text">
+                            You may stop using the application at any time. Since no user accounts are created and no contact details are stored, data retention is limited to the functionality required for analysis and local application use.
+                            <br /><br />
+                            Users located in Spain, Mexico, and Chile may have additional rights under applicable data protection laws.
+                        </p>
+                    </div>
+
+                    <!-- Section 8 -->
+                    <div class="section-point">
+                        <h3 class="section-title">8. Changes to This Policy</h3>
+                        <p class="section-text">
+                            We may update this Privacy Policy from time to time. Any changes will be reflected within the application. Continued use of Moneto Plus after updates constitutes acceptance of the revised policy.
+                        </p>
+                    </div>
+
+                    <!-- Section 9 -->
+                    <div class="section-point">
+                        <h3 class="section-title">9. Contact Information</h3>
+                        <p class="section-text">
+                            If you have any questions regarding this Privacy Policy, you may contact us:
+                            <br /><br />
+                            Email: support@monetoplusapp.com<br />
+                            Phone: +34 910 149 501<br />
+                            Address: AVDA. CASADO DEL ALISAL Nº 21, PLANTA 6ª, PUERTA D<br />
+                            Postcode: 34001<br />
+                            City: Palencia<br />
+                            Country: Spain
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollbar -->
+        <div class="scrollbar">
+            <div class="scrollbar-thumb"></div>
+        </div>
+    </div>
+
+    <script>
+        // Back button functionality
+        document.querySelector('.header-back').addEventListener('click', () => {
+            window.history.back();
+        });
+
+        // Scroll indicator
+        const contentWrapper = document.querySelector('.content-wrapper');
+        const scrollbarThumb = document.querySelector('.scrollbar-thumb');
+        const scrollbar = document.querySelector('.scrollbar');
+
+        if (contentWrapper && scrollbarThumb && scrollbar) {
+            contentWrapper.addEventListener('scroll', () => {
+                const scrollHeight = contentWrapper.scrollHeight - contentWrapper.clientHeight;
+                if (scrollHeight > 0) {
+                    const scrollPercentage = contentWrapper.scrollTop / scrollHeight;
+                    const maxThumbTop = scrollbar.clientHeight - scrollbarThumb.clientHeight;
+                    scrollbarThumb.style.top = `${scrollPercentage * maxThumbTop}px`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
