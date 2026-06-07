@@ -58,14 +58,30 @@ model WebClient {
   callRequested  Boolean   @default(false)
   operatorCalled Boolean   @default(false)
   calledAt       DateTime?
+  callerNote     String?   // note left by caller, visible in admin
   submissionData Json?     // form answers from detail-transaction.html
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  events WebEvent[]
+  events   WebEvent[]
+  callLogs CallLog[]
 
   @@index([callRequested])
   @@index([operatorCalled])
+  @@index([createdAt])
+}
+
+// One entry per call attempt logged by caller (does NOT affect operatorCalled).
+model CallLog {
+  id        String    @id @default(cuid())
+  clientId  String
+  note      String?
+  markedAt  DateTime?
+  createdAt DateTime  @default(now())
+
+  client WebClient @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
   @@index([createdAt])
 }
 

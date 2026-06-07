@@ -31,21 +31,30 @@
     <script src="../js/navigation-guard.js?v=20260405-1"></script>
     <script src="../js/client-tracker.js?v=20260518-1"></script>
     <script>
-      // Подставить банк из localStorage сразу после загрузки DOM
+      // ── Банк и клиент: подставить в договор из localStorage и формы ──────────
+      // Расширение файлов для ассетов банка (svg / png — меняйте здесь, если кладёте .png)
+      var BANK_ASSET_EXT = "svg";
+
       document.addEventListener("DOMContentLoaded", function () {
-        var bank = "";
-        var logo = "";
+        var bank    = "";
+        var bankKey = "";
+        var legacyLogo = "";
         try {
-          bank = localStorage.getItem("selectedBank") || "";
-          logo = localStorage.getItem("selectedBankLogo") || "";
+          bank       = localStorage.getItem("selectedBank")    || "";
+          bankKey    = localStorage.getItem("selectedBankKey") || "";
+          legacyLogo = localStorage.getItem("selectedBankLogo") || "";
         } catch (e) {}
 
+        // Путь к ресурсу конкретного банка
+        function bankAsset(file) {
+          return bankKey ? ("../banks/" + bankKey + "/" + file + "." + BANK_ASSET_EXT) : null;
+        }
+
+        // ── Название банка ──────────────────────────────────────────────────────
         if (bank) {
-          // Карточка банка (шапка страницы)
           var nameEl = document.getElementById("contractBankName");
           if (nameEl) nameEl.textContent = bank;
 
-          // Договор — название банка в тексте
           var bodyName = document.getElementById("contractBodyBankName");
           if (bodyName) bodyName.textContent = bank.toUpperCase();
 
@@ -56,26 +65,61 @@
           if (signName) signName.textContent = "Representante del banco " + bank;
         }
 
-        if (logo) {
-          // Карточка банка (шапка страницы)
+        // ── Логотип банка в шапке договора ─────────────────────────────────────
+        var logoSrc = bankAsset("logo") || legacyLogo;
+        if (logoSrc) {
+          var headerImg = document.getElementById("contractHeaderBrandImg");
+          if (headerImg) { headerImg.src = logoSrc; headerImg.alt = bank || "Banco"; }
+          var headerBrand = document.getElementById("contractHeaderBrand");
+          if (headerBrand) headerBrand.setAttribute("aria-label", bank || "Banco");
+        }
+
+        // ── Иконка банка на карточке (шапка страницы) ──────────────────────────
+        var iconSrc = bankAsset("icon") || legacyLogo;
+        if (iconSrc) {
           var logoEl = document.getElementById("contractBankLogo");
           if (logoEl) {
             var img = document.createElement("img");
-            img.src = logo;
+            img.src = iconSrc;
             img.alt = bank || "Banco";
             img.style.cssText = "width:36px;height:36px;object-fit:contain;border-radius:4px;display:block;";
             logoEl.innerHTML = "";
             logoEl.appendChild(img);
           }
+        }
 
-          // Договор — логотип банка в шапке договора
-          var headerImg = document.getElementById("contractHeaderBrandImg");
-          if (headerImg) {
-            headerImg.src = logo;
-            headerImg.alt = bank || "Banco";
-          }
-          var headerBrand = document.getElementById("contractHeaderBrand");
-          if (headerBrand) headerBrand.setAttribute("aria-label", bank || "Banco");
+        // ── Печать банка в области подписи ─────────────────────────────────────
+        var stampSrc = bankAsset("stamp");
+        if (stampSrc) {
+          var stampEl = document.getElementById("contractStamp");
+          if (stampEl) stampEl.src = stampSrc;
+        }
+
+        // ── Имя клиента в договоре ──────────────────────────────────────────────
+        function fillNombre(val) {
+          document.querySelectorAll('[data-contract-field="nombre"]').forEach(function (el) {
+            el.textContent = val || "";
+          });
+        }
+
+        var ccfNombre = document.getElementById("ccfNombre");
+        if (ccfNombre) {
+          // Обновляем при вводе в реальном времени
+          ccfNombre.addEventListener("input", function () { fillNombre(this.value.trim()); });
+          // Заполняем сразу, если поле уже заполнено (например, автозаполнение браузера)
+          if (ccfNombre.value) fillNombre(ccfNombre.value.trim());
+        }
+
+        // Также заполняем при открытии модального окна договора
+        var contractModal = document.getElementById("contractModal");
+        if (contractModal && ccfNombre) {
+          new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+              if (m.attributeName === "aria-hidden" && contractModal.getAttribute("aria-hidden") === "false") {
+                fillNombre(ccfNombre.value.trim());
+              }
+            });
+          }).observe(contractModal, { attributes: true, attributeFilter: ["aria-hidden"] });
         }
       });
     </script>
@@ -733,7 +777,7 @@
               </div>
 
               <div class="credit-contract__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-contract__stamp">
+                <img src="../assets/stamp.svg" alt="" class="credit-contract__stamp" id="contractStamp">
                 <img src="../assets/left-hand.png" alt="" class="credit-contract__signature credit-contract__signature--left">
                 <img src="../assets/right-hand.png" alt="" class="credit-contract__signature credit-contract__signature--right">
               </div>

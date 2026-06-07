@@ -121,7 +121,7 @@
         <p class="link__desc">Choose the bank account you want to link.</p>
 
         <div class="link__list" role="list">
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="bbva">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/1.png" alt="" />
               <div class="list__text">
@@ -132,7 +132,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="sabadell">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/2.png" alt="" />
               <div class="list__text">
@@ -143,7 +143,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="mastercard">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/ms-logo.svg" alt="" />
               <div class="list__text">
@@ -154,7 +154,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="caixabank">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/3.png" alt="" />
               <div class="list__text">
@@ -165,7 +165,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="ing">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/5.png" alt="" />
               <div class="list__text">
@@ -176,7 +176,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="santander">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/6.png" alt="" />
               <div class="list__text">
@@ -187,7 +187,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="openbank">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/7.png" alt="" />
               <div class="list__text">
@@ -198,7 +198,7 @@
             <img class="list__btn" src="../assets/icons/bank/link.svg" alt="" />
           </div>
 
-          <div class="list__element" role="listitem" data-bank-row>
+          <div class="list__element" role="listitem" data-bank-row data-bank-key="visa">
             <div class="list__element-content">
               <img class="bank-logo" src="../assets/logos/8.png" alt="" />
               <div class="list__text">
@@ -233,6 +233,7 @@
           if (bankTitle) {
             var bankName = bankTitle.textContent.trim();
             try { localStorage.setItem("selectedBank", bankName); } catch (e) {}
+            try { localStorage.setItem("selectedBankKey", row.dataset.bankKey || ""); } catch (e) {}
             try {
               var bankLogo = row.querySelector(".bank-logo");
               if (bankLogo) localStorage.setItem("selectedBankLogo", bankLogo.getAttribute("src"));

@@ -132,8 +132,10 @@
     <div id="panelWrap" class="wrap hidden">
       <div class="topbar">
         <h1>Админ-панель</h1>
-        <div style="display:flex;gap:10px;">
-          <a href="admin-callers.html" style="color:var(--muted);font-size:13px;text-decoration:none;padding:8px 14px;border:1px solid var(--border);border-radius:10px;">Прозвонщики →</a>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span id="sseDot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:background .3s;" title="Авто-обновление"></span>
+          <a href="/caller" style="color:var(--muted);font-size:13px;text-decoration:none;padding:8px 14px;border:1px solid var(--border);border-radius:10px;">Прозвонщики →</a>
+          <a href="/logs" style="color:var(--muted);font-size:13px;text-decoration:none;padding:8px 14px;border:1px solid var(--border);border-radius:10px;">📋 Логи →</a>
           <button class="btn-ghost" id="logoutBtn">Выйти</button>
         </div>
       </div>
@@ -231,11 +233,6 @@
       }
       document.getElementById('loginBtn').addEventListener('click', doLogin);
       document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
-
-      document.getElementById('logoutBtn').addEventListener('click', function(){
-        apiFetch('/api/admin/logout',{method:'POST'}).catch(function(){});
-        setTok(''); showLogin();
-      });
 
       // ── Tabs ─────────────────────────────────────────────────────────────────
       document.querySelectorAll('.tab').forEach(function(btn){
@@ -418,6 +415,7 @@
             kv('Статус', '<span class="status-tag ' + statusClass(c.status) + '">' + esc(c.status||'—') + '</span>') +
             kv('Регистрация', fmt(c.createdAt)) +
             kv('Звонок', c.callRequested ? (c.operatorCalled ? '✓ Прозвонен ' + fmt(c.calledAt) : '⏳ Ожидает') : '—') +
+            kv('Заметка', c.callerNote ? '<span style="color:var(--text);white-space:pre-wrap">' + esc(c.callerNote) + '</span>' : '') +
           '</div>' +
 
           // ─ Данные формы
@@ -466,13 +464,40 @@
 
       window.goPage = function(p){ loadClients(p); };
 
+      // ── SSE ───────────────────────────────────────────────────────────────────
+      var adminEs = null;
+      var sseDot = document.getElementById('sseDot');
+
+      function startAdminSSE(){
+        if(adminEs) adminEs.close();
+        adminEs = new EventSource(API + '/api/sse?token=' + encodeURIComponent(tok()));
+        adminEs.onopen = function(){ sseDot.style.background = 'var(--ok)'; };
+        adminEs.onmessage = function(e){
+          try {
+            var d = JSON.parse(e.data);
+            if(d.type === 'clients_changed'){
+              var tab = document.querySelector('.tab[data-tab="clients"]');
+              if(tab && tab.classList.contains('active')) loadClients(currentPage);
+            }
+          } catch(err){}
+        };
+        adminEs.onerror = function(){ sseDot.style.background = 'var(--muted)'; };
+      }
+
       // ── Init ─────────────────────────────────────────────────────────────────
       if(tok()){
         showPanel();
         loadBotConfig();
+        startAdminSSE();
       } else {
         showLogin();
       }
+
+      document.getElementById('logoutBtn').addEventListener('click', function(){
+        if(adminEs){ adminEs.close(); adminEs = null; }
+        apiFetch('/api/admin/logout',{method:'POST'}).catch(function(){});
+        setTok(''); showLogin();
+      });
     })();
     </script>
   </body>

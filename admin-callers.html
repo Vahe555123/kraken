@@ -7,14 +7,14 @@
     <link rel="icon" href="data:," />
     <style>
       :root {
-        --bg:#0f1115; --panel:#181b22; --panel2:#1f232c;
+        --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --panel3:#24283a;
         --border:#2a2f3a; --text:#e6e8ec; --muted:#9aa0ab;
-        --accent:#fa6c12; --ok:#1ec756; --err:#ef4444;
+        --accent:#fa6c12; --accent2:#ff8a3d; --ok:#1ec756; --err:#ef4444;
       }
       *{box-sizing:border-box;}
       body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-      /* ── Login ── */
+      /* Login */
       .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
       .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:340px;}
       .login-box h1{font-size:18px;margin:0 0 20px;}
@@ -26,39 +26,89 @@
       .btn-primary:disabled{opacity:.5;cursor:default;}
       .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;}
       .btn-ghost:hover{background:var(--panel2);}
+      .btn-sm{padding:5px 10px;font-size:12px;border-radius:8px;}
       .err-msg{color:var(--err);font-size:13px;margin-top:10px;min-height:18px;}
 
-      /* ── Main ── */
-      .main-wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px;}
+      /* Main */
+      .main-wrap{max-width:960px;margin:0 auto;padding:24px 16px 60px;}
       .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
       .topbar-left h1{font-size:18px;margin:0 0 2px;}
       .topbar-left p{color:var(--muted);font-size:13px;margin:0;}
-      .topbar-right{display:flex;gap:10px;}
+      .topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 
-      /* ── Stats ── */
+      /* SSE status dot */
+      .sse-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:background .3s;}
+      .sse-dot.live{background:var(--ok);}
+
+      /* Stats */
       .stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
       .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;flex:1;min-width:110px;}
       .stat__val{font-size:26px;font-weight:700;}
       .stat__lbl{font-size:12px;color:var(--muted);margin-top:2px;}
 
-      /* ── Cards ── */
+      /* Client cards */
       .client-list{display:flex;flex-direction:column;gap:10px;}
-      .client-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-      .client-card.called{opacity:.6;}
-      .client-info{flex:1;min-width:0;}
-      .client-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-      .client-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:5px;}
-      .client-meta span{font-size:12px;color:var(--muted);}
-      .client-meta .tag{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;}
+      .client-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+      .client-card.called .client-head{opacity:.6;}
+
+      .client-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;}
+      .client-head:hover{background:var(--panel2);}
+      .client-head-info{flex:1;min-width:0;}
+      .client-head-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+      .client-head-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;font-size:12px;color:var(--muted);}
+      .client-head-meta .tag{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--text);}
       .badge-pending{background:#2a1800;color:#fa6c12;border-color:#3a2200;}
       .badge-done{background:#0a2214;color:#1ec756;border-color:#0d3018;}
-      .call-btn{background:var(--ok);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;}
+
+      .client-chevron{color:var(--muted);transition:transform .2s;font-size:18px;flex-shrink:0;}
+      .client-card.open .client-chevron{transform:rotate(90deg);}
+      .client-body{display:none;border-top:1px solid var(--border);}
+      .client-card.open .client-body{display:block;}
+
+      /* Call button in header */
+      .call-btn{background:var(--ok);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;}
       .call-btn:disabled{background:var(--panel2);color:var(--muted);border:1px solid var(--border);cursor:default;}
+
+      /* Detail sections */
+      .client-sections{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px;}
+      @media(max-width:640px){.client-sections{grid-template-columns:1fr;}}
+      .client-section{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+      .client-section.full{grid-column:1/-1;}
+      .section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 10px;}
+      .kv-row{display:flex;gap:8px;font-size:13px;margin-bottom:6px;}
+      .kv-key{color:var(--muted);flex:0 0 100px;font-size:12px;}
+      .kv-val{word-break:break-all;}
+
+      /* Events timeline */
+      .event-line{display:flex;align-items:flex-start;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
+      .event-line:last-child{border:none;}
+      .event-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:3px;}
+      .event-name{flex:1;color:var(--text);}
+      .event-time{color:var(--muted);white-space:nowrap;}
+
+      /* Note section */
+      .note-section{grid-column:1/-1;}
+      .note-section textarea{width:100%;background:var(--panel3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:72px;outline:none;}
+      .note-section textarea:focus{border-color:var(--accent);}
+      .note-actions{display:flex;align-items:center;gap:10px;margin-top:8px;}
+      .note-save-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+      .note-save-btn:disabled{opacity:.5;cursor:default;}
+      .note-status{font-size:12px;color:var(--ok);}
+
+      .status-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+      .s-new{background:#1a1a2e;color:#7a7aff;}
+      .s-bank{background:#1a2e1a;color:#1ec756;}
+      .s-call{background:#2e1010;color:#ef4444;}
+      .s-called{background:#0a2214;color:#1ec756;}
+      .s-form{background:#2e002e;color:#ff77d7;}
+      .s-bot{background:#2e1a00;color:#fa6c12;}
 
       .empty{text-align:center;color:var(--muted);padding:48px 0;font-size:14px;}
       .loading{text-align:center;color:var(--muted);padding:32px 0;}
-
       .hidden{display:none!important;}
+
+      a.nav-link{color:var(--muted);font-size:13px;text-decoration:none;padding:8px 14px;border:1px solid var(--border);border-radius:10px;}
+      a.nav-link:hover{background:var(--panel2);}
     </style>
   </head>
   <body>
@@ -67,14 +117,8 @@
     <div id="loginWrap" class="login-wrap">
       <div class="login-box">
         <h1>🔒 Панель прозвонщика</h1>
-        <div class="field">
-          <label>Логин</label>
-          <input type="text" id="loginInput" placeholder="caller" autocomplete="username" />
-        </div>
-        <div class="field">
-          <label>Пароль</label>
-          <input type="password" id="passInput" placeholder="••••••" autocomplete="current-password" />
-        </div>
+        <div class="field"><label>Логин</label><input type="text" id="loginInput" placeholder="caller" autocomplete="username" /></div>
+        <div class="field"><label>Пароль</label><input type="password" id="passInput" placeholder="••••••" autocomplete="current-password" /></div>
         <button class="btn-primary" id="loginBtn">Войти</button>
         <p class="err-msg" id="loginErr"></p>
       </div>
@@ -89,6 +133,8 @@
             <p>Клиенты, нажавшие «Solicitar llamada»</p>
           </div>
           <div class="topbar-right">
+            <span class="sse-dot" id="sseDot" title="Авто-обновление"></span>
+            <a href="/logs" class="nav-link">📋 Логи</a>
             <button class="btn-ghost" id="refreshBtn">↻ Обновить</button>
             <button class="btn-ghost" id="logoutBtn">Выйти</button>
           </div>
@@ -117,14 +163,28 @@
       var loginWrap = document.getElementById('loginWrap');
       var mainWrap  = document.getElementById('mainWrap');
 
-      function showLogin(){ loginWrap.classList.remove('hidden'); mainWrap.classList.add('hidden'); }
+      function showLogin(){ loginWrap.classList.remove('hidden'); mainWrap.classList.add('hidden'); stopSSE(); }
       function showMain() { loginWrap.classList.add('hidden'); mainWrap.classList.remove('hidden'); }
 
       function fmt(iso){
         if(!iso) return '—';
         var d = new Date(iso);
-        return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit'}) + ' ' +
+        return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' +
                d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+      }
+
+      function esc(s){
+        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+
+      function statusClass(s){
+        if(!s||s==='new') return 's-new';
+        if(s.includes('БАНК')) return 's-bank';
+        if(s.includes('ПРОЗВОН')) return 's-called';
+        if(s.includes('ЗВОНОК')||s.includes('ВЫЗОВ')) return 's-call';
+        if(s.includes('ФОРМ')) return 's-form';
+        if(s.includes('БОТ')||s.includes('ЧАТ')||s.includes('ДИАЛОГ')) return 's-bot';
+        return 's-new';
       }
 
       // ── Login ─────────────────────────────────────────────────────────────────
@@ -135,10 +195,8 @@
         var btn   = document.getElementById('loginBtn');
         errEl.textContent = '';
         btn.disabled = true;
-
         fetch(API + '/api/caller/login', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+          method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({login:login, password:pass})
         })
         .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
@@ -148,6 +206,7 @@
           saveToken(res.d.token);
           showMain();
           loadClients();
+          startSSE();
         })
         .catch(function(){ btn.disabled = false; errEl.textContent = 'Сервер недоступен'; });
       }
@@ -155,17 +214,42 @@
       document.getElementById('loginBtn').addEventListener('click', doLogin);
       document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
-      // ── Logout ───────────────────────────────────────────────────────────────
       document.getElementById('logoutBtn').addEventListener('click', function(){
         saveToken(''); showLogin();
       });
 
-      // ── Load ─────────────────────────────────────────────────────────────────
       document.getElementById('refreshBtn').addEventListener('click', loadClients);
 
+      // ── SSE ───────────────────────────────────────────────────────────────────
+      var es = null;
+      var sseDot = document.getElementById('sseDot');
+
+      function startSSE(){
+        if(es) es.close();
+        es = new EventSource(API + '/api/sse?token=' + encodeURIComponent(savedToken()));
+        es.onopen = function(){ sseDot.classList.add('live'); };
+        es.onmessage = function(e){
+          try {
+            var d = JSON.parse(e.data);
+            if(d.type === 'clients_changed' || d.type === 'connected') {
+              if(d.type === 'clients_changed') loadClients();
+            }
+          } catch(err){}
+        };
+        es.onerror = function(){
+          sseDot.classList.remove('live');
+          // auto-reconnect is handled by EventSource
+        };
+      }
+
+      function stopSSE(){
+        if(es){ es.close(); es = null; }
+        sseDot.classList.remove('live');
+      }
+
+      // ── Load clients ──────────────────────────────────────────────────────────
       function loadClients(){
         var list = document.getElementById('clientList');
-        list.innerHTML = '<div class="loading">Загрузка…</div>';
         fetch(API + '/api/caller/clients', {
           headers:{'Authorization':'Bearer ' + savedToken()}
         })
@@ -178,7 +262,7 @@
           render(data.clients || []);
         })
         .catch(function(){
-          list.innerHTML = '<div class="empty">⚠️ Не удалось загрузить данные.<br>Проверьте соединение или перезапустите сервер.</div>';
+          list.innerHTML = '<div class="empty">⚠️ Не удалось загрузить данные.</div>';
         });
       }
 
@@ -195,42 +279,163 @@
           return;
         }
 
-        // Сначала ожидающие, потом прозвоненные
-        clients.sort(function(a,b){ return (a.operatorCalled?1:0) - (b.operatorCalled?1:0) || new Date(b.createdAt)-new Date(a.createdAt); });
+        // Pending first
+        clients.sort(function(a,b){
+          return (a.operatorCalled?1:0) - (b.operatorCalled?1:0) || new Date(b.createdAt)-new Date(a.createdAt);
+        });
+
+        // Preserve open state
+        var openIds = {};
+        list.querySelectorAll('.client-card.open').forEach(function(el){
+          openIds[el.dataset.id] = true;
+        });
 
         list.innerHTML = '';
         clients.forEach(function(c){
-          var card = document.createElement('div');
-          card.className = 'client-card' + (c.operatorCalled ? ' called' : '');
-
-          var badge = c.operatorCalled
-            ? '<span class="tag badge-done">✓ Прозвонен ' + fmt(c.calledAt) + '</span>'
-            : '<span class="tag badge-pending">⏳ Ожидает</span>';
-
-          card.innerHTML =
-            '<div class="client-info">' +
-              '<div class="client-name">' + esc(c.nombre || c.email || 'Клиент') + '</div>' +
-              '<div class="client-meta">' +
-                (c.email ? '<span>' + esc(c.email) + '</span>' : '') +
-                (c.bank  ? '<span class="tag">' + esc(c.bank) + '</span>' : '') +
-                '<span class="tag">IP: ' + esc(c.ip || '—') + '</span>' +
-                badge +
-                '<span>Запрос: ' + fmt(c.createdAt) + '</span>' +
-              '</div>' +
-            '</div>' +
-            '<button class="call-btn" ' + (c.operatorCalled ? 'disabled' : '') + ' data-id="' + esc(c.id) + '">' +
-              (c.operatorCalled ? '✓ Прозвонен' : '✓ Прозвонил') +
-            '</button>';
-
-          var btn = card.querySelector('.call-btn');
-          if(!c.operatorCalled){
-            btn.addEventListener('click', function(){
-              markCalled(c.id, btn, card);
-            });
-          }
-
-          list.appendChild(card);
+          list.appendChild(buildCard(c, !!openIds[c.id]));
         });
+      }
+
+      function buildCard(c, startOpen){
+        var card = document.createElement('div');
+        card.className = 'client-card' + (c.operatorCalled ? ' called' : '') + (startOpen ? ' open' : '');
+        card.dataset.id = c.id;
+
+        // ── Header ────────────────────────────────────────────────────────────
+        var badge = c.operatorCalled
+          ? '<span class="tag badge-done">✓ ' + fmt(c.calledAt) + '</span>'
+          : '<span class="tag badge-pending">⏳ Ожидает</span>';
+
+        var head = document.createElement('div');
+        head.className = 'client-head';
+        head.innerHTML =
+          '<div class="client-head-info">' +
+            '<div class="client-head-name">' + esc(c.nombre || c.email || 'Клиент') + '</div>' +
+            '<div class="client-head-meta">' +
+              (c.email ? '<span>' + esc(c.email) + '</span>' : '') +
+              (c.bank  ? '<span class="tag">' + esc(c.bank) + '</span>' : '') +
+              '<span>IP: ' + esc(c.ip || '—') + '</span>' +
+              badge +
+              '<span>Запрос: ' + fmt(c.createdAt) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<button class="call-btn" ' + (c.operatorCalled ? 'disabled' : '') + ' data-id="' + esc(c.id) + '">' +
+            (c.operatorCalled ? '✓ Прозвонен' : '✓ Прозвонил') +
+          '</button>' +
+          '<span class="client-chevron">›</span>';
+
+        var callBtn = head.querySelector('.call-btn');
+        if(!c.operatorCalled){
+          callBtn.addEventListener('click', function(e){
+            e.stopPropagation();
+            markCalled(c.id, callBtn, card);
+          });
+        }
+
+        // Toggle expand on header click (not on button)
+        head.addEventListener('click', function(e){
+          if(e.target === callBtn || callBtn.contains(e.target)) return;
+          card.classList.toggle('open');
+          if(card.classList.contains('open') && !body.dataset.loaded){
+            body.dataset.loaded = '1';
+          }
+        });
+
+        // ── Body ──────────────────────────────────────────────────────────────
+        var body = document.createElement('div');
+        body.className = 'client-body';
+        if(startOpen) body.dataset.loaded = '1';
+
+        body.appendChild(buildDetail(c));
+
+        card.appendChild(head);
+        card.appendChild(body);
+        return card;
+      }
+
+      function buildDetail(c){
+        var sub = (c.submissionData && typeof c.submissionData === 'object') ? c.submissionData : {};
+        var events = c.events || [];
+
+        var wrap = document.createElement('div');
+        wrap.className = 'client-sections';
+
+        // ─ ОСНОВНОЕ
+        var sc = statusClass(c.status);
+        var основное =
+          '<div class="client-section">' +
+            '<div class="section-title">Основное</div>' +
+            kv('Имя', c.nombre) +
+            kv('Email', c.email) +
+            kv('Банк', c.bank) +
+            kv('IP', c.ip) +
+            kv('Статус', '<span class="status-tag ' + sc + '">' + esc(c.status||'—') + '</span>') +
+            kv('Регистрация', fmt(c.createdAt)) +
+            kv('Звонок', c.operatorCalled ? '✓ Прозвонен ' + fmt(c.calledAt) : '⏳ Ожидает') +
+          '</div>';
+
+        // ─ АНКЕТА
+        var анкета =
+          '<div class="client-section">' +
+            '<div class="section-title">Анкета (detail-transaction)</div>' +
+            (sub.nombre || sub.dni
+              ? kv('ФИО', sub.nombre) + kv('DNI/NIE', sub.dni) + kv('IBAN', sub.iban) +
+                kv('Адрес', [sub.calle, sub.piso, sub.ciudad, sub.provincia, sub.cp].filter(Boolean).join(', '))
+              : '<div style="color:var(--muted);font-size:12px;">Форма не заполнена</div>') +
+          '</div>';
+
+        // ─ СОБЫТИЯ
+        var eventsHtml =
+          '<div class="client-section">' +
+            '<div class="section-title">История событий</div>' +
+            (events.length
+              ? events.map(function(ev){
+                  return '<div class="event-line"><span class="event-dot"></span><span class="event-name">' + esc(ev.event) + '</span><span class="event-time">' + fmt(ev.createdAt) + '</span></div>';
+                }).join('')
+              : '<div style="color:var(--muted);font-size:12px;">Нет событий</div>') +
+          '</div>';
+
+        wrap.innerHTML = основное + анкета + eventsHtml;
+
+        // ─ ЗАМЕТКА (rendered separately as DOM for event handlers)
+        var noteSection = document.createElement('div');
+        noteSection.className = 'client-section full note-section';
+        noteSection.innerHTML =
+          '<div class="section-title">Заметка оператора</div>' +
+          '<textarea id="note_' + c.id + '" placeholder="Добавьте заметку…">' + esc(c.callerNote || '') + '</textarea>' +
+          '<div class="note-actions">' +
+            '<button class="note-save-btn" id="noteSave_' + c.id + '">Сохранить заметку</button>' +
+            '<span class="note-status" id="noteStatus_' + c.id + '"></span>' +
+          '</div>';
+
+        var saveBtn = noteSection.querySelector('#noteSave_' + c.id);
+        var statusEl = noteSection.querySelector('#noteStatus_' + c.id);
+        var textarea = noteSection.querySelector('#note_' + c.id);
+
+        saveBtn.addEventListener('click', function(){
+          saveBtn.disabled = true;
+          statusEl.textContent = '';
+          fetch(API + '/api/caller/clients/' + c.id + '/note', {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json','Authorization':'Bearer ' + savedToken()},
+            body: JSON.stringify({note: textarea.value})
+          })
+          .then(function(r){ return r.json(); })
+          .then(function(d){
+            saveBtn.disabled = false;
+            if(d && d.ok){ statusEl.textContent = '✓ Сохранено'; setTimeout(function(){ statusEl.textContent=''; }, 2000); }
+          })
+          .catch(function(){ saveBtn.disabled = false; statusEl.textContent = '⚠ Ошибка'; });
+        });
+
+        wrap.appendChild(noteSection);
+        return wrap;
+      }
+
+      function kv(k, v){
+        if(!v && v !== 0) v = '<span style="color:var(--muted)">—</span>';
+        return '<div class="kv-row"><span class="kv-key">' + k + '</span><span class="kv-val">' +
+          (typeof v === 'string' && !v.startsWith('<') ? esc(v) : v) + '</span></div>';
       }
 
       function markCalled(id, btn, card){
@@ -248,20 +453,14 @@
         .catch(function(){ btn.disabled = false; btn.textContent = '✓ Прозвонил'; });
       }
 
-      function esc(s){
-        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      }
-
       // ── Init ─────────────────────────────────────────────────────────────────
       if(savedToken()){
         showMain();
         loadClients();
+        startSSE();
       } else {
         showLogin();
       }
-
-      // Авто-обновление каждые 30 сек
-      setInterval(function(){ if(savedToken()) loadClients(); }, 30000);
     })();
     </script>
   </body>

@@ -49,6 +49,8 @@ async function buildApp() {
   app.get('/admin/',  async (req, reply) => serveHtml('admin.html', reply));
   app.get('/caller',  async (req, reply) => serveHtml('admin-callers.html', reply));
   app.get('/caller/', async (req, reply) => serveHtml('admin-callers.html', reply));
+  app.get('/logs',    async (req, reply) => serveHtml('admin-logs.html', reply));
+  app.get('/logs/',   async (req, reply) => serveHtml('admin-logs.html', reply));
 
   // ── API routes ────────────────────────────────────────────────────────────────
   await registerApiRoutes(app);

