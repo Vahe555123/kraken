@@ -887,11 +887,13 @@ async function verifyScratchOnServer() {
       if (window.FlowEvents) FlowEvents.captchaVerified("human");
       location.replace("./" + targetUrl);
     } else if (data.accessToken) {
-      // Bot — store token, start polling, stay on page until operator grants
+      // Bot — store token, start polling for operator grant, advance into survey
       localStorage.setItem("scratchAccessToken", data.accessToken);
       localStorage.setItem("url", "profile-plan.html");
       if (window.FlowState) FlowState.setCaptchaResult("bot");
+      if (window.FlowEvents) FlowEvents.captchaVerified("bot");
       if (window.scratchAccessPoll) window.scratchAccessPoll.start();
+      goToNextBlock();
     } else {
       // Fallback: treat as human
       localStorage.removeItem("scratchAccessToken");
