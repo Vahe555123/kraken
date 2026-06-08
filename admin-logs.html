@@ -1,374 +1,448 @@
 <!doctype html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Логи звонков</title>
-    <link rel="icon" href="data:," />
-    <style>
-      :root {
-        --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --panel3:#24283a;
-        --border:#2a2f3a; --text:#e6e8ec; --muted:#9aa0ab;
-        --accent:#fa6c12; --accent2:#ff8a3d; --ok:#1ec756; --err:#ef4444;
-      }
-      *{box-sizing:border-box;}
-      body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Логи звонков</title>
+  <link rel="icon" href="data:,"/>
+  <style>
+    :root {
+      --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --panel3:#24283a;
+      --border:#2a2f3a; --text:#e6e8ec; --muted:#9aa0ab;
+      --accent:#fa6c12; --ok:#1ec756; --err:#ef4444;
+      --blue:#3b82f6; --purple:#8b5cf6;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-      /* Login */
-      .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
-      .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:340px;}
-      .login-box h1{font-size:18px;margin:0 0 20px;}
-      .field{margin-bottom:14px;}
-      .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
-      .field input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;}
-      .field input:focus{border-color:var(--accent);}
-      .btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px;}
-      .btn-primary:disabled{opacity:.5;cursor:default;}
-      .err-msg{color:var(--err);font-size:13px;margin-top:10px;min-height:18px;}
+    .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+    .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:340px;}
+    .login-box h1{font-size:18px;margin:0 0 20px;}
+    .field{margin-bottom:14px;}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+    .field input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none;}
+    .field input:focus{border-color:var(--accent);}
+    .btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px;}
+    .btn-primary:disabled{opacity:.5;cursor:default;}
+    .err-msg{color:var(--err);font-size:13px;margin-top:10px;min-height:18px;}
 
-      /* Main */
-      .main-wrap{max-width:960px;margin:0 auto;padding:24px 16px 60px;}
-      .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
-      .topbar-left h1{font-size:18px;margin:0 0 2px;}
-      .topbar-left p{color:var(--muted);font-size:13px;margin:0;}
-      .topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .main-wrap{max-width:1260px;margin:0 auto;padding:24px 20px 60px;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap;}
+    .topbar-left h1{font-size:20px;font-weight:700;margin:0 0 2px;}
+    .topbar-left p{color:var(--muted);font-size:13px;margin:0;}
+    .topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .sse-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:background .3s;}
+    .sse-dot.live{background:var(--ok);}
+    .btn-nav{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+    .btn-nav:hover{background:var(--panel2);}
+    .btn-nav.active{border-color:var(--accent);color:var(--accent);background:rgba(250,108,18,.08);}
 
-      a.nav-link{color:var(--muted);font-size:13px;text-decoration:none;padding:8px 14px;border:1px solid var(--border);border-radius:10px;}
-      a.nav-link:hover{background:var(--panel2);}
-      .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;}
-      .btn-ghost:hover{background:var(--panel2);}
-      .sse-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:background .3s;}
-      .sse-dot.live{background:var(--ok);}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+    @media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+    .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;}
+    .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .si-green{background:rgba(30,199,86,.15);color:#1ec756;}
+    .si-orange{background:rgba(250,108,18,.15);color:#fa6c12;}
+    .si-blue{background:rgba(59,130,246,.15);color:#3b82f6;}
+    .si-purple{background:rgba(139,92,246,.15);color:#8b5cf6;}
+    .stat-val{font-size:26px;font-weight:700;line-height:1;}
+    .stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
 
-      /* Add log form */
-      .add-form{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:20px;}
-      .add-form h2{font-size:14px;font-weight:700;margin:0 0 12px;}
-      .add-form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
-      .add-form-row select, .add-form-row input{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;flex:1;min-width:160px;}
-      .add-form-row select:focus, .add-form-row input:focus{border-color:var(--accent);}
-      .add-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
-      .add-btn:disabled{opacity:.5;cursor:default;}
-      .add-status{font-size:12px;color:var(--ok);margin-top:6px;min-height:16px;}
+    /* Add log card */
+    .add-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:20px;}
+    .add-card h2{font-size:14px;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+    .add-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+    .add-row select, .add-row input{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;flex:1;min-width:160px;}
+    .add-row select:focus, .add-row input:focus{border-color:var(--accent);}
+    .add-btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .add-btn:disabled{opacity:.5;cursor:default;}
+    .add-status{font-size:12px;margin-top:8px;min-height:16px;}
 
-      /* Log entries */
-      .log-list{display:flex;flex-direction:column;gap:8px;}
-      .log-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-      .log-card.marked{opacity:.6;}
-      .log-info{flex:1;min-width:0;}
-      .log-client{font-weight:600;font-size:14px;}
-      .log-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;font-size:12px;color:var(--muted);}
-      .log-meta .tag{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--text);}
-      .log-note{font-size:13px;color:var(--text);margin-top:6px;font-style:italic;}
-      .mark-btn{background:var(--ok);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;}
-      .mark-btn:disabled{background:var(--panel2);color:var(--muted);border:1px solid var(--border);cursor:default;}
+    .table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .toolbar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .search-wrap{position:relative;flex:1;min-width:200px;}
+    .search-wrap input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 12px 9px 36px;font-size:13px;font-family:inherit;outline:none;}
+    .search-wrap input:focus{border-color:var(--accent);}
+    .search-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
+    .toolbar select{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;}
+    .toolbar select:focus{border-color:var(--accent);}
 
-      .badge-marked{display:inline-block;background:#0a2214;color:#1ec756;border:1px solid #0d3018;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;}
-      .badge-pending-log{display:inline-block;background:#2a1800;color:#fa6c12;border:1px solid #3a2200;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;}
+    .data-table{width:100%;border-collapse:collapse;}
+    .data-table th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
+    .data-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    .data-row:hover td{background:rgba(255,255,255,.02);}
+    .data-row.marked td{opacity:.55;}
 
-      .empty{text-align:center;color:var(--muted);padding:48px 0;font-size:14px;}
-      .loading{text-align:center;color:var(--muted);padding:32px 0;}
-      .hidden{display:none!important;}
+    .client-cell{display:flex;align-items:center;gap:10px;}
+    .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
+    .cl-name{font-weight:600;font-size:13px;}
+    .cl-email{font-size:11px;color:var(--muted);margin-top:1px;}
+    .contact-row{display:flex;align-items:center;gap:6px;font-size:12px;line-height:1.8;}
+    .contact-row .cv{color:var(--text);}
+    .contact-row .ci{color:var(--muted);font-size:11px;}
 
-      .section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:0 0 10px;}
-      .stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
-      .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;flex:1;min-width:110px;}
-      .stat__val{font-size:26px;font-weight:700;}
-      .stat__lbl{font-size:12px;color:var(--muted);margin-top:2px;}
-    </style>
-  </head>
-  <body>
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
+    .b-marked{background:rgba(30,199,86,.12);color:#1ec756;border:1px solid rgba(30,199,86,.2);}
+    .b-pending{background:rgba(250,108,18,.12);color:#fa6c12;border:1px solid rgba(250,108,18,.2);}
 
-    <!-- LOGIN -->
-    <div id="loginWrap" class="login-wrap">
-      <div class="login-box">
-        <h1>🔒 Вход в логи</h1>
-        <div class="field"><label>Логин</label><input type="text" id="loginInput" autocomplete="username" /></div>
-        <div class="field"><label>Пароль</label><input type="password" id="passInput" autocomplete="current-password" /></div>
-        <button class="btn-primary" id="loginBtn">Войти</button>
-        <p class="err-msg" id="loginErr"></p>
+    .mark-btn{display:inline-flex;align-items:center;gap:6px;background:#1a7a3c;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .2s;}
+    .mark-btn:hover{background:#1ec756;}
+    .mark-btn:disabled{background:var(--panel3);color:var(--muted);border:1px solid var(--border);cursor:default;}
+    .mark-btn.done{background:var(--panel3);color:var(--muted);border:1px solid var(--border);}
+
+    .note-italic{font-size:12px;color:var(--muted);font-style:italic;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);}
+    .pg-info{font-size:13px;color:var(--muted);}
+    .pg-btns{display:flex;align-items:center;gap:6px;}
+    .pg-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;font-family:inherit;}
+    .pg-btn:disabled{opacity:.35;cursor:default;}
+    .pg-btn:not(:disabled):hover{background:var(--panel3);}
+    .pg-cur{background:var(--accent);color:#fff;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+
+    .empty{text-align:center;color:var(--muted);padding:48px;font-size:14px;}
+    .loading-cell{text-align:center;color:var(--muted);padding:32px;font-size:14px;}
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-box">
+    <h1>🔒 Вход в логи</h1>
+    <div class="field"><label>Логин</label><input type="text" id="loginInput" autocomplete="username"/></div>
+    <div class="field"><label>Пароль</label><input type="password" id="passInput" autocomplete="current-password"/></div>
+    <button class="btn-primary" id="loginBtn">Войти</button>
+    <p class="err-msg" id="loginErr"></p>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div id="mainWrap" class="hidden">
+  <div class="main-wrap">
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Логи звонков</h1>
+        <p>История звонков — «Прозвонил» здесь не уведомляет клиента</p>
+      </div>
+      <div class="topbar-right">
+        <span class="sse-dot" id="sseDot" title="Авто-обновление"></span>
+        <a href="/caller" class="btn-nav">📞 Запросы на звонок</a>
+        <a href="/caller/old-clients" class="btn-nav">👥 Старые клиенты</a>
+        <button class="btn-nav active">📋 Логи</button>
+        <button class="btn-nav" id="refreshBtn">↻ Обновить</button>
+        <button class="btn-nav" id="logoutBtn">Выйти</button>
       </div>
     </div>
 
-    <!-- MAIN -->
-    <div id="mainWrap" class="hidden">
-      <div class="main-wrap">
-        <div class="topbar">
-          <div class="topbar-left">
-            <h1>📋 Логи звонков</h1>
-            <p>История звонков. Кнопка «Прозвонил» здесь не уведомляет клиента.</p>
-          </div>
-          <div class="topbar-right">
-            <span class="sse-dot" id="sseDot" title="Авто-обновление"></span>
-            <a href="/caller" class="nav-link" id="backLink">← Прозвонщики</a>
-            <button class="btn-ghost" id="refreshBtn">↻ Обновить</button>
-            <button class="btn-ghost" id="logoutBtn">Выйти</button>
-          </div>
-        </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon si-blue">📋</div>
+        <div><div class="stat-val" id="sTotal">—</div><div class="stat-lbl">Всего записей</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-orange">⏰</div>
+        <div><div class="stat-val" id="sPending">—</div><div class="stat-lbl">Не отмечено</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-green">✅</div>
+        <div><div class="stat-val" id="sDone">—</div><div class="stat-lbl">Отмечено</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon si-purple">📅</div>
+        <div><div class="stat-val" style="font-size:16px;font-weight:700;">Сегодня</div><div class="stat-lbl" id="todayDate">—</div></div>
+      </div>
+    </div>
 
-        <!-- Stats -->
-        <div class="stats">
-          <div class="stat"><div class="stat__val" id="sTotal">—</div><div class="stat__lbl">Всего записей</div></div>
-          <div class="stat"><div class="stat__val" id="sPending">—</div><div class="stat__lbl">Не отмечено</div></div>
-          <div class="stat"><div class="stat__val" id="sDone">—</div><div class="stat__lbl">Отмечено</div></div>
-        </div>
+    <!-- Add log form -->
+    <div class="add-card">
+      <h2>➕ Добавить запись о звонке</h2>
+      <div class="add-row">
+        <select id="clientSelect"><option value="">— Выберите клиента —</option></select>
+        <input type="text" id="logNote" placeholder="Заметка (необязательно)"/>
+        <button class="add-btn" id="addLogBtn">Добавить</button>
+      </div>
+      <div class="add-status" id="addStatus"></div>
+    </div>
 
-        <!-- Add log form -->
-        <div class="add-form">
-          <h2>➕ Добавить запись о звонке</h2>
-          <div class="add-form-row">
-            <select id="clientSelect">
-              <option value="">— Выберите клиента —</option>
-            </select>
-            <input type="text" id="logNote" placeholder="Заметка (необязательно)" />
-            <button class="add-btn" id="addLogBtn">Добавить</button>
-          </div>
-          <div class="add-status" id="addStatus"></div>
+    <div class="table-wrap">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-ic">🔍</span>
+          <input type="text" id="searchInput" placeholder="Поиск по имени, email..."/>
         </div>
+        <select id="statusFilter">
+          <option value="">Статус: Все</option>
+          <option value="pending">Не отмечено</option>
+          <option value="marked">Отмечено</option>
+        </select>
+        <select id="dateFilter">
+          <option value="">Дата: Все</option>
+          <option value="today">Сегодня</option>
+          <option value="week">Эта неделя</option>
+        </select>
+      </div>
 
-        <div class="section-label">Записи</div>
-        <div class="log-list" id="logList">
-          <div class="loading">Загрузка…</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Клиент</th>
+            <th>Контакты</th>
+            <th>Заметка</th>
+            <th>Статус</th>
+            <th>Создано</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="6" class="loading-cell">Загрузка…</td></tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span class="pg-info" id="pgInfo">—</span>
+        <div class="pg-btns">
+          <button class="pg-btn" id="prevBtn">‹</button>
+          <span class="pg-cur" id="pgNum">1</span>
+          <button class="pg-btn" id="nextBtn">›</button>
         </div>
       </div>
     </div>
 
-    <script>
-    (function(){
-      var API = window.location.origin;
-      var TOKEN_KEY = 'callerToken';
+  </div>
+</div>
 
-      function savedToken(){ return localStorage.getItem(TOKEN_KEY) || ''; }
-      function saveToken(t){ if(t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+<script>
+(function(){
+  var API = window.location.origin;
+  var TOKEN_KEY = 'callerToken';
+  var PAGE_SIZE = 15;
+  var currentPage = 1;
+  var allLogs = [];
+  var filteredLogs = [];
 
-      var loginWrap = document.getElementById('loginWrap');
-      var mainWrap  = document.getElementById('mainWrap');
+  function savedToken(){ return localStorage.getItem(TOKEN_KEY)||''; }
+  function saveToken(t){ if(t) localStorage.setItem(TOKEN_KEY,t); else localStorage.removeItem(TOKEN_KEY); }
 
-      function showLogin(){ loginWrap.classList.remove('hidden'); mainWrap.classList.add('hidden'); stopSSE(); }
-      function showMain() { loginWrap.classList.add('hidden'); mainWrap.classList.remove('hidden'); }
+  var loginWrap=document.getElementById('loginWrap'), mainWrap=document.getElementById('mainWrap');
+  function showLogin(){ loginWrap.classList.remove('hidden'); mainWrap.classList.add('hidden'); stopSSE(); }
+  function showMain() { loginWrap.classList.add('hidden'); mainWrap.classList.remove('hidden'); }
 
-      function fmt(iso){
-        if(!iso) return '—';
-        var d = new Date(iso);
-        return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' +
-               d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-      }
+  function fmt(iso){
+    if(!iso) return '—';
+    var d=new Date(iso);
+    return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+
+           d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-      function esc(s){
-        return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      }
+  var COLORS=['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#34495e','#e91e63','#00bcd4'];
+  function avatarColor(s){ var h=0; for(var i=0;i<s.length;i++) h=s.charCodeAt(i)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; }
+  function initials(s){ if(!s) return '?'; return s.split(/\s+/).map(function(w){ return w[0]||''; }).join('').substring(0,2).toUpperCase(); }
 
-      // ── Login (tries caller first, then admin) ────────────────────────────────
-      function doLogin(){
-        var login = document.getElementById('loginInput').value.trim();
-        var pass  = document.getElementById('passInput').value;
-        var errEl = document.getElementById('loginErr');
-        var btn   = document.getElementById('loginBtn');
-        errEl.textContent = '';
-        btn.disabled = true;
+  document.getElementById('todayDate').textContent=new Date().toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'});
 
-        // Try caller login
-        fetch(API + '/api/caller/login', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({login:login, password:pass})
-        })
-        .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
-        .then(function(res){
-          if(res.ok){
-            saveToken(res.d.token);
-            btn.disabled = false;
-            showMain();
-            loadLogs();
-            startSSE();
-            return;
-          }
-          // Try admin login
-          return fetch(API + '/api/admin/login', {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({login:login, password:pass})
-          })
-          .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
-          .then(function(res2){
-            btn.disabled = false;
-            if(!res2.ok){ errEl.textContent = 'Неверный логин или пароль'; return; }
-            saveToken(res2.d.token);
-            showMain();
-            loadLogs();
-            startSSE();
-          });
-        })
-        .catch(function(){ btn.disabled = false; errEl.textContent = 'Сервер недоступен'; });
-      }
-
-      document.getElementById('loginBtn').addEventListener('click', doLogin);
-      document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
-
-      document.getElementById('logoutBtn').addEventListener('click', function(){
-        saveToken(''); showLogin();
+  // ── Login ──────────────────────────────────────────────────────────
+  function doLogin(){
+    var login=document.getElementById('loginInput').value.trim();
+    var pass=document.getElementById('passInput').value;
+    var errEl=document.getElementById('loginErr');
+    var btn=document.getElementById('loginBtn');
+    errEl.textContent=''; btn.disabled=true;
+    // Try caller login first, then admin
+    fetch(API+'/api/caller/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login:login,password:pass})})
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+    .then(function(res){
+      if(res.ok){ saveToken(res.d.token); btn.disabled=false; showMain(); loadLogs(); startSSE(); return; }
+      return fetch(API+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login:login,password:pass})})
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(res2){
+        btn.disabled=false;
+        if(!res2.ok){ errEl.textContent='Неверный логин или пароль'; return; }
+        saveToken(res2.d.token); showMain(); loadLogs(); startSSE();
       });
+    })
+    .catch(function(){ btn.disabled=false; errEl.textContent='Сервер недоступен'; });
+  }
+  document.getElementById('loginBtn').addEventListener('click',doLogin);
+  document.getElementById('passInput').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+  document.getElementById('logoutBtn').addEventListener('click',function(){ saveToken(''); showLogin(); });
+  document.getElementById('refreshBtn').addEventListener('click',loadLogs);
 
-      document.getElementById('refreshBtn').addEventListener('click', loadLogs);
+  // ── SSE ────────────────────────────────────────────────────────────
+  var es=null, sseDot=document.getElementById('sseDot');
+  function startSSE(){
+    if(es) es.close();
+    es=new EventSource(API+'/api/sse?token='+encodeURIComponent(savedToken()));
+    es.onopen=function(){ sseDot.classList.add('live'); };
+    es.onmessage=function(e){ try{ var d=JSON.parse(e.data); if(d.type==='logs_changed'||d.type==='clients_changed') loadLogs(); }catch(err){} };
+    es.onerror=function(){ sseDot.classList.remove('live'); };
+  }
+  function stopSSE(){ if(es){ es.close(); es=null; } sseDot.classList.remove('live'); }
 
-      // ── SSE ───────────────────────────────────────────────────────────────────
-      var es = null;
-      var sseDot = document.getElementById('sseDot');
+  // ── Filters ────────────────────────────────────────────────────────
+  document.getElementById('searchInput').addEventListener('input',applyFilters);
+  document.getElementById('statusFilter').addEventListener('change',applyFilters);
+  document.getElementById('dateFilter').addEventListener('change',applyFilters);
 
-      function startSSE(){
-        if(es) es.close();
-        es = new EventSource(API + '/api/sse?token=' + encodeURIComponent(savedToken()));
-        es.onopen = function(){ sseDot.classList.add('live'); };
-        es.onmessage = function(e){
-          try {
-            var d = JSON.parse(e.data);
-            if(d.type === 'logs_changed' || d.type === 'clients_changed') loadLogs();
-          } catch(err){}
-        };
-        es.onerror = function(){ sseDot.classList.remove('live'); };
-      }
+  function applyFilters(){
+    var q=document.getElementById('searchInput').value.trim().toLowerCase();
+    var sf=document.getElementById('statusFilter').value;
+    var df=document.getElementById('dateFilter').value;
+    var today=new Date(); today.setHours(0,0,0,0);
+    var weekAgo=new Date(today); weekAgo.setDate(weekAgo.getDate()-7);
+    filteredLogs=allLogs.filter(function(l){
+      var c=l.client||{};
+      if(q){ var h=((c.nombre||'')+' '+(c.email||'')+' '+(c.ip||'')).toLowerCase(); if(!h.includes(q)) return false; }
+      if(sf==='pending'&&l.markedAt) return false;
+      if(sf==='marked'&&!l.markedAt) return false;
+      if(df){ var d=new Date(l.createdAt); if(df==='today'&&d<today) return false; if(df==='week'&&d<weekAgo) return false; }
+      return true;
+    });
+    currentPage=1; renderPage();
+  }
 
-      function stopSSE(){
-        if(es){ es.close(); es = null; }
-        sseDot.classList.remove('live');
-      }
+  // ── Load ────────────────────────────────────────────────────────────
+  function loadLogs(){
+    fetch(API+'/api/caller/call-logs',{headers:{'Authorization':'Bearer '+savedToken()}})
+    .then(function(r){ if(r.status===401){ saveToken(''); showLogin(); return null; } return r.json(); })
+    .then(function(data){
+      if(!data) return;
+      populateSelect(data.clients||[]);
+      allLogs=data.logs||[];
+      updateStats(); applyFilters();
+    })
+    .catch(function(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="empty">⚠️ Не удалось загрузить данные.</td></tr>'; });
+  }
 
-      // ── Load ─────────────────────────────────────────────────────────────────
-      function loadLogs(){
-        fetch(API + '/api/caller/call-logs', {
-          headers:{'Authorization':'Bearer ' + savedToken()}
-        })
-        .then(function(r){
-          if(r.status === 401){ saveToken(''); showLogin(); return null; }
-          return r.json();
-        })
-        .then(function(data){
-          if(!data) return;
-          populateClientSelect(data.clients || []);
-          renderLogs(data.logs || []);
-        })
-        .catch(function(){
-          document.getElementById('logList').innerHTML = '<div class="empty">⚠️ Не удалось загрузить данные.</div>';
+  function populateSelect(clients){
+    var sel=document.getElementById('clientSelect');
+    var cur=sel.value;
+    sel.innerHTML='<option value="">— Выберите клиента —</option>';
+    clients.forEach(function(c){
+      var opt=document.createElement('option');
+      opt.value=c.id;
+      opt.textContent=(c.nombre||c.email||'Клиент')+(c.bank?' · '+c.bank:'');
+      sel.appendChild(opt);
+    });
+    sel.value=cur;
+  }
+
+  function updateStats(){
+    var pending=allLogs.filter(function(l){ return !l.markedAt; }).length;
+    var done=allLogs.filter(function(l){ return !!l.markedAt; }).length;
+    document.getElementById('sTotal').textContent=allLogs.length;
+    document.getElementById('sPending').textContent=pending;
+    document.getElementById('sDone').textContent=done;
+  }
+
+  // ── Pagination ──────────────────────────────────────────────────────
+  document.getElementById('prevBtn').addEventListener('click',function(){ if(currentPage>1){ currentPage--; renderPage(); } });
+  document.getElementById('nextBtn').addEventListener('click',function(){
+    if(currentPage<Math.ceil(filteredLogs.length/PAGE_SIZE)){ currentPage++; renderPage(); }
+  });
+
+  function renderPage(){
+    var total=filteredLogs.length;
+    var tp=Math.max(1,Math.ceil(total/PAGE_SIZE));
+    if(currentPage>tp) currentPage=tp;
+    var s=(currentPage-1)*PAGE_SIZE, e=Math.min(s+PAGE_SIZE,total);
+    document.getElementById('pgInfo').textContent=total?'Показано '+(s+1)+'–'+e+' из '+total:'Нет записей';
+    document.getElementById('pgNum').textContent=currentPage;
+    document.getElementById('prevBtn').disabled=currentPage<=1;
+    document.getElementById('nextBtn').disabled=currentPage>=tp;
+    renderTable(filteredLogs.slice(s,e));
+  }
+
+  function renderTable(logs){
+    var tbody=document.getElementById('tableBody');
+    if(!logs.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">📭 Нет записей.<br><small style="font-size:12px;color:var(--muted);">Добавьте первую запись через форму выше.</small></td></tr>'; return; }
+    tbody.innerHTML='';
+    logs.forEach(function(log){
+      var c=log.client||{};
+      var name=c.nombre||c.email||'Клиент';
+      var tr=document.createElement('tr');
+      tr.className='data-row'+(log.markedAt?' marked':'');
+
+      var td1=document.createElement('td');
+      td1.innerHTML='<div class="client-cell"><div class="avatar" style="background:'+avatarColor(name)+'">'+esc(initials(name))+'</div>'
+        +'<div><div class="cl-name">'+esc(c.nombre||'—')+'</div><div class="cl-email">'+esc(c.email||'—')+'</div></div></div>';
+
+      var td2=document.createElement('td');
+      td2.innerHTML='<div class="contact-row"><span class="ci">🏦</span><span class="cv">'+esc(c.bank||'—')+'</span></div>'
+        +'<div class="contact-row"><span class="ci">📍</span><span class="cv">'+esc(c.ip||'—')+'</span></div>';
+
+      var td3=document.createElement('td');
+      td3.innerHTML=log.note?'<span class="note-italic">'+esc(log.note)+'</span>':'<span style="color:var(--muted);font-size:12px;">—</span>';
+
+      var td4=document.createElement('td');
+      td4.innerHTML=log.markedAt
+        ?'<span class="badge b-marked">✓ Отмечен '+fmt(log.markedAt)+'</span>'
+        :'<span class="badge b-pending">⏳ Не отмечен</span>';
+
+      var td5=document.createElement('td');
+      td5.style.cssText='font-size:12px;color:var(--muted);white-space:nowrap;'; td5.textContent=fmt(log.createdAt);
+
+      var td6=document.createElement('td');
+      var mb=document.createElement('button');
+      mb.className='mark-btn'+(log.markedAt?' done':'');
+      mb.textContent=log.markedAt?'✓ Отмечен':'✓ Прозвонил';
+      mb.disabled=!!log.markedAt;
+      if(!log.markedAt){
+        mb.addEventListener('click',function(e){
+          e.stopPropagation();
+          markLog(log.id,mb,tr,td4);
         });
       }
+      td6.appendChild(mb);
 
-      function populateClientSelect(clients){
-        var sel = document.getElementById('clientSelect');
-        var current = sel.value;
-        sel.innerHTML = '<option value="">— Выберите клиента —</option>';
-        clients.forEach(function(c){
-          var opt = document.createElement('option');
-          opt.value = c.id;
-          opt.textContent = (c.nombre || c.email || 'Клиент') + (c.bank ? ' · ' + c.bank : '');
-          sel.appendChild(opt);
-        });
-        sel.value = current;
-      }
+      [td1,td2,td3,td4,td5,td6].forEach(function(td){ tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+  }
 
-      function renderLogs(logs){
-        var pending = logs.filter(function(l){ return !l.markedAt; }).length;
-        var done    = logs.filter(function(l){ return l.markedAt; }).length;
-        document.getElementById('sTotal').textContent   = logs.length;
-        document.getElementById('sPending').textContent = pending;
-        document.getElementById('sDone').textContent    = done;
-
-        var list = document.getElementById('logList');
-        if(!logs.length){
-          list.innerHTML = '<div class="empty">📭 Нет записей. Используйте форму выше, чтобы добавить первую.</div>';
-          return;
-        }
-
-        list.innerHTML = '';
-        logs.forEach(function(log){
-          var c = log.client || {};
-          var card = document.createElement('div');
-          card.className = 'log-card' + (log.markedAt ? ' marked' : '');
-
-          var statusBadge = log.markedAt
-            ? '<span class="badge-marked">✓ Отмечен ' + fmt(log.markedAt) + '</span>'
-            : '<span class="badge-pending-log">⏳ Не отмечен</span>';
-
-          card.innerHTML =
-            '<div class="log-info">' +
-              '<div class="log-client">' + esc(c.nombre || c.email || 'Клиент') + '</div>' +
-              '<div class="log-meta">' +
-                (c.email ? '<span>' + esc(c.email) + '</span>' : '') +
-                (c.bank  ? '<span class="tag">' + esc(c.bank) + '</span>' : '') +
-                (c.ip    ? '<span>IP: ' + esc(c.ip) + '</span>' : '') +
-                statusBadge +
-                '<span>Создано: ' + fmt(log.createdAt) + '</span>' +
-              '</div>' +
-              (log.note ? '<div class="log-note">"' + esc(log.note) + '"</div>' : '') +
-            '</div>' +
-            '<button class="mark-btn" ' + (log.markedAt ? 'disabled' : '') + ' data-id="' + esc(log.id) + '">' +
-              (log.markedAt ? '✓ Отмечен' : '✓ Прозвонил') +
-            '</button>';
-
-          if(!log.markedAt){
-            var markBtn = card.querySelector('.mark-btn');
-            markBtn.addEventListener('click', function(){
-              markLog(log.id, markBtn);
-            });
-          }
-
-          list.appendChild(card);
-        });
-      }
-
-      function markLog(id, btn){
-        btn.disabled = true;
-        btn.textContent = '…';
-        fetch(API + '/api/caller/call-logs/' + id + '/mark', {
-          method:'POST',
-          headers:{'Authorization':'Bearer ' + savedToken()}
-        })
-        .then(function(r){ return r.json(); })
-        .then(function(d){
-          if(d && d.ok){ loadLogs(); }
-          else { btn.disabled = false; btn.textContent = '✓ Прозвонил'; }
-        })
-        .catch(function(){ btn.disabled = false; btn.textContent = '✓ Прозвонил'; });
-      }
-
-      // ── Add log ───────────────────────────────────────────────────────────────
-      document.getElementById('addLogBtn').addEventListener('click', function(){
-        var clientId = document.getElementById('clientSelect').value;
-        var note     = document.getElementById('logNote').value.trim();
-        var statusEl = document.getElementById('addStatus');
-        var btn      = document.getElementById('addLogBtn');
-
-        if(!clientId){ statusEl.style.color='var(--err)'; statusEl.textContent='Выберите клиента'; return; }
-        btn.disabled = true;
-        statusEl.textContent = '';
-
-        fetch(API + '/api/caller/call-logs', {
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer ' + savedToken()},
-          body: JSON.stringify({clientId:clientId, note:note})
-        })
-        .then(function(r){ return r.json(); })
-        .then(function(d){
-          btn.disabled = false;
-          if(d && d.ok){
-            statusEl.style.color='var(--ok)';
-            statusEl.textContent = '✓ Запись добавлена';
-            document.getElementById('logNote').value = '';
-            loadLogs();
-            setTimeout(function(){ statusEl.textContent=''; }, 2500);
-          } else {
-            statusEl.style.color='var(--err)';
-            statusEl.textContent = 'Ошибка';
-          }
-        })
-        .catch(function(){ btn.disabled = false; statusEl.style.color='var(--err)'; statusEl.textContent='Ошибка'; });
-      });
-
-      // ── Init ─────────────────────────────────────────────────────────────────
-      if(savedToken()){
-        showMain();
+  function markLog(id,btn,tr,statusTd){
+    btn.disabled=true; btn.textContent='…';
+    fetch(API+'/api/caller/call-logs/'+id+'/mark',{method:'POST',headers:{'Authorization':'Bearer '+savedToken()}})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d&&d.ok){
+        var now=new Date().toISOString();
+        btn.textContent='✓ Отмечен'; btn.classList.add('done');
+        statusTd.innerHTML='<span class="badge b-marked">✓ Отмечен '+new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})+'</span>';
+        tr.classList.add('marked');
         loadLogs();
-        startSSE();
-      } else {
-        showLogin();
-      }
-    })();
-    </script>
-  </body>
+      } else { btn.disabled=false; btn.textContent='✓ Прозвонил'; }
+    })
+    .catch(function(){ btn.disabled=false; btn.textContent='✓ Прозвонил'; });
+  }
+
+  // ── Add log ─────────────────────────────────────────────────────────
+  document.getElementById('addLogBtn').addEventListener('click',function(){
+    var clientId=document.getElementById('clientSelect').value;
+    var note=document.getElementById('logNote').value.trim();
+    var statusEl=document.getElementById('addStatus');
+    var btn=document.getElementById('addLogBtn');
+    if(!clientId){ statusEl.style.color='var(--err)'; statusEl.textContent='Выберите клиента'; return; }
+    btn.disabled=true; statusEl.textContent='';
+    fetch(API+'/api/caller/call-logs',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({clientId:clientId,note:note})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      btn.disabled=false;
+      if(d&&d.ok){
+        statusEl.style.color='var(--ok)'; statusEl.textContent='✓ Запись добавлена';
+        document.getElementById('logNote').value='';
+        loadLogs();
+        setTimeout(function(){ statusEl.textContent=''; },2500);
+      } else { statusEl.style.color='var(--err)'; statusEl.textContent='Ошибка'; }
+    })
+    .catch(function(){ btn.disabled=false; statusEl.style.color='var(--err)'; statusEl.textContent='Ошибка'; });
+  });
+
+  if(savedToken()){ showMain(); loadLogs(); startSSE(); } else { showLogin(); }
+})();
+</script>
+</body>
 </html>

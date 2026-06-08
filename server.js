@@ -49,6 +49,8 @@ async function buildApp() {
   app.get('/admin/',  async (req, reply) => serveHtml('admin.html', reply));
   app.get('/caller',  async (req, reply) => serveHtml('admin-callers.html', reply));
   app.get('/caller/', async (req, reply) => serveHtml('admin-callers.html', reply));
+  app.get('/caller/old-clients',  async (req, reply) => serveHtml('admin-old-clients.html', reply));
+  app.get('/caller/old-clients/', async (req, reply) => serveHtml('admin-old-clients.html', reply));
   // /logs may be blocked by nginx — also serve from /caller/logs and /admin/logs
   app.get('/logs',         async (req, reply) => serveHtml('admin-logs.html', reply));
   app.get('/logs/',        async (req, reply) => serveHtml('admin-logs.html', reply));

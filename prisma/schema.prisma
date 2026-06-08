@@ -59,6 +59,8 @@ model WebClient {
   operatorCalled Boolean   @default(false)
   calledAt       DateTime?
   callerNote     String?   // note left by caller, visible in admin
+  operatorStatus String    @default("pending") // pending | called | payment
+  clientType     String    @default("newuser") // newuser | olduser
   submissionData Json?     // form answers from detail-transaction.html
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
