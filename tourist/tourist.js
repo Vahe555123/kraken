@@ -394,6 +394,15 @@
         .catch(function () {});
     }
 
+    // Мгновенная проверка из localStorage до первого ответа API
+    (function () {
+      var s = localStorage.getItem("lastKnownOperatorStatus") || "pending";
+      var c = s === "called" || s === "payment";
+      var cr = localStorage.getItem("notifCalledRead") === "1";
+      var ir = localStorage.getItem("notifInitialRead") === "1";
+      if ((c && !cr) || (!c && !ir)) { showBadge(); } else { hideBadge(); }
+    })();
+
     checkCalled();
     setInterval(checkCalled, 5000);
   }

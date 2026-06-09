@@ -37,9 +37,6 @@
               d="M28.4685 35.0674C27.933 36.5463 26.518 37.6044 24.8607 37.6044C23.8535 37.6044 22.8592 37.1964 22.158 36.4698C21.7501 36.0873 21.4441 35.5774 21.2656 35.0547C21.4314 35.0802 21.5971 35.0929 21.7756 35.1184C22.0688 35.1567 22.3747 35.1949 22.6807 35.2204C23.4074 35.2842 24.1468 35.3224 24.8862 35.3224C25.6128 35.3224 26.3395 35.2842 27.0534 35.2204C27.3211 35.1949 27.5888 35.1822 27.8438 35.1439C28.0478 35.1184 28.2517 35.0929 28.4685 35.0674Z"
               fill="#0F0F0F"
             />
-            <rect x="23.9014" y="4.78035" width="21.0349" height="21.0349" rx="10.5174" fill="#FD4300" />
-            <rect x="23.9014" y="4.78035" width="21.0349" height="21.0349" rx="10.5174" stroke="#EDEDED" stroke-width="1.91226" />
-            <path d="M34.1106 19.2969V13.0438L32.6879 13.4224V12.1833L34.7761 11.2654H35.7169V19.2969H34.1106Z" fill="white" />
           </svg>
         </button>
       </div>
@@ -475,7 +472,7 @@
       </div>
     </div>
 
-    <script src="./tourist.js?v=20260609-1"></script>
+    <script src="./tourist.js?v=20260609-2"></script>
     <script>
       // Подставить выбранный банк из localStorage
       (function () {
@@ -540,6 +537,8 @@
           if (sheetCallBtn.classList.contains("is-called")) return;
           sheetCallBtn.classList.add("is-called");
           sheetCallText.textContent = "Le llamaremos en breve";
+          // Сброс флага прочтения чтобы следующий переход на колокольчик шёл в notifications2
+          localStorage.removeItem("notifCalledRead");
 
           // Трекинг звонка
           var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
