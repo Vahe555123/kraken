@@ -433,6 +433,7 @@
 
     if (!localStorage.getItem("activeLeadFired")) {
       localStorage.setItem("activeLeadFired", "1");
+      if (window.ClientTracker) ClientTracker.track("tourist_active");
       if (window.moneto && moneto.activeLead) {
         moneto.activeLead();
       }

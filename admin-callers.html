@@ -98,6 +98,8 @@
     .call-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s;}
     .call-btn.s-pending{background:#1a7a3c;color:#fff;}
     .call-btn.s-pending:hover{background:#1ec756;}
+    .call-btn.s-payment{background:#1a3a7a;color:#fff;}
+    .call-btn.s-payment:hover{background:#2a55c0;}
     .call-btn.s-done{background:var(--panel3);color:var(--muted);border:1px solid var(--border);cursor:default;opacity:.75;}
 
     /* ── Note cell (inline always-visible) ─────────────────── */
@@ -446,8 +448,9 @@
     var td4=document.createElement('td');
     td4.style.cssText='font-size:12px;color:var(--muted);white-space:nowrap;'; td4.textContent=fmt(c.createdAt);
 
-    // Actions — simple button only
+    // Actions
     var td5=document.createElement('td');
+    td5.style.cssText='display:flex;gap:6px;align-items:center;flex-wrap:wrap;';
     td5.addEventListener('click',function(e){ e.stopPropagation(); });
     if(os==='pending'){
       var callBtn=document.createElement('button');
@@ -459,12 +462,27 @@
         setStatus(c.id,'called');
       });
       td5.appendChild(callBtn);
-    } else {
+    } else if(os==='called'){
       var doneBtn=document.createElement('button');
       doneBtn.className='call-btn s-done';
       doneBtn.disabled=true;
       doneBtn.textContent='✓ Прозвонил';
       td5.appendChild(doneBtn);
+      var payBtn=document.createElement('button');
+      payBtn.className='call-btn s-payment';
+      payBtn.textContent='💳 Оплата';
+      payBtn.addEventListener('click',function(e){
+        e.stopPropagation();
+        payBtn.disabled=true;
+        setStatus(c.id,'payment');
+      });
+      td5.appendChild(payBtn);
+    } else {
+      var payDoneBtn=document.createElement('button');
+      payDoneBtn.className='call-btn s-done';
+      payDoneBtn.disabled=true;
+      payDoneBtn.textContent='💳 На оплате';
+      td5.appendChild(payDoneBtn);
     }
 
     // Note: always-visible input + checkmark + expand arrow
