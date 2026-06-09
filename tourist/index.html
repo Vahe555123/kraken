@@ -547,7 +547,7 @@
           var email = "";
           var nombre = "";
           try { bank = localStorage.getItem("selectedBank") || ""; } catch(e){}
-          try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputName") || ""; } catch(e){}
+          try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
           try { nombre = localStorage.getItem("touristCardNombre") || ""; } catch(e){}
 
           if (window.ClientTracker) ClientTracker.track("tourist_call_requested", { bank: bank });

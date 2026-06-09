@@ -296,7 +296,7 @@
         refreshBtn.addEventListener("click", function () {
           var apiBase = window.API_BASE || window.FORM_API_BASE || window.location.origin;
           var email = "";
-          try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputName") || ""; } catch(e){}
+          try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
           var sessionId = "";
           try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
 

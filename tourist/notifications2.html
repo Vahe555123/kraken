@@ -144,11 +144,11 @@
                 <p class="credit-letter__para">Gracias por su colaboración.</p>
                 <p class="credit-letter__line">Atentamente,</p>
                 <p class="credit-letter__line">Departamento de Préstamos</p>
-                <p class="credit-letter__line">CaixaBank S.A.</p>
+                <p class="credit-letter__line" id="notif2ContractBankFooter">CaixaBank S.A.</p>
               </div>
 
               <div class="credit-letter__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp">
+                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp" id="notif2ContractStamp">
                 <img src="../assets/left-hand.png" alt="" class="credit-letter__signature">
               </div>
             </section>
@@ -233,40 +233,53 @@
         var ibanEl = document.getElementById("notif2Iban");
         var contractNameEl = document.getElementById("notif2ContractClientName");
 
-        // Подставить выбранный банк из localStorage
+        // Подставить выбранный банк (та же логика что в detail-transaction.html)
         var bank = "";
+        var bankKey = "";
         var bankLogo = "";
-        try { bank = localStorage.getItem("selectedBank") || ""; } catch(e){}
+        try { bank    = localStorage.getItem("selectedBank")    || ""; } catch(e){}
+        try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch(e){}
         try { bankLogo = localStorage.getItem("selectedBankLogo") || ""; } catch(e){}
 
-        var pdfBankName = document.getElementById("notif2PdfBankName");
+        var BANK_ASSET_EXT = "svg";
+        function bankAsset(file) {
+          return bankKey ? ("../banks/" + bankKey + "/" + file + "." + BANK_ASSET_EXT) : null;
+        }
+
+        var pdfBankName      = document.getElementById("notif2PdfBankName");
         var contractBankName = document.getElementById("notif2ContractBankName");
+        var contractBankFooter = document.getElementById("notif2ContractBankFooter");
         var contractBankLogoWrap = document.getElementById("notif2ContractBankLogoWrap");
-        var pdfBankIcon = document.getElementById("notif2PdfBankIcon");
+        var pdfBankIcon      = document.getElementById("notif2PdfBankIcon");
 
         if (bank) {
-          if (pdfBankName) pdfBankName.textContent = bank;
-          if (contractBankName) contractBankName.textContent = bank;
+          if (pdfBankName)       pdfBankName.textContent       = bank;
+          if (contractBankName)  contractBankName.textContent  = bank;
+          if (contractBankFooter) contractBankFooter.textContent = bank;
         }
-        if (bankLogo) {
-          // Лого в PDF кнопке (заменяем SVG на img)
+
+        // Лого: сначала banks/{key}/logo.svg, потом legacy URL из localStorage
+        var logoSrc = bankAsset("logo") || bankLogo;
+        if (logoSrc) {
           if (pdfBankIcon) {
             var iconImg = document.createElement("img");
-            iconImg.src = bankLogo;
+            iconImg.src = logoSrc;
             iconImg.alt = bank || "Banco";
             iconImg.className = "tourist-notif-pdf__icon";
             iconImg.style.cssText = "width:32px;height:32px;object-fit:contain;border-radius:4px;";
             pdfBankIcon.parentNode.replaceChild(iconImg, pdfBankIcon);
           }
-          // Лого в шапке контракта
           if (contractBankLogoWrap) {
-            var logoImg = document.createElement("img");
-            logoImg.src = bankLogo;
-            logoImg.alt = bank || "Banco";
-            logoImg.className = "credit-letter__caixa-logo";
-            contractBankLogoWrap.innerHTML = "";
-            contractBankLogoWrap.appendChild(logoImg);
+            var logoImg = contractBankLogoWrap.querySelector("img");
+            if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
           }
+        }
+
+        // Печать: banks/{key}/stamp.svg
+        var stampSrc = bankAsset("stamp");
+        if (stampSrc) {
+          var stampEl = document.getElementById("notif2ContractStamp");
+          if (stampEl) stampEl.src = stampSrc;
         }
 
         // Имя из localStorage как быстрый старт
