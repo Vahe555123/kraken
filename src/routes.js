@@ -429,14 +429,33 @@ async function handleTouristStatus(req, reply) {
   reply.header('Cache-Control', 'no-store');
   try {
     const flowSessionId = sanitizeString(req.query.s || '', 80);
-    if (!flowSessionId) return reply.send({ operatorCalled: false });
-    const client = await prisma.webClient.findUnique({
-      where: { flowSessionId },
-      select: { operatorCalled: true, status: true },
+    if (!flowSessionId) return reply.send({ operatorCalled: false, operatorStatus: 'pending', iban: '' });
+
+    let client = null;
+    try {
+      client = await prisma.webClient.findUnique({
+        where: { flowSessionId },
+        select: { operatorCalled: true, status: true, operatorStatus: true, submissionData: true, nombre: true },
+      });
+    } catch (e) {
+      if (e?.code === 'P2022') {
+        client = await prisma.webClient.findUnique({
+          where: { flowSessionId },
+          select: { operatorCalled: true, status: true, nombre: true },
+        });
+      } else throw e;
+    }
+
+    const sub = (client?.submissionData && typeof client.submissionData === 'object') ? client.submissionData : {};
+    const opStatus = client?.operatorStatus ?? (client?.operatorCalled ? 'called' : 'pending');
+    return reply.send({
+      operatorCalled: client?.operatorCalled ?? false,
+      operatorStatus: opStatus,
+      iban: sub.iban || '',
+      nombre: client?.nombre || sub.nombre || '',
     });
-    return reply.send({ operatorCalled: client?.operatorCalled ?? false });
   } catch {
-    return reply.send({ operatorCalled: false });
+    return reply.send({ operatorCalled: false, operatorStatus: 'pending', iban: '' });
   }
 }
 

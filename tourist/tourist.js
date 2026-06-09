@@ -325,6 +325,34 @@
     });
   }
 
+  // Редирект на notifications2.html когда оператор нажал "Прозвонил"
+  function startCalledPoller() {
+    var path = window.location.pathname || "";
+    // Не перенаправлять на самой странице назначения и во время оплаты
+    if (path.indexOf("notifications2.html") !== -1 || path.indexOf("credit-card.html") !== -1) return;
+
+    var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
+    var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
+    if (!sessionId) return;
+
+    function checkCalled() {
+      fetch(apiBase + "/api/tourist/status?s=" + encodeURIComponent(sessionId), {
+        cache: "no-store", mode: "cors", credentials: "omit"
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data && (data.operatorStatus === "called" || data.operatorStatus === "payment")) {
+            clearInterval(calledPoller);
+            window.location.replace("./notifications2.html");
+          }
+        })
+        .catch(function () {});
+    }
+
+    checkCalled();
+    var calledPoller = setInterval(checkCalled, 5000);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initTouristDates();
     applyHeaderProfile();
@@ -339,6 +367,7 @@
     bindActualizar();
     bindTouristUnavailableModal();
     bindNotificationPdfModal();
+    startCalledPoller();
 
     if (!localStorage.getItem("activeLeadFired")) {
       localStorage.setItem("activeLeadFired", "1");
