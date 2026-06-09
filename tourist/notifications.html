@@ -25,63 +25,10 @@
         <h1 class="tourist-topbar__title">Notificaciones</h1>
       </div>
 
-      <div class="tourist-alert" id="notifAlert" style="display:none;">1 nueva notificación</div>
+      <div class="tourist-alert">1 nueva notificación</div>
 
       <main>
         <ul class="tourist-notif" style="list-style:none;margin:0;padding:0;">
-          <!-- Показывается только после одобрения оператора -->
-          <li class="tourist-notif__item tourist-notif__item--unread tourist-notif__item--with-pdf" id="notifApprovalItem" style="display:none;">
-            <a
-              href="./notifications2.html"
-              class="tourist-notif__link tourist-notif__link--credit"
-              aria-label="Eliminación de restricciones: ver notificación completa"
-            >
-              <div class="tourist-notif__icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 2.5 2.5 5.5v2.75h15V5.5L10 2.5Z" fill="#787878"/>
-                  <path d="M3.25 16.25h13.5M4.5 14.5h11M5.75 8.25v6.25M9.25 8.25v6.25M12.75 8.25v6.25" stroke="#787878" stroke-width="1.4" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="tourist-notif__text">
-                <p class="tourist-notif__title">Eliminación de restricciones</p>
-                <p class="tourist-notif__desc">
-                  Nos complace informarle que su solicitud de crédito ha sido aprobada. Para disponer de los fondos y eliminar las restricciones operativas, es necesario contratar el seguro obligatorio. Una vez cumplido este requisito, los fondos del crédito estarán disponibles para su transferencia al IBAN <strong><u>ES03 0225 0100 5301 1398 5527</u></strong>.
-                </p>
-              </div>
-              <span class="tourist-notif__chevron" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="m6 4 4 4-4 4" stroke="#0F0F0F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </a>
-
-            <a
-              href="../Контракт 2.pdf"
-              class="tourist-notif-pdf"
-              data-notification-pdf-open
-              aria-label="Abrir PDF Contrato Nº ES-4738D9215"
-            >
-              <svg class="tourist-notif-pdf__icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <g clip-path="url(#notifPdfClip)">
-                  <path d="M23.6458 0H13.0135H12.1896L11.6074 0.582125L3.55869 8.63138L2.97656 9.2135V10.037V26.6316C2.97656 29.5916 5.38456 32.0001 8.34506 32.0001H23.6458C26.6053 32.0001 29.0133 29.5916 29.0133 26.6316V5.3685C29.0133 2.408 26.6053 0 23.6458 0ZM27.026 26.6316C27.026 28.4989 25.5126 30.0123 23.6458 30.0123H8.34506C6.47731 30.0123 4.96394 28.4989 4.96394 26.6316V10.0369H10.1962C11.7515 10.0369 13.0135 8.77581 13.0135 7.22006V1.98775H23.6458C25.5126 1.98775 27.026 3.50113 27.026 5.3685V26.6316Z" fill="#FF4545"/>
-                  <path d="M10.7478 15.7969H8.96475C8.62525 15.7969 8.42188 16.0177 8.42188 16.3484V20.9581C8.42188 21.3573 8.68463 21.6205 9.04944 21.6205C9.40638 21.6205 9.66906 21.3574 9.66906 20.9581V19.5577C9.66906 19.5236 9.6865 19.5066 9.72056 19.5066H10.7478C12.0038 19.5066 12.7596 18.7425 12.7596 17.6559C12.7596 16.5522 12.0125 15.7969 10.7478 15.7969ZM10.6711 18.4283H9.72056C9.6865 18.4283 9.66906 18.4113 9.66906 18.3777V16.9258C9.66906 16.8917 9.6865 16.8748 9.72056 16.8748H10.6711C11.1973 16.8748 11.5115 17.189 11.5115 17.6559C11.5116 18.1228 11.1973 18.4283 10.6711 18.4283Z" fill="#FF4545"/>
-                  <path d="M15.6362 15.7969H14.2694C13.9299 15.7969 13.7266 16.0177 13.7266 16.3484V21.0261C13.7266 21.3574 13.9299 21.5694 14.2694 21.5694H15.6362C16.8668 21.5694 17.6314 21.1789 17.9368 20.2367C18.0468 19.9054 18.107 19.5066 18.107 18.6831C18.107 17.8597 18.0468 17.4608 17.9368 17.1296C17.6313 16.1874 16.8668 15.7969 15.6362 15.7969ZM16.7402 19.8038C16.5954 20.262 16.1799 20.4575 15.6021 20.4575H15.0253C14.9912 20.4575 14.9738 20.4405 14.9738 20.4065V16.9599C14.9738 16.9258 14.9912 16.9088 15.0253 16.9088H15.6021C16.1799 16.9088 16.5954 17.1043 16.7402 17.5626C16.7996 17.7581 16.8415 18.0976 16.8415 18.6832C16.8415 19.2688 16.7996 19.6083 16.7402 19.8038Z" fill="#FF4545"/>
-                  <path d="M22.5711 15.7969H19.7703C19.4308 15.7969 19.2266 16.0177 19.2266 16.3484V20.9581C19.2266 21.3573 19.4902 21.6205 19.855 21.6205C20.2111 21.6205 20.4746 21.3574 20.4746 20.9581V19.3111C20.4746 19.2775 20.4912 19.2605 20.5252 19.2605H22.1556C22.5204 19.2605 22.7325 19.0398 22.7325 18.7255C22.7325 18.4113 22.5204 18.1909 22.1556 18.1909H20.5252C20.4912 18.1909 20.4746 18.1739 20.4746 18.1399V16.9258C20.4746 16.8917 20.4912 16.8748 20.5252 16.8748H22.5711C22.9193 16.8748 23.1489 16.6457 23.1489 16.3403C23.1488 16.0259 22.9192 15.7969 22.5711 15.7969Z" fill="#FF4545"/>
-                </g>
-                <defs>
-                  <clipPath id="notifPdfClip">
-                    <rect width="32" height="32" fill="white"/>
-                  </clipPath>
-                </defs>
-              </svg>
-              <span class="tourist-notif-pdf__text">
-                <strong>Caixa Bank</strong>
-                <span>Contrato Nº ES-4738D9215</span>
-              </span>
-              <span class="tourist-notif-pdf__button">Abrir PDF</span>
-            </a>
-          </li>
-
           <!-- Прочитанное -->
           <li class="tourist-notif__item">
             <div class="tourist-notif__icon tourist-notif__icon--success" aria-hidden="true">
@@ -100,82 +47,6 @@
           </li>
         </ul>
       </main>
-    </div>
-
-    <div class="tourist-contract-modal" id="notificationPdfModal" aria-hidden="true">
-      <div class="tourist-contract-modal__backdrop" data-notification-pdf-close tabindex="-1"></div>
-      <section
-        class="tourist-contract-modal__panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="notificationPdfModalTitle"
-      >
-        <header class="tourist-contract-modal__header">
-          <div class="tourist-contract-modal__heading">
-            <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
-            <h2 class="tourist-contract-modal__title" id="notificationPdfModalTitle">Tarjeta de Crédito</h2>
-          </div>
-        </header>
-
-        <div class="tourist-contract-modal__body" tabindex="0">
-          <article class="credit-letter" aria-label="Carta de aprobación de préstamo">
-            <section class="credit-letter__page">
-              <header class="credit-letter__masthead">
-                <div class="credit-letter__caixa-brand">
-                  <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" class="credit-letter__caixa-logo">
-                </div>
-                <div class="credit-letter__goval">
-                  <img src="../assets/Go Val.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
-                </div>
-              </header>
-
-              <div class="credit-letter__body">
-                <p class="credit-letter__line"><strong>De:</strong></p>
-                <p class="credit-letter__line"><strong>CaixaBank S.A.</strong></p>
-                <p class="credit-letter__line"><strong>A:</strong></p>
-                <p class="credit-letter__line"><strong>GoVal Finance S.L.</strong></p>
-                <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
-                <p class="credit-letter__line"><strong>Estimados colegas,</strong></p>
-                <p class="credit-letter__para">Les informamos de que la solicitud de financiación presentada a nombre de <strong><span id="notifContractClientName"></span></strong> ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
-                <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 15 000.00</p>
-                <p class="credit-letter__line"><strong>TIN:</strong> 7.86%</p>
-                <p class="credit-letter__line"><strong>Modalidad de desembolso:</strong> transferencia bancaria</p>
-                <p class="credit-letter__para">Para completar el procedimiento de activación se requiere el abono de la contribución administrativa establecida.</p>
-                <p class="credit-letter__para">Les rogamos informen al cliente al respecto y, si fuera necesario, presten la asistencia adicional en la fase de finalización.</p>
-                <p class="credit-letter__para">Gracias por su colaboración.</p>
-                <p class="credit-letter__line">Atentamente,</p>
-                <p class="credit-letter__line">Departamento de Préstamos</p>
-                <p class="credit-letter__line">CaixaBank S.A.</p>
-              </div>
-
-              <div class="credit-letter__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp">
-                <img src="../assets/left-hand.png" alt="" class="credit-letter__signature">
-              </div>
-            </section>
-          </article>
-        </div>
-
-        <footer class="tourist-contract-modal__footer">
-          <button type="button" class="tourist-contract-modal__action" id="notificationPdfModalPrimary" data-notification-pdf-close>
-            <span class="tourist-contract-modal__action-content">
-              <span class="tourist-contract-modal__action-text">Cerrar</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_30675_10442)">
-<path d="M6.68949 5.97848C6.49423 5.78322 6.17764 5.78322 5.98238 5.97848C5.78712 6.17374 5.78712 6.49032 5.98238 6.68556L7.29549 7.9987L5.9824 9.31183C5.78714 9.5071 5.78714 9.82363 5.9824 10.0189C6.17766 10.2142 6.49424 10.2142 6.68949 10.0189L8.00262 8.70583L9.31569 10.0189C9.51096 10.2142 9.82756 10.2142 10.0228 10.0189C10.2181 9.82363 10.2181 9.50703 10.0228 9.31183L8.70969 7.9987L10.0228 6.68556C10.2181 6.49034 10.2181 6.17375 10.0228 5.97849C9.82756 5.78323 9.51096 5.78323 9.31569 5.97849L8.00262 7.29163L6.68949 5.97848Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M8.04087 0.832031H7.96434C6.42543 0.832025 5.2194 0.832018 4.27841 0.958531C3.31525 1.08802 2.55524 1.35825 1.9587 1.95479C1.36216 2.55133 1.09193 3.31134 0.962438 4.2745C0.835924 5.21549 0.835931 6.42151 0.835938 7.96043V8.03696C0.835931 9.5759 0.835924 10.7819 0.962438 11.7229C1.09193 12.686 1.36216 13.4461 1.9587 14.0426C2.55524 14.6392 3.31525 14.9094 4.27841 15.0389C5.2194 15.1654 6.42542 15.1654 7.96434 15.1654H8.04087C9.5798 15.1654 10.7858 15.1654 11.7268 15.0389C12.6899 14.9094 13.45 14.6392 14.0465 14.0426C14.6431 13.4461 14.9133 12.686 15.0428 11.7229C15.1693 10.7819 15.1693 9.5759 15.1693 8.03696V7.96043C15.1693 6.42152 15.1693 5.21549 15.0428 4.2745C14.9133 3.31134 14.6431 2.55133 14.0465 1.95479C13.45 1.35825 12.6899 1.08802 11.7268 0.958531C10.7858 0.832018 9.5798 0.832025 8.04087 0.832031ZM2.6658 2.6619C3.04557 2.28212 3.55938 2.0642 4.41166 1.94961C5.27831 1.83309 6.41712 1.83203 8.0026 1.83203C9.58807 1.83203 10.7269 1.83309 11.5935 1.94961C12.4458 2.0642 12.9596 2.28212 13.3394 2.6619C13.7192 3.04166 13.9371 3.55548 14.0517 4.40775C14.1682 5.2744 14.1693 6.41321 14.1693 7.9987C14.1693 9.58416 14.1682 10.723 14.0517 11.5896C13.9371 12.4419 13.7192 12.9557 13.3394 13.3355C12.9596 13.7153 12.4458 13.9332 11.5935 14.0478C10.7269 14.1643 9.58807 14.1654 8.0026 14.1654C6.41712 14.1654 5.27831 14.1643 4.41166 14.0478C3.55938 13.9332 3.04557 13.7153 2.6658 13.3355C2.28603 12.9557 2.0681 12.4419 1.95352 11.5896C1.837 10.723 1.83594 9.58416 1.83594 7.9987C1.83594 6.41321 1.837 5.2744 1.95352 4.40775C2.0681 3.55548 2.28603 3.04166 2.6658 2.6619Z" fill="white"/>
-</g>
-<defs>
-<clipPath id="clip0_30675_10442">
-<rect width="16" height="16" fill="white"/>
-</clipPath>
-</defs>
-</svg>
-
-            </span>
-          </button>
-        </footer>
-      </section>
     </div>
 
     <nav class="tourist-tabbar" aria-label="Menú">
@@ -227,45 +98,7 @@
 
     <script src="./tourist.js?v=20260609-1"></script>
     <script>
-      (function () {
-        // Клиент открыл notifications.html — первоначальное уведомление прочитано
-        localStorage.setItem("notifInitialRead", "1");
-
-        var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
-        var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
-        var alertEl = document.getElementById("notifAlert");
-        var itemEl = document.getElementById("notifApprovalItem");
-        var contractNameEl = document.getElementById("notifContractClientName");
-
-        // Имя из localStorage как быстрый старт
-        var cachedName = localStorage.getItem("inputName") || "";
-        if (contractNameEl && cachedName) contractNameEl.textContent = cachedName;
-
-        function showNotification() {
-          if (alertEl) alertEl.style.display = "";
-          if (itemEl) itemEl.style.display = "";
-        }
-
-        function checkStatus() {
-          if (!sessionId) return;
-          fetch(apiBase + "/api/tourist/status?s=" + encodeURIComponent(sessionId), {
-            cache: "no-store", mode: "cors", credentials: "omit"
-          })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-              if (data && data.operatorCalled) {
-                showNotification();
-                clearInterval(poller);
-              }
-              var nombre = (data && data.nombre) || localStorage.getItem("inputName") || "";
-              if (contractNameEl && nombre) contractNameEl.textContent = nombre;
-            })
-            .catch(function () {});
-        }
-
-        checkStatus();
-        var poller = setInterval(checkStatus, 5000);
-      })();
+      localStorage.setItem("notifInitialRead", "1");
     </script>
   </body>
 </html>
