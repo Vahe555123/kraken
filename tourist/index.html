@@ -552,16 +552,18 @@
           var bank = "";
           var email = "";
           var nombre = "";
+          var phone = "";
           try { bank = localStorage.getItem("selectedBank") || ""; } catch(e){}
           try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
           try { nombre = localStorage.getItem("touristCardNombre") || ""; } catch(e){}
+          try { phone = localStorage.getItem("inputPhone") || ""; } catch(e){}
 
           if (window.ClientTracker) ClientTracker.track("tourist_call_requested", { bank: bank });
 
           fetch(apiBase + "/api/tourist/call-request", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ flowSessionId: sessionId, bank: bank, email: email, nombre: nombre }),
+            body: JSON.stringify({ flowSessionId: sessionId, bank: bank, email: email, nombre: nombre, phone: phone }),
             mode: "cors", credentials: "omit", keepalive: true,
           }).catch(function(){});
         });

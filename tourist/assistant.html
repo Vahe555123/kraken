@@ -370,10 +370,11 @@
         }
 
         function scrollDown() {
-          // Double rAF: first fires before paint, second after layout is complete
+          // Input bar is position:fixed; the window (not chat) scrolls
           requestAnimationFrame(function () {
+            window.scrollTo(0, document.body.scrollHeight);
             requestAnimationFrame(function () {
-              chat.scrollTop = chat.scrollHeight;
+              window.scrollTo(0, document.body.scrollHeight);
             });
           });
         }
@@ -383,7 +384,6 @@
           msg.className = 'assistant-msg ' + (role === 'user' ? 'assistant-msg--user' : 'assistant-msg--bot');
           msg.innerHTML = '<p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p>';
           chat.insertBefore(msg, typing);
-          msg.scrollIntoView({ block: 'end', behavior: 'instant' });
           scrollDown();
           return msg;
         }
