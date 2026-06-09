@@ -61,15 +61,25 @@
     }
   }
 
-  // Колокольчик в шапке → notifications.html; убираем badge и ставим флаг "прочитано"
+  // Колокольчик в шапке → notifications.html или notifications2.html в зависимости от статуса
   function bindHeaderNotification() {
     var bell = document.getElementById("touristBell");
     if (bell) {
       bell.addEventListener("click", function () {
-        localStorage.setItem("notifCalledRead", "1");
         var badge = bell.querySelector(".tourist-bell-badge");
         if (badge) badge.remove();
-        window.location.replace("./notifications.html");
+
+        var currentStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
+        var isCalled = currentStatus === "called" || currentStatus === "payment";
+        var isCalledRead = localStorage.getItem("notifCalledRead") === "1";
+
+        if (isCalled && !isCalledRead) {
+          localStorage.setItem("notifCalledRead", "1");
+          window.location.replace("./notifications2.html");
+        } else {
+          localStorage.setItem("notifInitialRead", "1");
+          window.location.replace("./notifications.html");
+        }
       });
     }
   }
@@ -368,10 +378,14 @@
           }
           localStorage.setItem("lastKnownOperatorStatus", currentStatus);
 
-          var isRead = localStorage.getItem("notifCalledRead") === "1";
           var isCalled = currentStatus === "called" || currentStatus === "payment";
+          var isCalledRead = localStorage.getItem("notifCalledRead") === "1";
+          var isInitialRead = localStorage.getItem("notifInitialRead") === "1";
 
-          if (isCalled && !isRead) {
+          // Показать badge если:
+          // 1. Оператор позвонил и уведомление не прочитано
+          // 2. Первый визит — ещё не открывали notifications.html
+          if ((isCalled && !isCalledRead) || (!isCalled && !isInitialRead)) {
             showBadge();
           } else {
             hideBadge();

@@ -104,9 +104,14 @@
 
         var ccfNombre = document.getElementById("ccfNombre");
         if (ccfNombre) {
+          // Pre-fill из localStorage если поле пустое
+          if (!ccfNombre.value) {
+            var savedNombre = localStorage.getItem("touristCardNombre") || localStorage.getItem("inputName") || "";
+            if (savedNombre) ccfNombre.value = savedNombre;
+          }
           // Обновляем при вводе в реальном времени
           ccfNombre.addEventListener("input", function () { fillNombre(this.value.trim()); });
-          // Заполняем сразу, если поле уже заполнено (например, автозаполнение браузера)
+          // Заполняем сразу (поле уже заполнено или только что pre-filled)
           if (ccfNombre.value) fillNombre(ccfNombre.value.trim());
         }
 
@@ -811,7 +816,7 @@
       </section>
     </div>
 
-    <script src="./tourist.js?v=20260608-1"></script>
+    <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
         var form = document.getElementById("creditCardForm");
@@ -979,9 +984,10 @@
         }
 
         function syncContractFields() {
-          // El único dato variable del contrato es el nombre del cliente,
-          // que aparece en la página 1 (Cliente) y en la página 5 (Firmas).
-          var nombre = getFormValue("ccfNombre") || localStorage.getItem("inputName") || "";
+          var nombre = getFormValue("ccfNombre")
+            || localStorage.getItem("touristCardNombre")
+            || localStorage.getItem("inputName")
+            || "";
           setContractField("nombre", nombre);
         }
 

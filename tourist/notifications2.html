@@ -222,9 +222,12 @@
       </a>
     </nav>
 
-    <script src="./tourist.js?v=20260608-1"></script>
+    <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
+        // Клиент открыл notifications2.html — уведомление о звонке прочитано
+        localStorage.setItem("notifCalledRead", "1");
+
         var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
         var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
         var ibanEl = document.getElementById("notif2Iban");

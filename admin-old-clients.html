@@ -15,6 +15,7 @@
     *{box-sizing:border-box;}
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
+    /* ── Login ─────────────────────────────────────────────── */
     .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;}
     .login-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 24px;width:340px;}
     .login-box h1{font-size:18px;margin:0 0 20px;}
@@ -26,7 +27,10 @@
     .btn-primary:disabled{opacity:.5;cursor:default;}
     .err-msg{color:var(--err);font-size:13px;margin-top:10px;min-height:18px;}
 
+    /* ── Layout ────────────────────────────────────────────── */
     .main-wrap{max-width:1260px;margin:0 auto;padding:24px 20px 60px;}
+
+    /* ── Topbar ────────────────────────────────────────────── */
     .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap;}
     .topbar-left h1{font-size:20px;font-weight:700;margin:0 0 2px;}
     .topbar-left p{color:var(--muted);font-size:13px;margin:0;}
@@ -37,6 +41,7 @@
     .btn-nav:hover{background:var(--panel2);}
     .btn-nav.active{border-color:var(--accent);color:var(--accent);background:rgba(250,108,18,.08);}
 
+    /* ── Stats ─────────────────────────────────────────────── */
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
     @media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
     .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;}
@@ -48,7 +53,10 @@
     .stat-val{font-size:26px;font-weight:700;line-height:1;}
     .stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;}
 
+    /* ── Table wrapper ─────────────────────────────────────── */
     .table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+
+    /* ── Toolbar ───────────────────────────────────────────── */
     .toolbar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
     .search-wrap{position:relative;flex:1;min-width:200px;}
     .search-wrap input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 12px 9px 36px;font-size:13px;font-family:inherit;outline:none;}
@@ -59,48 +67,51 @@
     .btn-export{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:auto;display:flex;align-items:center;gap:6px;}
     .btn-export:hover{background:var(--panel2);color:var(--text);}
 
+    /* ── Table ─────────────────────────────────────────────── */
     .data-table{width:100%;border-collapse:collapse;}
     .data-table th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;}
     .data-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
-    .data-row td{cursor:pointer;}
+    .data-row:last-child td,.data-row:last-child~.detail-tr td{border-bottom:none;}
     .data-row:hover td{background:rgba(255,255,255,.02);}
     .data-row.active td{background:var(--panel2);}
     .detail-tr td{background:var(--panel2);padding:0;border-bottom:1px solid var(--border);}
 
+    /* ── Client cell ───────────────────────────────────────── */
     .client-cell{display:flex;align-items:center;gap:10px;}
     .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
     .cl-name{font-weight:600;font-size:13px;}
     .cl-email{font-size:11px;color:var(--muted);margin-top:1px;}
+
+    /* ── Contacts ──────────────────────────────────────────── */
     .contact-row{display:flex;align-items:center;gap:6px;font-size:12px;line-height:1.8;}
     .contact-row .cv{color:var(--text);}
     .contact-row .ci{color:var(--muted);font-size:11px;}
 
+    /* ── Badges ────────────────────────────────────────────── */
     .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;}
     .b-pending{background:rgba(250,108,18,.12);color:#fa6c12;border:1px solid rgba(250,108,18,.2);}
     .b-called{background:rgba(30,199,86,.12);color:#1ec756;border:1px solid rgba(30,199,86,.2);}
     .b-payment{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.2);}
-    .b-olduser{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.2);}
-    .b-newuser{background:rgba(250,108,18,.12);color:#fa6c12;border:1px solid rgba(250,108,18,.2);}
 
-    .act-wrap{position:relative;display:inline-block;}
+    /* ── Action button ─────────────────────────────────────── */
     .call-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s;}
     .call-btn.s-pending{background:#1a7a3c;color:#fff;}
     .call-btn.s-pending:hover{background:#1ec756;}
-    .call-btn.s-called{background:var(--panel3);color:var(--muted);border:1px solid var(--border);}
-    .call-btn.s-payment{background:rgba(139,92,246,.15);color:#8b5cf6;border:1px solid rgba(139,92,246,.3);}
-    .call-btn .arr{font-size:9px;opacity:.6;}
-    .status-dd{position:absolute;top:calc(100% + 6px);right:0;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:6px;min-width:190px;z-index:200;box-shadow:0 8px 28px rgba(0,0,0,.5);display:none;}
-    .status-dd.open{display:block;}
-    .sd-opt{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer;transition:background .15s;}
-    .sd-opt:hover{background:var(--panel2);}
-    .sd-opt.cur{background:var(--panel2);font-weight:600;}
+    .call-btn.s-done{background:var(--panel3);color:var(--muted);border:1px solid var(--border);cursor:default;opacity:.75;}
 
-    .note-wrap{display:flex;align-items:center;gap:8px;}
-    .note-txt{font-size:12px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;}
-    .note-txt.filled{color:var(--text);}
-    .note-pencil{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:6px;font-size:13px;line-height:1;flex-shrink:0;}
-    .note-pencil:hover{background:var(--panel3);color:var(--text);}
+    /* ── Note cell (inline always-visible) ─────────────────── */
+    .note-inline{display:flex;align-items:center;gap:5px;}
+    .note-inp{flex:1;min-width:80px;max-width:150px;background:var(--panel3);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 8px;font-size:12px;font-family:inherit;outline:none;}
+    .note-inp:focus{border-color:var(--accent);}
+    .note-check{background:none;border:1px solid var(--border);color:var(--muted);border-radius:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;flex-shrink:0;transition:all .15s;padding:0;}
+    .note-check:disabled{opacity:.3;cursor:default;}
+    .note-check.dirty{border-color:var(--ok);color:var(--ok);}
+    .note-check.dirty:hover{background:rgba(30,199,86,.1);}
+    .expand-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:7px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;transition:all .2s;padding:0;line-height:1;}
+    .expand-btn:hover{background:var(--panel3);color:var(--text);}
+    .expand-btn.open{border-color:var(--accent);color:var(--accent);transform:rotate(90deg);}
 
+    /* ── Detail panel ──────────────────────────────────────── */
     .detail-panel{padding:16px;}
     .det-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
     @media(max-width:860px){.det-grid{grid-template-columns:1fr 1fr;}}
@@ -116,14 +127,13 @@
     .ev-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:3px;}
     .ev-name{flex:1;}
     .ev-time{color:var(--muted);white-space:nowrap;}
-    .det-select{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;width:100%;margin-top:6px;}
-    .det-select:focus{border-color:var(--accent);}
     .note-ta{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:68px;outline:none;}
     .note-ta:focus{border-color:var(--accent);}
     .note-save-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
     .note-save-btn:disabled{opacity:.5;}
     .note-ok{font-size:12px;color:var(--ok);}
 
+    /* ── Pagination ────────────────────────────────────────── */
     .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);}
     .pg-info{font-size:13px;color:var(--muted);}
     .pg-btns{display:flex;align-items:center;gap:6px;}
@@ -161,9 +171,8 @@
       </div>
       <div class="topbar-right">
         <span class="sse-dot" id="sseDot" title="Авто-обновление"></span>
-        <a href="/caller" class="btn-nav">📞 Запросы на звонок</a>
-        <a href="/caller/logs" class="btn-nav">📋 Логи</a>
-        <button class="btn-nav active">👥 Старые клиенты</button>
+        <a href="/caller" class="btn-nav">🆕 Новые клиенты</a>
+        <a href="/caller/old-clients" class="btn-nav active">👥 Старые клиенты</a>
         <button class="btn-nav" id="refreshBtn">↻ Обновить</button>
         <button class="btn-nav" id="logoutBtn">Выйти</button>
       </div>
@@ -268,6 +277,7 @@
 
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'});
 
+  // ── Login ──────────────────────────────────────────────────────
   function doLogin(){
     var login=document.getElementById('loginInput').value.trim();
     var pass=document.getElementById('passInput').value;
@@ -288,6 +298,7 @@
   document.getElementById('logoutBtn').addEventListener('click',function(){ saveToken(''); showLogin(); });
   document.getElementById('refreshBtn').addEventListener('click',loadClients);
 
+  // ── SSE ─────────────────────────────────────────────────────────
   var es=null, sseDot=document.getElementById('sseDot');
   function startSSE(){
     if(es) es.close();
@@ -298,6 +309,7 @@
   }
   function stopSSE(){ if(es){ es.close(); es=null; } sseDot.classList.remove('live'); }
 
+  // ── Filters ──────────────────────────────────────────────────────
   document.getElementById('searchInput').addEventListener('input',applyFilters);
   document.getElementById('statusFilter').addEventListener('change',applyFilters);
   document.getElementById('dateFilter').addEventListener('change',applyFilters);
@@ -319,6 +331,7 @@
     currentPage=1; renderPage();
   }
 
+  // ── Export ───────────────────────────────────────────────────────
   document.getElementById('exportBtn').addEventListener('click',function(){
     var rows=[['Имя','Email','IP','Банк','Статус','Добавлен','Заметка']];
     filteredClients.forEach(function(c){
@@ -330,6 +343,7 @@
     a.download='old-clients-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   });
 
+  // ── Load ─────────────────────────────────────────────────────────
   function loadClients(){
     fetch(API+'/api/caller/old-clients',{headers:{'Authorization':'Bearer '+savedToken()}})
     .then(function(r){ if(r.status===401){ saveToken(''); showLogin(); return null; } return r.json(); })
@@ -354,6 +368,7 @@
     document.getElementById('sDone').textContent=done;
   }
 
+  // ── Pagination ───────────────────────────────────────────────────
   document.getElementById('prevBtn').addEventListener('click',function(){ if(currentPage>1){ currentPage--; renderPage(); } });
   document.getElementById('nextBtn').addEventListener('click',function(){
     if(currentPage<Math.ceil(filteredClients.length/PAGE_SIZE)){ currentPage++; renderPage(); }
@@ -373,9 +388,10 @@
     renderTable(filteredClients.slice(s,e), openId);
   }
 
+  // ── Render table ─────────────────────────────────────────────────
   function renderTable(clients, openId){
     var tbody=document.getElementById('tableBody');
-    if(!clients.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">📭 Нет старых клиентов.<br><small style="font-size:12px;color:var(--muted);">Добавьте clientType=olduser через API или перенесите клиентов.</small></td></tr>'; return; }
+    if(!clients.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">📭 Нет старых клиентов.<br><small style="font-size:12px;color:var(--muted);">Клиенты появятся здесь после повторного запроса звонка.</small></td></tr>'; return; }
     tbody.innerHTML='';
     clients.forEach(function(c){
       var row=buildRow(c);
@@ -395,120 +411,124 @@
     var name=c.nombre||c.email||'Клиент';
     var tr=document.createElement('tr'); tr.className='data-row'; tr.dataset.id=c.id;
 
+    // Client
     var td1=document.createElement('td');
     td1.innerHTML='<div class="client-cell"><div class="avatar" style="background:'+avatarColor(name)+'">'+esc(initials(name))+'</div>'
       +'<div><div class="cl-name">'+esc(c.nombre||'—')+'</div><div class="cl-email">'+esc(c.email||'—')+'</div></div></div>';
 
+    // Contacts
     var td2=document.createElement('td');
     td2.innerHTML='<div class="contact-row"><span class="ci">☎</span><span class="cv">'+esc(c.bank||'—')+'</span></div>'
       +'<div class="contact-row"><span class="ci">📍</span><span class="cv">'+esc(c.ip||'—')+'</span></div>';
 
+    // Status
     var td3=document.createElement('td'); td3.innerHTML=statusBadge(os);
 
+    // Date
     var td4=document.createElement('td');
     td4.style.cssText='font-size:12px;color:var(--muted);white-space:nowrap;'; td4.textContent=fmt(c.createdAt);
 
+    // Actions — simple button only
     var td5=document.createElement('td');
     td5.addEventListener('click',function(e){ e.stopPropagation(); });
-    var btnTxt=os==='called'?'✓ Прозвонил':os==='payment'?'💳 Оплата':'📞 Позвонить';
-    var btnCls='call-btn s-'+os;
-    td5.innerHTML='<div class="act-wrap">'
-      +'<button class="'+btnCls+'" data-id="'+esc(c.id)+'">'+btnTxt+' <span class="arr">▼</span></button>'
-      +'<div class="status-dd" id="sd_'+esc(c.id)+'">'
-        +'<div class="sd-opt'+(os==='pending'?' cur':'')+'" data-s="pending">⏳ Ожидает звонка</div>'
-        +'<div class="sd-opt'+(os==='called'?' cur':'')+'" data-s="called">✅ Прозвонил</div>'
-        +'<div class="sd-opt'+(os==='payment'?' cur':'')+'" data-s="payment">💳 На этапе оплаты</div>'
-      +'</div></div>';
-
-    td5.querySelector('.call-btn').addEventListener('click',function(e){
-      e.stopPropagation();
-      var dd=document.getElementById('sd_'+c.id);
-      closeDropdowns(dd);
-      dd.classList.toggle('open');
-    });
-    td5.querySelectorAll('.sd-opt').forEach(function(opt){
-      opt.addEventListener('click',function(e){
+    if(os==='pending'){
+      var callBtn=document.createElement('button');
+      callBtn.className='call-btn s-pending';
+      callBtn.textContent='📞 Позвонить';
+      callBtn.addEventListener('click',function(e){
         e.stopPropagation();
-        setStatus(c.id,opt.dataset.s);
-        document.getElementById('sd_'+c.id).classList.remove('open');
+        callBtn.disabled=true;
+        setStatus(c.id,'called');
       });
-    });
+      td5.appendChild(callBtn);
+    } else {
+      var doneBtn=document.createElement('button');
+      doneBtn.className='call-btn s-done';
+      doneBtn.disabled=true;
+      doneBtn.textContent='✓ Прозвонил';
+      td5.appendChild(doneBtn);
+    }
 
+    // Note: always-visible input + checkmark + expand arrow
     var td6=document.createElement('td');
     td6.addEventListener('click',function(e){ e.stopPropagation(); });
-    renderNoteCell(td6,c);
+    renderInlineNote(td6,c,tr);
 
     [td1,td2,td3,td4,td5,td6].forEach(function(td){ tr.appendChild(td); });
-
-    tr.addEventListener('click',function(){
-      var next=tr.nextSibling;
-      if(next&&next.classList&&next.classList.contains('detail-tr')){
-        next.remove(); tr.classList.remove('active'); return;
-      }
-      document.querySelectorAll('.detail-tr').forEach(function(el){ el.remove(); });
-      document.querySelectorAll('.data-row.active').forEach(function(el){ el.classList.remove('active'); });
-      tr.after(buildDetailTr(c)); tr.classList.add('active');
-    });
     return tr;
   }
 
-  function renderNoteCell(td,c){
-    var note=c.callerNote||'';
-    td.innerHTML='<div class="note-wrap">'
-      +'<span class="note-txt'+(note?' filled':'')+'" title="'+esc(note)+'">'+esc(note||'Добавить заметку...')+'</span>'
-      +'<button class="note-pencil" title="Редактировать">✏</button></div>';
-    td.querySelector('.note-pencil').addEventListener('click',function(){ startNoteEdit(td,c); });
-  }
+  function renderInlineNote(td,c,tr){
+    var origNote=c.callerNote||'';
+    var wrap=document.createElement('div'); wrap.className='note-inline';
 
-  function startNoteEdit(td,c){
-    td.innerHTML='<div style="display:flex;flex-direction:column;gap:6px;min-width:160px;">'
-      +'<input class="ni" value="'+esc(c.callerNote||'')+'" style="background:var(--panel3);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:6px 10px;font-size:12px;font-family:inherit;outline:none;width:100%;"/>'
-      +'<div style="display:flex;gap:5px;">'
-        +'<button class="ns note-save-btn" style="padding:5px 10px;font-size:12px;">✓</button>'
-        +'<button class="nc" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;">✕</button>'
-      +'</div></div>';
-    var inp=td.querySelector('.ni'), sb=td.querySelector('.ns'), cb=td.querySelector('.nc');
-    inp.focus();
-    function doSave(){ sb.disabled=true;
+    var inp=document.createElement('input');
+    inp.className='note-inp'; inp.value=origNote; inp.placeholder='Заметка…';
+
+    var checkBtn=document.createElement('button');
+    checkBtn.className='note-check'; checkBtn.title='Сохранить'; checkBtn.textContent='✓';
+    checkBtn.disabled=true;
+
+    var expandBtn=document.createElement('button');
+    expandBtn.className='expand-btn'; expandBtn.title='Подробнее'; expandBtn.textContent='›';
+
+    inp.addEventListener('input',function(){
+      var dirty=inp.value!==origNote;
+      checkBtn.disabled=!dirty;
+      checkBtn.classList.toggle('dirty',dirty);
+    });
+
+    checkBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      checkBtn.disabled=true; checkBtn.classList.remove('dirty');
       fetch(API+'/api/caller/clients/'+c.id+'/note',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({note:inp.value.trim()})})
-      .then(function(r){ return r.json(); }).then(function(d){ if(d&&d.ok){ c.callerNote=inp.value.trim(); renderNoteCell(td,c); } else sb.disabled=false; })
-      .catch(function(){ sb.disabled=false; }); }
-    sb.addEventListener('click',doSave);
-    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') doSave(); if(e.key==='Escape') renderNoteCell(td,c); });
-    cb.addEventListener('click',function(){ renderNoteCell(td,c); });
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d&&d.ok){ origNote=inp.value.trim(); c.callerNote=origNote; }
+        else { checkBtn.disabled=false; checkBtn.classList.add('dirty'); }
+      })
+      .catch(function(){ checkBtn.disabled=false; checkBtn.classList.add('dirty'); });
+    });
+
+    expandBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var next=tr.nextSibling;
+      if(next&&next.classList&&next.classList.contains('detail-tr')){
+        next.remove(); tr.classList.remove('active'); expandBtn.classList.remove('open');
+      } else {
+        document.querySelectorAll('.detail-tr').forEach(function(el){ el.remove(); });
+        document.querySelectorAll('.data-row.active').forEach(function(el){ el.classList.remove('active'); });
+        document.querySelectorAll('.expand-btn.open').forEach(function(el){ el.classList.remove('open'); });
+        tr.after(buildDetailTr(c)); tr.classList.add('active'); expandBtn.classList.add('open');
+      }
+    });
+
+    wrap.appendChild(inp); wrap.appendChild(checkBtn); wrap.appendChild(expandBtn);
+    td.appendChild(wrap);
   }
 
   function buildDetailTr(c){
     var sub=(c.submissionData&&typeof c.submissionData==='object')?c.submissionData:{};
     var events=c.events||[];
     var os=getOpStatus(c);
-    var ct=c.clientType||'olduser';
     var tr=document.createElement('tr'); tr.className='detail-tr';
     var td=document.createElement('td'); td.setAttribute('colspan','6');
     var panel=document.createElement('div'); panel.className='detail-panel';
     var grid=document.createElement('div'); grid.className='det-grid';
 
+    // Card 1: Basic
     var c1=document.createElement('div'); c1.className='det-card';
     c1.innerHTML='<div class="det-title">Основное</div>'
-      +kv('Имя',c.nombre)+kv('Email',c.email)+kv('Банк',c.bank)+kv('IP',c.ip)+kv('Добавлен',fmt(c.createdAt))
-      +kv('Тип клиента','<span class="badge '+(ct==='olduser'?'b-olduser':'b-newuser')+'">'+esc(ct)+'</span>');
+      +kv('Имя',c.nombre)+kv('Email',c.email)+kv('Банк',c.bank)+kv('IP',c.ip)+kv('Добавлен',fmt(c.createdAt));
 
+    // Card 2: Call info (read-only)
     var c2=document.createElement('div'); c2.className='det-card';
-    c2.innerHTML='<div class="det-title">Статус оператора</div>'
-      +'<select class="det-select">'
-        +'<option value="pending"'+(os==='pending'?' selected':'')+'>⏳ Ожидает звонка</option>'
-        +'<option value="called"'+(os==='called'?' selected':'')+'>✅ Прозвонил</option>'
-        +'<option value="payment"'+(os==='payment'?' selected':'')+'>💳 На этапе оплаты</option>'
-      +'</select>'
-      +'<div class="det-title" style="margin-top:14px;">Тип клиента</div>'
-      +'<select class="det-select ct-sel">'
-        +'<option value="newuser"'+(ct==='newuser'?' selected':'')+'>🆕 Новый клиент</option>'
-        +'<option value="olduser"'+(ct==='olduser'?' selected':'')+'>👥 Старый клиент</option>'
-      +'</select>'
-      +(c.calledAt?'<div style="font-size:11px;color:var(--muted);margin-top:8px;">Звонок: '+fmt(c.calledAt)+'</div>':'');
-    c2.querySelector('.det-select').addEventListener('change',function(){ setStatus(c.id,this.value); });
-    c2.querySelector('.ct-sel').addEventListener('change',function(){ setClientType(c.id,this.value); });
+    var statusLbl=os==='called'?'✅ Прозвонил':os==='payment'?'💳 На этапе оплаты':'⏳ Ожидает звонка';
+    c2.innerHTML='<div class="det-title">Статус звонка</div>'
+      +kv('Статус',statusLbl)
+      +(c.calledAt?kv('Дата звонка',fmt(c.calledAt)):'');
 
+    // Card 3: Anket
     var c3=document.createElement('div'); c3.className='det-card';
     c3.innerHTML='<div class="det-title">Анкета</div>'
       +(sub.nombre||sub.dni
@@ -516,12 +536,14 @@
           +kv('Адрес',[sub.calle,sub.piso,sub.ciudad,sub.provincia,sub.cp].filter(Boolean).join(', '))
         : '<div style="color:var(--muted);font-size:12px;">Форма не заполнена</div>');
 
+    // Card 4: Events
     var c4=document.createElement('div'); c4.className='det-card';
     c4.innerHTML='<div class="det-title">История событий</div>'
       +(events.length
         ? events.map(function(ev){ return '<div class="ev-row"><span class="ev-dot"></span><span class="ev-name">'+esc(ev.event)+'</span><span class="ev-time">'+fmt(ev.createdAt)+'</span></div>'; }).join('')
         : '<div style="color:var(--muted);font-size:12px;">Нет событий</div>');
 
+    // Card 5: Note
     var c5=document.createElement('div'); c5.className='det-card full';
     c5.innerHTML='<div class="det-title">Заметка оператора</div>'
       +'<textarea class="note-ta" id="dnt_'+c.id+'">'+esc(c.callerNote||'')+'</textarea>'
@@ -551,23 +573,11 @@
 
   function setStatus(id,status){
     var c=allClients.find(function(x){ return x.id===id; });
-    if(c){ c.operatorStatus=status; c.operatorCalled=status!=='pending'; }
+    if(c){ c.operatorStatus=status; if(status!=='pending'){ c.operatorCalled=true; } else { c.operatorCalled=false; } }
     updateStats(); applyFilters();
     fetch(API+'/api/caller/clients/'+id+'/operator-status',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({status:status})})
     .then(function(r){ return r.json(); }).then(function(d){ if(!d||!d.ok) loadClients(); }).catch(loadClients);
   }
-
-  function setClientType(id,type){
-    var c=allClients.find(function(x){ return x.id===id; });
-    if(c) c.clientType=type;
-    fetch(API+'/api/caller/clients/'+id+'/client-type',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({type:type})})
-    .then(function(r){ return r.json(); }).then(function(d){ if(!d||!d.ok) loadClients(); }).catch(loadClients);
-  }
-
-  function closeDropdowns(except){
-    document.querySelectorAll('.status-dd.open').forEach(function(dd){ if(dd!==except) dd.classList.remove('open'); });
-  }
-  document.addEventListener('click',function(){ closeDropdowns(null); });
 
   if(savedToken()){ showMain(); loadClients(); startSSE(); } else { showLogin(); }
 })();
