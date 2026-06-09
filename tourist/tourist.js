@@ -71,9 +71,10 @@
 
         var currentStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
         var isCalled = currentStatus === "called" || currentStatus === "payment";
+        var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1";
 
-        // Если оператор уже позвонил — всегда в notifications2, даже без бейджа
-        if (isCalled) {
+        // Как только оператор позвонил хоть раз — всегда в notifications2
+        if (isCalled || hasEverBeenCalled) {
           localStorage.setItem("notifCalledRead", "1");
           window.location.replace("./notifications2.html");
         } else {
@@ -374,6 +375,7 @@
 
           // Оператор только что отреагировал → сбросить флаг прочтения и разблокировать кнопку звонка
           if (lastStatus !== currentStatus && (currentStatus === "called" || currentStatus === "payment")) {
+            localStorage.setItem("hasBeenCalled", "1");
             localStorage.removeItem("notifCalledRead");
             localStorage.removeItem("callRequested");
             var callBtn = document.getElementById("touristSheetCallBtn");
@@ -386,13 +388,13 @@
           localStorage.setItem("lastKnownOperatorStatus", currentStatus);
 
           var isCalled = currentStatus === "called" || currentStatus === "payment";
+          var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1";
           var isCalledRead = localStorage.getItem("notifCalledRead") === "1";
           var isInitialRead = localStorage.getItem("notifInitialRead") === "1";
 
-          // Показать badge если:
-          // 1. Оператор позвонил и уведомление не прочитано
-          // 2. Первый визит — ещё не открывали notifications.html
-          if ((isCalled && !isCalledRead) || (!isCalled && !isInitialRead)) {
+          // Badge: если хоть раз позвонили — показывать пока не прочитал notifications2
+          // Если ни разу не звонили — показывать пока не открыл notifications.html
+          if ((hasEverBeenCalled && !isCalledRead) || (!hasEverBeenCalled && !isInitialRead)) {
             showBadge();
           } else {
             hideBadge();
@@ -403,11 +405,10 @@
 
     // Мгновенная проверка из localStorage до первого ответа API
     (function () {
-      var s = localStorage.getItem("lastKnownOperatorStatus") || "pending";
-      var c = s === "called" || s === "payment";
+      var hbc = localStorage.getItem("hasBeenCalled") === "1";
       var cr = localStorage.getItem("notifCalledRead") === "1";
       var ir = localStorage.getItem("notifInitialRead") === "1";
-      if ((c && !cr) || (!c && !ir)) { showBadge(); } else { hideBadge(); }
+      if ((hbc && !cr) || (!hbc && !ir)) { showBadge(); } else { hideBadge(); }
     })();
 
     checkCalled();

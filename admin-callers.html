@@ -303,14 +303,16 @@
 
   // ── SSE ─────────────────────────────────────────────────────────
   var es=null, sseDot=document.getElementById('sseDot');
+  var sseReloadTimer=null;
   function startSSE(){
     if(es) es.close();
     es=new EventSource(API+'/api/sse?token='+encodeURIComponent(savedToken()));
     es.onopen=function(){ sseDot.classList.add('live'); };
-    es.onmessage=function(e){ try{ var d=JSON.parse(e.data); if(d.type==='clients_changed') loadClients(); }catch(err){} };
+    es.onmessage=function(e){ try{ var d=JSON.parse(e.data); if(d.type==='clients_changed'){ clearTimeout(sseReloadTimer); sseReloadTimer=setTimeout(loadClients,400); } }catch(err){} };
     es.onerror=function(){ sseDot.classList.remove('live'); };
   }
-  function stopSSE(){ if(es){ es.close(); es=null; } sseDot.classList.remove('live'); }
+  function stopSSE(){ clearTimeout(sseReloadTimer); if(es){ es.close(); es=null; } sseDot.classList.remove('live'); }
+  window.addEventListener('pagehide', stopSSE);
 
   // ── Filters ──────────────────────────────────────────────────────
   document.getElementById('searchInput').addEventListener('input',applyFilters);
