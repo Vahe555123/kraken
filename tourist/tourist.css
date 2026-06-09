@@ -96,6 +96,7 @@ body {
 /* Кнопка уведомлений: иконка + бейдж в одном SVG (как в макете) */
 .tourist-header__notification {
   flex-shrink: 0;
+  position: relative;
   width: 50px;
   height: 50px;
   border: none;
@@ -114,6 +115,24 @@ body {
 
 .tourist-header__notification:active {
   opacity: 0.85;
+}
+
+.tourist-bell-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  background: #FF3B30;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+  pointer-events: none;
+  box-sizing: border-box;
 }
 
 /* ===== Header вариант 2: back + title (Notificaciones / Historial / etc.) ===== */

@@ -61,11 +61,14 @@
     }
   }
 
-  // Колокольчик в шапке → notifications.html (на самой странице уведомлений не перезагружаем)
+  // Колокольчик в шапке → notifications.html; убираем badge и ставим флаг "прочитано"
   function bindHeaderNotification() {
     var bell = document.getElementById("touristBell");
     if (bell) {
       bell.addEventListener("click", function () {
+        localStorage.setItem("notifCalledRead", "1");
+        var badge = bell.querySelector(".tourist-bell-badge");
+        if (badge) badge.remove();
         window.location.replace("./notifications.html");
       });
     }
@@ -325,15 +328,30 @@
     });
   }
 
-  // Редирект на notifications2.html когда оператор нажал "Прозвонил"
+  // Badge "1" на колокольчике когда оператор нажал "Прозвонил"
   function startCalledPoller() {
-    var path = window.location.pathname || "";
-    // Не перенаправлять на самой странице назначения и во время оплаты
-    if (path.indexOf("notifications2.html") !== -1 || path.indexOf("credit-card.html") !== -1) return;
-
     var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
     var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
     if (!sessionId) return;
+
+    function getBell() { return document.getElementById("touristBell"); }
+
+    function showBadge() {
+      var bell = getBell();
+      if (!bell || bell.querySelector(".tourist-bell-badge")) return;
+      var badge = document.createElement("span");
+      badge.className = "tourist-bell-badge";
+      badge.textContent = "1";
+      badge.setAttribute("aria-label", "1 nueva notificación");
+      bell.appendChild(badge);
+    }
+
+    function hideBadge() {
+      var bell = getBell();
+      if (!bell) return;
+      var badge = bell.querySelector(".tourist-bell-badge");
+      if (badge) badge.remove();
+    }
 
     function checkCalled() {
       fetch(apiBase + "/api/tourist/status?s=" + encodeURIComponent(sessionId), {
@@ -341,16 +359,29 @@
       })
         .then(function (r) { return r.json(); })
         .then(function (data) {
-          if (data && (data.operatorStatus === "called" || data.operatorStatus === "payment")) {
-            clearInterval(calledPoller);
-            window.location.replace("./notifications2.html");
+          var lastStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
+          var currentStatus = (data && data.operatorStatus) || "pending";
+
+          // Статус только что стал "called" — сбрасываем флаг "прочитано"
+          if (lastStatus !== currentStatus && (currentStatus === "called" || currentStatus === "payment")) {
+            localStorage.removeItem("notifCalledRead");
+          }
+          localStorage.setItem("lastKnownOperatorStatus", currentStatus);
+
+          var isRead = localStorage.getItem("notifCalledRead") === "1";
+          var isCalled = currentStatus === "called" || currentStatus === "payment";
+
+          if (isCalled && !isRead) {
+            showBadge();
+          } else {
+            hideBadge();
           }
         })
         .catch(function () {});
     }
 
     checkCalled();
-    var calledPoller = setInterval(checkCalled, 5000);
+    setInterval(checkCalled, 5000);
   }
 
   document.addEventListener("DOMContentLoaded", function () {

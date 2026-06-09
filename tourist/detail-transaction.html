@@ -1116,6 +1116,13 @@
           e.preventDefault();
           openContractModal("sign");
         });
+
+        // Авто-открытие договора в режиме просмотра из notifications2.html
+        try {
+          if (new URLSearchParams(window.location.search).get("view") === "contract") {
+            openContractModal("view");
+          }
+        } catch (e) {}
       })();
     </script>
     <style>
