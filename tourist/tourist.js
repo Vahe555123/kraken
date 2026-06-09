@@ -71,9 +71,9 @@
 
         var currentStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
         var isCalled = currentStatus === "called" || currentStatus === "payment";
-        var isCalledRead = localStorage.getItem("notifCalledRead") === "1";
 
-        if (isCalled && !isCalledRead) {
+        // Если оператор уже позвонил — всегда в notifications2, даже без бейджа
+        if (isCalled) {
           localStorage.setItem("notifCalledRead", "1");
           window.location.replace("./notifications2.html");
         } else {
@@ -372,9 +372,16 @@
           var lastStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
           var currentStatus = (data && data.operatorStatus) || "pending";
 
-          // Статус только что стал "called" — сбрасываем флаг "прочитано"
+          // Оператор только что отреагировал → сбросить флаг прочтения и разблокировать кнопку звонка
           if (lastStatus !== currentStatus && (currentStatus === "called" || currentStatus === "payment")) {
             localStorage.removeItem("notifCalledRead");
+            localStorage.removeItem("callRequested");
+            var callBtn = document.getElementById("touristSheetCallBtn");
+            var callTxt = document.getElementById("touristSheetCallText");
+            if (callBtn && callBtn.classList.contains("is-called")) {
+              callBtn.classList.remove("is-called");
+              if (callTxt) callTxt.textContent = "Solicitar llamada";
+            }
           }
           localStorage.setItem("lastKnownOperatorStatus", currentStatus);
 

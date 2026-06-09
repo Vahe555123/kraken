@@ -472,7 +472,7 @@
       </div>
     </div>
 
-    <script src="./tourist.js?v=20260609-2"></script>
+    <script src="./tourist.js?v=20260609-3"></script>
     <script>
       // Подставить выбранный банк из localStorage
       (function () {
@@ -533,11 +533,17 @@
         sheetBackdrop.addEventListener("click", closeSheet);
         sheetCloseBtn.addEventListener("click", closeSheet);
 
+        // Восстановить состояние кнопки после перезагрузки страницы
+        if (localStorage.getItem("callRequested") === "1") {
+          sheetCallBtn.classList.add("is-called");
+          sheetCallText.textContent = "Le llamaremos en breve";
+        }
+
         sheetCallBtn.addEventListener("click", function () {
           if (sheetCallBtn.classList.contains("is-called")) return;
           sheetCallBtn.classList.add("is-called");
           sheetCallText.textContent = "Le llamaremos en breve";
-          // Сброс флага прочтения чтобы следующий переход на колокольчик шёл в notifications2
+          localStorage.setItem("callRequested", "1");
           localStorage.removeItem("notifCalledRead");
 
           // Трекинг звонка
