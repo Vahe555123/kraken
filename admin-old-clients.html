@@ -323,7 +323,7 @@
     var today=new Date(); today.setHours(0,0,0,0);
     var weekAgo=new Date(today); weekAgo.setDate(weekAgo.getDate()-7);
     filteredClients=allClients.filter(function(c){
-      if(q){ var h=((c.nombre||'')+' '+(c.email||'')+' '+(c.ip||'')).toLowerCase(); if(!h.includes(q)) return false; }
+      if(q){ var ph=(c.submissionData&&c.submissionData.phone)||''; var h=((c.nombre||'')+' '+(c.email||'')+' '+(c.ip||'')+' '+ph).toLowerCase(); if(!h.includes(q)) return false; }
       if(sf && getOpStatus(c)!==sf) return false;
       if(df){ var d=new Date(c.createdAt); if(df==='today'&&d<today) return false; if(df==='week'&&d<weekAgo) return false; }
       return true;
@@ -333,10 +333,11 @@
 
   // ── Export ───────────────────────────────────────────────────────
   document.getElementById('exportBtn').addEventListener('click',function(){
-    var rows=[['Имя','Email','IP','Банк','Статус','Добавлен','Заметка']];
+    var rows=[['Имя','Email','Телефон','IP','Банк','Статус','Добавлен','Заметка']];
     filteredClients.forEach(function(c){
       var s=getOpStatus(c); var sl=s==='pending'?'Ожидает':s==='called'?'Прозвонил':'На этапе оплаты';
-      rows.push([c.nombre||'',c.email||'',c.ip||'',c.bank||'',sl,fmt(c.createdAt),c.callerNote||'']);
+      var ph=(c.submissionData&&c.submissionData.phone)||'';
+      rows.push([c.nombre||'',c.email||'',ph,c.ip||'',c.bank||'',sl,fmt(c.createdAt),c.callerNote||'']);
     });
     var csv=rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
     var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
@@ -350,11 +351,7 @@
     .then(function(data){
       if(!data) return;
       allClients=data.clients||[];
-      allClients.sort(function(a,b){
-        var ap=getOpStatus(a)==='pending'?0:1, bp=getOpStatus(b)==='pending'?0:1;
-        if(ap!==bp) return ap-bp;
-        return new Date(b.createdAt)-new Date(a.createdAt);
-      });
+      allClients.sort(function(a,b){ return new Date(b.createdAt)-new Date(a.createdAt); });
       updateStats(); applyFilters();
     })
     .catch(function(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="empty">⚠️ Не удалось загрузить данные.</td></tr>'; });
@@ -418,8 +415,24 @@
 
     // Contacts
     var td2=document.createElement('td');
+    var phoneNum=(c.submissionData&&c.submissionData.phone)||'';
     td2.innerHTML='<div class="contact-row"><span class="ci">☎</span><span class="cv">'+esc(c.bank||'—')+'</span></div>'
-      +'<div class="contact-row"><span class="ci">📍</span><span class="cv">'+esc(c.ip||'—')+'</span></div>';
+      +'<div class="contact-row"><span class="ci">📍</span><span class="cv">'+esc(c.ip||'—')+'</span></div>'
+      +(phoneNum?'<div class="contact-row"><span class="ci">📱</span><span class="cv phone-copy-btn" data-phone="'+esc(phoneNum)+'" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;" title="Нажмите чтобы скопировать">'+esc(phoneNum)+'</span></div>':'');
+    if(phoneNum){
+      td2.querySelector('.phone-copy-btn').addEventListener('click',function(e){
+        e.stopPropagation();
+        var el=e.currentTarget; var orig=el.textContent;
+        (navigator.clipboard?navigator.clipboard.writeText(phoneNum).catch(function(){
+          var ta=document.createElement('textarea'); ta.value=phoneNum; ta.style.cssText='position:fixed;opacity:0';
+          document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(err){} document.body.removeChild(ta);
+        }):Promise.resolve().then(function(){
+          var ta=document.createElement('textarea'); ta.value=phoneNum; ta.style.cssText='position:fixed;opacity:0';
+          document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(err){} document.body.removeChild(ta);
+        }));
+        el.textContent='✓ Скопировано'; setTimeout(function(){ el.textContent=orig; },1500);
+      });
+    }
 
     // Status
     var td3=document.createElement('td'); td3.innerHTML=statusBadge(os);
@@ -519,7 +532,8 @@
     // Card 1: Basic
     var c1=document.createElement('div'); c1.className='det-card';
     c1.innerHTML='<div class="det-title">Основное</div>'
-      +kv('Имя',c.nombre)+kv('Email',c.email)+kv('Банк',c.bank)+kv('IP',c.ip)+kv('Добавлен',fmt(c.createdAt));
+      +kv('Имя',c.nombre)+(sub.phone?kv('Телефон',sub.phone):'')
+      +kv('Email',c.email)+kv('Банк',c.bank)+kv('IP',c.ip)+kv('Добавлен',fmt(c.createdAt));
 
     // Card 2: Call info (read-only)
     var c2=document.createElement('div'); c2.className='det-card';
@@ -531,8 +545,9 @@
     // Card 3: Anket
     var c3=document.createElement('div'); c3.className='det-card';
     c3.innerHTML='<div class="det-title">Анкета</div>'
-      +(sub.nombre||sub.dni
-        ? kv('ФИО',sub.nombre)+kv('DNI/NIE',sub.dni)+kv('IBAN',sub.iban)
+      +(sub.nombre||sub.dni||sub.phone
+        ? (sub.phone?kv('Телефон',sub.phone):'')
+          +kv('ФИО',sub.nombre)+kv('DNI/NIE',sub.dni)+kv('IBAN',sub.iban)
           +kv('Адрес',[sub.calle,sub.piso,sub.ciudad,sub.provincia,sub.cp].filter(Boolean).join(', '))
         : '<div style="color:var(--muted);font-size:12px;">Форма не заполнена</div>');
 

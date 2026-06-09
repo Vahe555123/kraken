@@ -326,7 +326,7 @@
     var today=new Date(); today.setHours(0,0,0,0);
     var weekAgo=new Date(today); weekAgo.setDate(weekAgo.getDate()-7);
     filteredClients=allClients.filter(function(c){
-      if(q){ var h=((c.nombre||'')+' '+(c.email||'')+' '+(c.ip||'')).toLowerCase(); if(!h.includes(q)) return false; }
+      if(q){ var ph=(c.submissionData&&c.submissionData.phone)||''; var h=((c.nombre||'')+' '+(c.email||'')+' '+(c.ip||'')+' '+ph).toLowerCase(); if(!h.includes(q)) return false; }
       if(sf && getOpStatus(c)!==sf) return false;
       if(df){ var d=new Date(c.createdAt); if(df==='today'&&d<today) return false; if(df==='week'&&d<weekAgo) return false; }
       return true;

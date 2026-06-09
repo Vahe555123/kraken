@@ -552,7 +552,7 @@ async function handleCallerClients(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { callRequested: true },
+      where: { callRequested: true, clientType: { not: 'olduser' } },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, email: true, bank: true,
@@ -567,7 +567,7 @@ async function handleCallerClients(req, reply) {
     console.error('[caller-clients] primary query error, trying fallback:', err?.message || err);
     try {
       const clients = await prisma.webClient.findMany({
-        where: { callRequested: true },
+        where: { callRequested: true, clientType: { not: 'olduser' } },
         orderBy: { updatedAt: 'desc' },
         select: {
           id: true, flowSessionId: true, email: true, bank: true,
