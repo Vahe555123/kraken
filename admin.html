@@ -114,6 +114,11 @@
       .search-bar{display:flex;gap:10px;margin-bottom:16px;}
       .search-bar input{flex:1;}
 
+      /* ── Delete button ── */
+      .btn-del{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1.6;transition:all .15s;}
+      .btn-del:hover{border-color:var(--err);color:var(--err);}
+      .btn-del.confirming{background:var(--err);color:#fff;border-color:var(--err);}
+
       /* ── Платежка tab ── */
       .settings-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:480px;}
       .settings-card h2{font-size:15px;margin:0 0 18px;}
@@ -430,6 +435,34 @@
           '</div>' +
           '<span class="status-tag ' + sc + '">' + esc(c.status||'new') + '</span>' +
           '<span class="client-chevron">›</span>';
+
+        // Delete button — two-step confirm
+        var delBtn = document.createElement('button');
+        delBtn.className = 'btn-del';
+        delBtn.textContent = '✕';
+        delBtn.title = 'Удалить клиента';
+        var delTimer = null;
+        delBtn.addEventListener('click', function(e){
+          e.stopPropagation();
+          if(delBtn.dataset.confirm === '1'){
+            clearTimeout(delTimer);
+            delBtn.disabled = true; delBtn.textContent = '…';
+            apiFetch('/api/admin/clients/' + encodeURIComponent(c.id), { method: 'DELETE' })
+              .then(function(){ card.remove(); })
+              .catch(function(){
+                delBtn.disabled = false; delBtn.textContent = '✕';
+                delBtn.dataset.confirm = ''; delBtn.classList.remove('confirming');
+              });
+          } else {
+            delBtn.dataset.confirm = '1'; delBtn.textContent = '?';
+            delBtn.classList.add('confirming');
+            delTimer = setTimeout(function(){
+              delBtn.dataset.confirm = ''; delBtn.textContent = '✕';
+              delBtn.classList.remove('confirming');
+            }, 3000);
+          }
+        });
+        head.insertBefore(delBtn, head.querySelector('.client-chevron'));
 
         var body = document.createElement('div');
         body.className = 'client-body';

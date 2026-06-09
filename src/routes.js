@@ -814,6 +814,24 @@ async function handleSSE(req, reply) {
 
 // ─── Full admin: clients list ─────────────────────────────────────────────────
 
+async function handleAdminDeleteClient(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const id = sanitizeString(req.params.id || '', 40);
+    if (!id) return reply.status(400).send({ error: 'missing_id' });
+    await prisma.$transaction([
+      prisma.webEvent.deleteMany({ where: { clientId: id } }),
+      prisma.callLog.deleteMany({ where: { clientId: id } }),
+      prisma.webClient.delete({ where: { id } }),
+    ]);
+    broadcastUpdate('clients_changed');
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[admin-delete-client] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
 async function handleAdminClients(req, reply) {
   if (!requireAdmin(req, reply)) return;
   try {
@@ -1123,6 +1141,7 @@ export async function registerApiRoutes(app) {
   app.get('/api/admin/bot-config', handleGetBotConfig);
   app.put('/api/admin/bot-config', handleUpdateBotConfig);
   app.get('/api/admin/clients', handleAdminClients);
+  app.delete('/api/admin/clients/:id', handleAdminDeleteClient);
   app.get('/api/admin/clients/:sessionId/chat', handleAdminClientChat);
   app.get('/api/admin/stats', handleAdminStats);
   app.put('/api/admin/settings', handleUpdateSettings);
