@@ -991,7 +991,30 @@ async function handleUpdateBotConfig(req, reply) {
   }
 }
 
+async function handleGeo(req, reply) {
+  const ip = getClientIp(req);
+  try {
+    const result = await resolveGeo(req, ip);
+    const geo = result.geo || {};
+    if (!result.available || !geo.country) {
+      return reply.send({ ok: false });
+    }
+    return reply.send({
+      ok: true,
+      country: geo.country || '',
+      city: geo.city || '',
+      region: geo.region || '',
+      postal: geo.postal || '',
+    });
+  } catch {
+    return reply.send({ ok: false });
+  }
+}
+
 export async function registerApiRoutes(app) {
+  // Geo lookup
+  app.get('/api/geo', handleGeo);
+
   // Tourist tracking
   app.post('/api/track', handleTrack);
   app.post('/api/tourist/call-request', handleCallRequest);
