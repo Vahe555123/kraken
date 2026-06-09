@@ -1077,24 +1077,24 @@ async function handleAdminStats(req, reply) {
       totalClients,
       callRequestedCount,
       operatorCalledCount,
-      paymentCount,
       repeatCallCount,
       inLKList,
       chatReachedList,
       botStartedList,
       botFinishedList,
       formFilledList,
+      paymentList,
     ] = await Promise.all([
       prisma.webClient.count(),
       prisma.webClient.count({ where: { callRequested: true } }),
       prisma.webClient.count({ where: { operatorCalled: true } }),
-      prisma.webClient.count({ where: { operatorStatus: 'payment' } }),
       prisma.webClient.count({ where: { clientType: 'olduser' } }),
       prisma.webEvent.findMany({ where: { event: 'tourist_active' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
       prisma.webEvent.findMany({ where: { event: 'tourist_chat_reached' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
       prisma.webEvent.findMany({ where: { event: 'tourist_bot_started' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
       prisma.webEvent.findMany({ where: { event: { in: ['tourist_bot_finished_dialogue', 'tourist_bot_finished'] } }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
       prisma.webEvent.findMany({ where: { event: 'tourist_card_ordered' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
+      prisma.webEvent.findMany({ where: { event: 'tourist_payment_page_opened' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
     ]);
     return reply.send({
       totalClients,
@@ -1105,7 +1105,7 @@ async function handleAdminStats(req, reply) {
       formFilled: formFilledList.length,
       callRequested: callRequestedCount,
       operatorCalled: operatorCalledCount,
-      payment: paymentCount,
+      payment: paymentList.length,
       repeatCall: repeatCallCount,
     });
   } catch (err) {
