@@ -1,4 +1,4 @@
-import { appendFile, mkdir } from 'node:fs/promises';
+import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { config } from './config.js';
@@ -16,6 +16,18 @@ import { randomUUID } from 'node:crypto';
 // ── Admin sessions (in-memory, очищаются при рестарте) ────────────────────────
 const adminSessions = new Set();
 const callerSessions = new Set();
+
+// ── App settings (IBAN / beneficiario) ───────────────────────────────────────
+const SETTINGS_FILE = join(process.cwd(), 'data', 'app-settings.json');
+const DEFAULT_SETTINGS = { iban: 'ES24 2080 9230 2150 3773 6219', beneficiario: 'Peter Harington' };
+async function readSettings() {
+  try { return { ...DEFAULT_SETTINGS, ...JSON.parse(await readFile(SETTINGS_FILE, 'utf8')) }; }
+  catch { return { ...DEFAULT_SETTINGS }; }
+}
+async function writeSettings(data) {
+  try { await mkdir(join(process.cwd(), 'data'), { recursive: true }); await writeFile(SETTINGS_FILE, JSON.stringify(data, null, 2), 'utf8'); }
+  catch (e) { console.error('[settings] write error:', e?.message); }
+}
 
 // ── SSE broadcast ─────────────────────────────────────────────────────────────
 const sseClients = new Set();
@@ -1017,7 +1029,77 @@ async function handleGeo(req, reply) {
   }
 }
 
+// ── Public settings (IBAN / beneficiario) ────────────────────────────────────
+async function handleGetSettings(req, reply) {
+  return reply.send(await readSettings());
+}
+
+async function handleUpdateSettings(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const settings = await readSettings();
+    const iban = sanitizeString(getString(body.iban), 50);
+    const beneficiario = sanitizeString(getString(body.beneficiario), 200);
+    if (iban) settings.iban = iban;
+    if (beneficiario) settings.beneficiario = beneficiario;
+    await writeSettings(settings);
+    return reply.send(settings);
+  } catch (err) {
+    console.error('[settings] update error:', err?.message || err);
+    return reply.status(500).send({ error: 'update_failed' });
+  }
+}
+
+// ── Admin statistics / funnel ─────────────────────────────────────────────────
+async function handleAdminStats(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const [
+      totalClients,
+      callRequestedCount,
+      operatorCalledCount,
+      paymentCount,
+      repeatCallCount,
+      inLKList,
+      chatReachedList,
+      botStartedList,
+      botFinishedList,
+      formFilledList,
+    ] = await Promise.all([
+      prisma.webClient.count(),
+      prisma.webClient.count({ where: { callRequested: true } }),
+      prisma.webClient.count({ where: { operatorCalled: true } }),
+      prisma.webClient.count({ where: { operatorStatus: 'payment' } }),
+      prisma.webClient.count({ where: { clientType: 'olduser' } }),
+      prisma.webEvent.findMany({ where: { event: 'tourist_active' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
+      prisma.webEvent.findMany({ where: { event: 'tourist_chat_reached' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
+      prisma.webEvent.findMany({ where: { event: 'tourist_bot_started' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
+      prisma.webEvent.findMany({ where: { event: { in: ['tourist_bot_finished_dialogue', 'tourist_bot_finished'] } }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
+      prisma.webEvent.findMany({ where: { event: 'tourist_card_ordered' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
+    ]);
+    return reply.send({
+      totalClients,
+      inLK: inLKList.length,
+      chatReached: chatReachedList.length,
+      botStarted: botStartedList.length,
+      botFinished: botFinishedList.length,
+      formFilled: formFilledList.length,
+      callRequested: callRequestedCount,
+      operatorCalled: operatorCalledCount,
+      payment: paymentCount,
+      repeatCall: repeatCallCount,
+    });
+  } catch (err) {
+    console.error('[admin-stats] error:', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
 export async function registerApiRoutes(app) {
+  // Public settings
+  app.get('/api/settings', handleGetSettings);
+
   // Geo lookup
   app.get('/api/geo', handleGeo);
 
@@ -1042,6 +1124,8 @@ export async function registerApiRoutes(app) {
   app.put('/api/admin/bot-config', handleUpdateBotConfig);
   app.get('/api/admin/clients', handleAdminClients);
   app.get('/api/admin/clients/:sessionId/chat', handleAdminClientChat);
+  app.get('/api/admin/stats', handleAdminStats);
+  app.put('/api/admin/settings', handleUpdateSettings);
 
   // Caller admin
   app.post('/api/caller/login', handleCallerLogin);

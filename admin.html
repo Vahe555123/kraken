@@ -113,6 +113,28 @@
 
       .search-bar{display:flex;gap:10px;margin-bottom:16px;}
       .search-bar input{flex:1;}
+
+      /* ── Платежка tab ── */
+      .settings-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:480px;}
+      .settings-card h2{font-size:15px;margin:0 0 18px;}
+
+      /* ── Статистика tab ── */
+      .funnel-wrap{max-width:660px;}
+      .funnel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+      .funnel-header h2{font-size:15px;margin:0;}
+      .funnel-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
+      .funnel-row:last-child{border:none;}
+      .funnel-icon{font-size:18px;flex:0 0 24px;text-align:center;}
+      .funnel-label{flex:1;font-size:13px;}
+      .funnel-count{font-size:20px;font-weight:700;flex:0 0 50px;text-align:right;}
+      .funnel-bar-wrap{flex:0 0 120px;height:6px;background:var(--panel3);border-radius:3px;overflow:hidden;}
+      .funnel-bar{height:100%;background:var(--accent);border-radius:3px;transition:width .4s;}
+      .funnel-pct{flex:0 0 38px;text-align:right;font-size:12px;color:var(--muted);}
+      .funnel-divider{height:1px;background:var(--border);margin:10px 0;border:none;}
+      .funnel-total-row{display:flex;align-items:center;gap:12px;padding:11px 0 16px;}
+      .funnel-total-icon{font-size:20px;flex:0 0 24px;text-align:center;}
+      .funnel-total-label{flex:1;font-size:14px;font-weight:600;}
+      .funnel-total-count{font-size:28px;font-weight:800;}
     </style>
   </head>
   <body>
@@ -141,6 +163,8 @@
       <div class="tabs">
         <button class="tab active" data-tab="bot">🤖 Настройки бота</button>
         <button class="tab" data-tab="clients">👥 Клиенты</button>
+        <button class="tab" data-tab="settings">💰 Платежка</button>
+        <button class="tab" data-tab="stats">📊 Статистика</button>
       </div>
 
       <!-- BOT SETTINGS TAB -->
@@ -179,6 +203,37 @@
         <div id="clientsStats" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;"></div>
         <div id="clientsList"><div class="loading">Загрузка…</div></div>
         <div class="pagination" id="clientsPagination"></div>
+      </div>
+
+      <!-- ПЛАТЕЖКА TAB -->
+      <div id="tab-settings" class="tab-content">
+        <div class="settings-card">
+          <h2>Реквизиты перевода</h2>
+          <p class="hint" style="margin:0 0 18px;">Эти данные отображаются в <strong>transaction-detail.html</strong> у клиента (поля IBAN и Beneficiario).</p>
+          <div class="field">
+            <label>IBAN получателя</label>
+            <input type="text" id="settingsIban" placeholder="ES24 2080 9230 2150 3773 6219" />
+          </div>
+          <div class="field">
+            <label>Имя получателя (Beneficiario)</label>
+            <input type="text" id="settingsBeneficiario" placeholder="Peter Harington" />
+          </div>
+          <div class="actions">
+            <button id="settingsSaveBtn">Сохранить</button>
+            <span class="status" id="settingsStatus"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- СТАТИСТИКА TAB -->
+      <div id="tab-stats" class="tab-content">
+        <div class="funnel-wrap">
+          <div class="funnel-header">
+            <h2>Воронка конверсии</h2>
+            <button class="btn-ghost" id="statsRefreshBtn">↻ Обновить</button>
+          </div>
+          <div id="funnelContent"><div class="loading">Загрузка…</div></div>
+        </div>
       </div>
     </div>
 
@@ -241,6 +296,8 @@
           var tab = document.getElementById('tab-' + btn.dataset.tab);
           if(tab) tab.classList.add('active');
           if(btn.dataset.tab === 'clients') loadClients(1);
+          if(btn.dataset.tab === 'settings') loadSettings();
+          if(btn.dataset.tab === 'stats') loadStats();
         });
       });
 
@@ -461,6 +518,82 @@
       }
 
       window.goPage = function(p){ loadClients(p); };
+
+      // ── Settings (Платежка) ──────────────────────────────────────────────────
+      function loadSettings(){
+        apiFetch('/api/settings').then(function(s){
+          document.getElementById('settingsIban').value = s.iban || '';
+          document.getElementById('settingsBeneficiario').value = s.beneficiario || '';
+        }).catch(function(){});
+      }
+
+      document.getElementById('settingsSaveBtn').addEventListener('click', function(){
+        var btn = this; var st = document.getElementById('settingsStatus');
+        btn.disabled = true; st.className = 'status'; st.textContent = 'Сохраняю…';
+        apiFetch('/api/admin/settings', {
+          method: 'PUT',
+          body: JSON.stringify({
+            iban: document.getElementById('settingsIban').value.trim(),
+            beneficiario: document.getElementById('settingsBeneficiario').value.trim(),
+          })
+        })
+        .then(function(s){
+          document.getElementById('settingsIban').value = s.iban || '';
+          document.getElementById('settingsBeneficiario').value = s.beneficiario || '';
+          btn.disabled = false; st.className = 'status ok'; st.textContent = '✓ Сохранено';
+          setTimeout(function(){ st.textContent = ''; }, 2500);
+        })
+        .catch(function(e){ btn.disabled = false; st.className = 'status err'; st.textContent = 'Ошибка: ' + e.message; });
+      });
+
+      // ── Statistics (Воронка) ─────────────────────────────────────────────────
+      document.getElementById('statsRefreshBtn').addEventListener('click', loadStats);
+
+      function loadStats(){
+        var el = document.getElementById('funnelContent');
+        el.innerHTML = '<div class="loading">Загрузка…</div>';
+        apiFetch('/api/admin/stats').then(renderStats).catch(function(){
+          el.innerHTML = '<div class="empty">⚠️ Не удалось загрузить статистику.</div>';
+        });
+      }
+
+      function renderStats(s){
+        var total = s.totalClients || 1;
+        var rows = [
+          { icon: '👤', label: 'КЛИЕНТ В ЛК',                  val: s.inLK },
+          { icon: '💬', label: 'КЛИЕНТ ДОШЕЛ ДО ЧАТА',         val: s.chatReached },
+          { icon: '🤖', label: 'БОТ НАЧАЛ ДИАЛОГ',             val: s.botStarted },
+          { icon: '✅', label: 'БОТ ЗАКОНЧИЛ ДИАЛОГ',          val: s.botFinished },
+          { icon: '📋', label: 'КЛИЕНТ ПОДПИСАЛ ДОГОВОР',      val: s.formFilled },
+          { icon: '📞', label: 'КЛИЕНТ ЗАКАЗАЛ ЗВОНОК',        val: s.callRequested },
+          { icon: '☎️', label: 'ОПЕРАТОР ПРОЗВОНИЛ',           val: s.operatorCalled },
+          { icon: '💳', label: 'ПЕРЕШЕЛ К ОПЛАТЕ',             val: s.payment },
+          { icon: '🔄', label: 'КЛИЕНТ ЗАКАЗАЛ ЗВОНОК (×2)',   val: s.repeatCall },
+        ];
+
+        var html = '<div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;">';
+        // Total row
+        html += '<div class="funnel-total-row">'
+          + '<span class="funnel-total-icon">📥</span>'
+          + '<span class="funnel-total-label">Всего клиентов</span>'
+          + '<span class="funnel-total-count">' + s.totalClients + '</span>'
+          + '</div><hr class="funnel-divider" />';
+
+        rows.forEach(function(r){
+          var pct = total > 0 ? Math.round((r.val / total) * 100) : 0;
+          var barW = Math.min(pct, 100);
+          html += '<div class="funnel-row">'
+            + '<span class="funnel-icon">' + r.icon + '</span>'
+            + '<span class="funnel-label">' + r.label + '</span>'
+            + '<span class="funnel-count">' + (r.val || 0) + '</span>'
+            + '<div class="funnel-bar-wrap"><div class="funnel-bar" style="width:' + barW + '%"></div></div>'
+            + '<span class="funnel-pct">' + pct + '%</span>'
+            + '</div>';
+        });
+
+        html += '</div>';
+        document.getElementById('funnelContent').innerHTML = html;
+      }
 
       // ── SSE ───────────────────────────────────────────────────────────────────
       var adminEs = null;
