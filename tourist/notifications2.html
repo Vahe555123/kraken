@@ -15,7 +15,7 @@
   </head>
 
   <body>
-    <div class="tourist-shell">
+    <div class="tourist-shell tourist-shell--notifications">
       <div class="tourist-topbar">
         <button type="button" class="tourist-topbar__back" data-tourist-back aria-label="Atrás">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -49,7 +49,7 @@
               </div>
               <span class="tourist-notif__chevron" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="m6 4 4 4-4 4" stroke="#0F0F0F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="m6 4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
             </a>
@@ -62,10 +62,10 @@
             >
               <svg class="tourist-notif-pdf__icon" id="notif2PdfBankIcon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <g clip-path="url(#notif2PdfClip)">
-                  <path d="M23.6458 0H13.0135H12.1896L11.6074 0.582125L3.55869 8.63138L2.97656 9.2135V10.037V26.6316C2.97656 29.5916 5.38456 32.0001 8.34506 32.0001H23.6458C26.6053 32.0001 29.0133 29.5916 29.0133 26.6316V5.3685C29.0133 2.408 26.6053 0 23.6458 0ZM27.026 26.6316C27.026 28.4989 25.5126 30.0123 23.6458 30.0123H8.34506C6.47731 30.0123 4.96394 28.4989 4.96394 26.6316V10.0369H10.1962C11.7515 10.0369 13.0135 8.77581 13.0135 7.22006V1.98775H23.6458C25.5126 1.98775 27.026 3.50113 27.026 5.3685V26.6316Z" fill="#FF4545"/>
-                  <path d="M10.7478 15.7969H8.96475C8.62525 15.7969 8.42188 16.0177 8.42188 16.3484V20.9581C8.42188 21.3573 8.68463 21.6205 9.04944 21.6205C9.40638 21.6205 9.66906 21.3574 9.66906 20.9581V19.5577C9.66906 19.5236 9.6865 19.5066 9.72056 19.5066H10.7478C12.0038 19.5066 12.7596 18.7425 12.7596 17.6559C12.7596 16.5522 12.0125 15.7969 10.7478 15.7969ZM10.6711 18.4283H9.72056C9.6865 18.4283 9.66906 18.4113 9.66906 18.3777V16.9258C9.66906 16.8917 9.6865 16.8748 9.72056 16.8748H10.6711C11.1973 16.8748 11.5115 17.189 11.5115 17.6559C11.5116 18.1228 11.1973 18.4283 10.6711 18.4283Z" fill="#FF4545"/>
-                  <path d="M15.6362 15.7969H14.2694C13.9299 15.7969 13.7266 16.0177 13.7266 16.3484V21.0261C13.7266 21.3574 13.9299 21.5694 14.2694 21.5694H15.6362C16.8668 21.5694 17.6314 21.1789 17.9368 20.2367C18.0468 19.9054 18.107 19.5066 18.107 18.6831C18.107 17.8597 18.0468 17.4608 17.9368 17.1296C17.6313 16.1874 16.8668 15.7969 15.6362 15.7969ZM16.7402 19.8038C16.5954 20.262 16.1799 20.4575 15.6021 20.4575H15.0253C14.9912 20.4575 14.9738 20.4405 14.9738 20.4065V16.9599C14.9738 16.9258 14.9912 16.9088 15.0253 16.9088H15.6021C16.1799 16.9088 16.5954 17.1043 16.7402 17.5626C16.7996 17.7581 16.8415 18.0976 16.8415 18.6832C16.8415 19.2688 16.7996 19.6083 16.7402 19.8038Z" fill="#FF4545"/>
-                  <path d="M22.5711 15.7969H19.7703C19.4308 15.7969 19.2266 16.0177 19.2266 16.3484V20.9581C19.2266 21.3573 19.4902 21.6205 19.855 21.6205C20.2111 21.6205 20.4746 21.3574 20.4746 20.9581V19.3111C20.4746 19.2775 20.4912 19.2605 20.5252 19.2605H22.1556C22.5204 19.2605 22.7325 19.0398 22.7325 18.7255C22.7325 18.4113 22.5204 18.1909 22.1556 18.1909H20.5252C20.4912 18.1909 20.4746 18.1739 20.4746 18.1399V16.9258C20.4746 16.8917 20.4912 16.8748 20.5252 16.8748H22.5711C22.9193 16.8748 23.1489 16.6457 23.1489 16.3403C23.1488 16.0259 22.9192 15.7969 22.5711 15.7969Z" fill="#FF4545"/>
+                  <path d="M23.6458 0H13.0135H12.1896L11.6074 0.582125L3.55869 8.63138L2.97656 9.2135V10.037V26.6316C2.97656 29.5916 5.38456 32.0001 8.34506 32.0001H23.6458C26.6053 32.0001 29.0133 29.5916 29.0133 26.6316V5.3685C29.0133 2.408 26.6053 0 23.6458 0ZM27.026 26.6316C27.026 28.4989 25.5126 30.0123 23.6458 30.0123H8.34506C6.47731 30.0123 4.96394 28.4989 4.96394 26.6316V10.0369H10.1962C11.7515 10.0369 13.0135 8.77581 13.0135 7.22006V1.98775H23.6458C25.5126 1.98775 27.026 3.50113 27.026 5.3685V26.6316Z" fill="#787878"/>
+                  <path d="M10.7478 15.7969H8.96475C8.62525 15.7969 8.42188 16.0177 8.42188 16.3484V20.9581C8.42188 21.3573 8.68463 21.6205 9.04944 21.6205C9.40638 21.6205 9.66906 21.3574 9.66906 20.9581V19.5577C9.66906 19.5236 9.6865 19.5066 9.72056 19.5066H10.7478C12.0038 19.5066 12.7596 18.7425 12.7596 17.6559C12.7596 16.5522 12.0125 15.7969 10.7478 15.7969ZM10.6711 18.4283H9.72056C9.6865 18.4283 9.66906 18.4113 9.66906 18.3777V16.9258C9.66906 16.8917 9.6865 16.8748 9.72056 16.8748H10.6711C11.1973 16.8748 11.5115 17.189 11.5115 17.6559C11.5116 18.1228 11.1973 18.4283 10.6711 18.4283Z" fill="#787878"/>
+                  <path d="M15.6362 15.7969H14.2694C13.9299 15.7969 13.7266 16.0177 13.7266 16.3484V21.0261C13.7266 21.3574 13.9299 21.5694 14.2694 21.5694H15.6362C16.8668 21.5694 17.6314 21.1789 17.9368 20.2367C18.0468 19.9054 18.107 19.5066 18.107 18.6831C18.107 17.8597 18.0468 17.4608 17.9368 17.1296C17.6313 16.1874 16.8668 15.7969 15.6362 15.7969ZM16.7402 19.8038C16.5954 20.262 16.1799 20.4575 15.6021 20.4575H15.0253C14.9912 20.4575 14.9738 20.4405 14.9738 20.4065V16.9599C14.9738 16.9258 14.9912 16.9088 15.0253 16.9088H15.6021C16.1799 16.9088 16.5954 17.1043 16.7402 17.5626C16.7996 17.7581 16.8415 18.0976 16.8415 18.6832C16.8415 19.2688 16.7996 19.6083 16.7402 19.8038Z" fill="#787878"/>
+                  <path d="M22.5711 15.7969H19.7703C19.4308 15.7969 19.2266 16.0177 19.2266 16.3484V20.9581C19.2266 21.3573 19.4902 21.6205 19.855 21.6205C20.2111 21.6205 20.4746 21.3574 20.4746 20.9581V19.3111C20.4746 19.2775 20.4912 19.2605 20.5252 19.2605H22.1556C22.5204 19.2605 22.7325 19.0398 22.7325 18.7255C22.7325 18.4113 22.5204 18.1909 22.1556 18.1909H20.5252C20.4912 18.1909 20.4746 18.1739 20.4746 18.1399V16.9258C20.4746 16.8917 20.4912 16.8748 20.5252 16.8748H22.5711C22.9193 16.8748 23.1489 16.6457 23.1489 16.3403C23.1488 16.0259 22.9192 15.7969 22.5711 15.7969Z" fill="#787878"/>
                 </g>
                 <defs>
                   <clipPath id="notif2PdfClip">
@@ -74,7 +74,7 @@
                 </defs>
               </svg>
               <span class="tourist-notif-pdf__text">
-                <strong><span id="notif2PdfBankName">Caixa Bank</span> – Anexo crédito</strong>
+                <strong id="notif2PdfBankName">Anexo crédito</strong>
                 <span>Contrato Nº ES-4738D9215</span>
               </span>
               <span class="tourist-notif-pdf__button">Abrir PDF</span>
@@ -124,7 +124,7 @@
                   <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" class="credit-letter__caixa-logo">
                 </div>
                 <div class="credit-letter__goval">
-                  <img src="../assets/Go Val.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
+                  <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
                 </div>
               </header>
 
@@ -132,14 +132,15 @@
                 <p class="credit-letter__line"><strong>De:</strong></p>
                 <p class="credit-letter__line"><strong id="notif2ContractBankName">CaixaBank S.A.</strong></p>
                 <p class="credit-letter__line"><strong>A:</strong></p>
-                <p class="credit-letter__line"><strong>GoVal Finance S.L.</strong></p>
+                <p class="credit-letter__line"><strong>Moneto Plus S.L.</strong></p>
                 <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
                 <p class="credit-letter__line"><strong>Estimados colegas,</strong></p>
                 <p class="credit-letter__para">Les informamos de que la solicitud de financiación presentada a nombre de <strong><span id="notif2ContractClientName"></span></strong> ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
-                <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 15 000.00</p>
+                <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 5 000.00</p>
                 <p class="credit-letter__line"><strong>TIN:</strong> 7.86%</p>
                 <p class="credit-letter__line"><strong>Modalidad de desembolso:</strong> transferencia bancaria</p>
-                <p class="credit-letter__para">Para completar el procedimiento de activación se requiere el abono de la contribución administrativa establecida.</p>
+				<p class="credit-letter__line"><strong>Seguro de crédito:</strong> 100.00</p>
+                <p class="credit-letter__para">Para la liberación de los fondos y el levantamiento de las restricciones operativas, es necesaria la contratación del seguro obligatorio establecido en las condiciones del contrato de crédito.</p>
                 <p class="credit-letter__para">Les rogamos informen al cliente al respecto y, si fuera necesario, presten la asistencia adicional en la fase de finalización.</p>
                 <p class="credit-letter__para">Gracias por su colaboración.</p>
                 <p class="credit-letter__line">Atentamente,</p>
@@ -258,11 +259,21 @@
           if (contractBankFooter) contractBankFooter.textContent = bank;
         }
 
-        // Лого банка только внутри договора
+        // Лого: сначала banks/{key}/logo.svg, потом legacy URL из localStorage
         var logoSrc = bankAsset("logo") || bankLogo;
-        if (logoSrc && contractBankLogoWrap) {
-          var logoImg = contractBankLogoWrap.querySelector("img");
-          if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
+        if (logoSrc) {
+          if (pdfBankIcon) {
+            var iconImg = document.createElement("img");
+            iconImg.src = logoSrc;
+            iconImg.alt = bank || "Banco";
+            iconImg.className = "tourist-notif-pdf__icon";
+            iconImg.style.cssText = "width:32px;height:32px;object-fit:contain;border-radius:4px;";
+            pdfBankIcon.parentNode.replaceChild(iconImg, pdfBankIcon);
+          }
+          if (contractBankLogoWrap) {
+            var logoImg = contractBankLogoWrap.querySelector("img");
+            if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
+          }
         }
 
         // Печать: banks/{key}/stamp.svg

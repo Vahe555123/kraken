@@ -1047,6 +1047,8 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
+  height: 103px;
+  box-sizing: border-box;
 }
 
 .tourist-notif__item--unread {
@@ -1055,7 +1057,7 @@ body {
 
 .tourist-notif__item--with-pdf {
   position: relative;
-  height: 221px;
+  height: 239px;
   display: block;
   padding: 0;
 }
@@ -1083,7 +1085,7 @@ body {
 
 .tourist-notif__link--credit {
   position: relative;
-  height: 157px;
+  height: 175px;
   display: block;
   padding: 0;
 }
@@ -1128,8 +1130,8 @@ body {
   left: 60px;
   top: 12px;
   width: calc(100% - 104px);
-  height: 133px;
-  justify-content: center;
+  height: 151px;
+  justify-content: flex-start;
 }
 
 .tourist-notif__title {
@@ -1169,6 +1171,7 @@ body {
   position: absolute;
   right: 16px;
   top: 70.5px;
+  color: #c6c6c6;
 }
 
 .tourist-notif__chevron svg {
@@ -1179,11 +1182,11 @@ body {
   position: absolute;
   left: 16px;
   right: 16px;
-  top: 157px;
+  top: 175px;
   height: 52px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   padding: 8px 16px;
   border-radius: 10px;
   background: #ffffff;
@@ -1600,6 +1603,14 @@ body {
   pointer-events: none;
 }
 
+.tourist-page-boot-loader--index {
+  transition: opacity 1s ease;
+}
+
+.tourist-page-boot-loader--index.tourist-page-boot-loader--hidden {
+  visibility: visible;
+}
+
 .tourist-page-boot-loader__text {
   margin: 0;
   font-family: "DM Sans", sans-serif;
@@ -1608,6 +1619,12 @@ body {
   line-height: 21px;
   text-align: center;
   color: #000000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.tourist-page-boot-loader__text--hidden {
+  opacity: 0;
 }
 
 /* Спиннер как в Figma: слот 40×40, SVG 36×36 по центру (offset 2px) */
