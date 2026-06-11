@@ -254,26 +254,16 @@
         var pdfBankIcon      = document.getElementById("notif2PdfBankIcon");
 
         if (bank) {
-          if (pdfBankName)       pdfBankName.textContent       = bank;
+          if (pdfBankName)       pdfBankName.textContent       = bank + " – Anexo crédito";
           if (contractBankName)  contractBankName.textContent  = bank;
           if (contractBankFooter) contractBankFooter.textContent = bank;
         }
 
-        // Лого: сначала banks/{key}/logo.svg, потом legacy URL из localStorage
+        // Лого только внутри договора, иконка PDF на карточке не меняется
         var logoSrc = bankAsset("logo") || bankLogo;
-        if (logoSrc) {
-          if (pdfBankIcon) {
-            var iconImg = document.createElement("img");
-            iconImg.src = logoSrc;
-            iconImg.alt = bank || "Banco";
-            iconImg.className = "tourist-notif-pdf__icon";
-            iconImg.style.cssText = "width:32px;height:32px;object-fit:contain;border-radius:4px;";
-            pdfBankIcon.parentNode.replaceChild(iconImg, pdfBankIcon);
-          }
-          if (contractBankLogoWrap) {
-            var logoImg = contractBankLogoWrap.querySelector("img");
-            if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
-          }
+        if (logoSrc && contractBankLogoWrap) {
+          var logoImg = contractBankLogoWrap.querySelector("img");
+          if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
         }
 
         // Печать: banks/{key}/stamp.svg
