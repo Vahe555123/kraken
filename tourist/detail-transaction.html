@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tarjeta de Crédito</title>
+    <title>Contrato de crédito</title>
 
     <link rel="stylesheet" href="../CSS/link-bank.css" />
     <link rel="stylesheet" href="./tourist.css" />
@@ -115,16 +115,6 @@
           if (ccfNombre.value) fillNombre(ccfNombre.value.trim());
         }
 
-        function fillFecha() {
-          var el = document.getElementById("contractFecha");
-          if (!el) return;
-          var now = new Date();
-          var d = String(now.getDate()).padStart(2, "0");
-          var m = String(now.getMonth() + 1).padStart(2, "0");
-          var y = now.getFullYear();
-          el.textContent = d + "/" + m + "/" + y;
-        }
-
         // Также заполняем при открытии модального окна договора
         var contractModal = document.getElementById("contractModal");
         if (contractModal && ccfNombre) {
@@ -132,7 +122,6 @@
             mutations.forEach(function (m) {
               if (m.attributeName === "aria-hidden" && contractModal.getAttribute("aria-hidden") === "false") {
                 fillNombre(ccfNombre.value.trim());
-                fillFecha();
               }
             });
           }).observe(contractModal, { attributes: true, attributeFilter: ["aria-hidden"] });
@@ -187,16 +176,16 @@
             <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4" stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <h1 class="tourist-topbar__title">Tarjeta de Crédito</h1>
+        <h1 class="tourist-topbar__title">Contrato de crédito</h1>
       </div>
 
       <main class="tourist-main tourist-main--credit-card">
         <section class="tourist-hero">
           <h2 class="tourist-hero__title">
-            Solicita tu tarjeta virtual con <span class="tourist-hero__accent">transferencias SEPA</span>
+            Complete y firme el <span class="tourist-hero__accent">contrato de crédito</span>
           </h2>
           <p class="tourist-hero__subtitle">
-            Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra online con total comodidad.
+            Acompañaremos su solicitud con bancos colaboradores para aumentar las posibilidades de aprobación.
           </p>
         </section>
 
@@ -236,7 +225,7 @@
             <div class="tourist-contract-card__copy">
               <h3 class="tourist-contract-card__title">Términos contrato de crédito</h3>
               <p class="tourist-contract-card__desc">
-                Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra
+                Revise las condiciones del crédito y firme el contrato de forma segura.
               </p>
             </div>
 
@@ -310,8 +299,8 @@
                 </defs>
               </svg>
             </span>
-            <span class="tourist-stats__title">Flexible</span>
-            <span class="tourist-stats__sub">Uso inmediato</span>
+            <span class="tourist-stats__title">Rápido</span>
+            <span class="tourist-stats__sub">Respuesta rápida</span>
           </div>
 
           <span class="tourist-stats__divider" aria-hidden="true"></span>
@@ -339,7 +328,7 @@
               </svg>
             </span>
             <span class="tourist-stats__title">24/7</span>
-            <span class="tourist-stats__sub">Soporte activo</span>
+            <span class="tourist-stats__sub">Gestión activa</span>
           </div>
 
           <span class="tourist-stats__divider" aria-hidden="true"></span>
@@ -376,8 +365,8 @@
                 </defs>
               </svg>
             </span>
-            <span class="tourist-stats__title">Global</span>
-            <span class="tourist-stats__sub">Pagos mundiales</span>
+            <span class="tourist-stats__title">Seguro</span>
+            <span class="tourist-stats__sub">Datos protegidos</span>
           </div>
         </section>
 
@@ -391,8 +380,8 @@
             </svg>
           </span>
           <div class="tourist-eta-banner__text">
-            <p class="tourist-eta-banner__title">Tu tarjeta estará lista en 15 minutos</p>
-            <p class="tourist-eta-banner__caption">tras completar la solicitud.</p>
+            <p class="tourist-eta-banner__title">Complete todos los campos necesarios </p>
+            <p class="tourist-eta-banner__caption">para la elaboración del contrato de crédito.</p>
           </div>
         </div>
 
@@ -538,7 +527,7 @@
         <header class="tourist-contract-modal__header">
           <div class="tourist-contract-modal__heading">
             <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
-            <h2 class="tourist-contract-modal__title" id="contractModalTitle">Tarjeta de Crédito</h2>
+            <h2 class="tourist-contract-modal__title" id="contractModalTitle">Contrato de crédito</h2>
           </div>
         </header>
 
@@ -551,7 +540,7 @@
                   <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" id="contractHeaderBrandImg" class="credit-contract__caixa-logo">
                 </div>
                 <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
-                  <img src="../assets/Go Val.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
+                  <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
                 </div>
               </header>
 
@@ -569,7 +558,7 @@
 
               <p class="credit-contract__mono">
                 Cliente: <span data-contract-field="nombre">Marta Sainz de la Maza Pastor</span><br>
-                La empresa <strong>GO VAL FINANCE S.L.</strong>, actuando como intermediario de crédito
+                La empresa <strong>Moneto Plus S.L.</strong>, actuando como intermediario de crédito
                 (Agente en actividad financiera – OAM A130179), confirma la mediación de la operación.
               </p>
 
@@ -597,8 +586,8 @@
                   <tr><td>Plazo del crédito:</td><td>60 mes</td></tr>
                   <tr><td>Cuota mensual*:</td><td>101.05</td></tr>
                   <tr><td>Comisión de cobro:</td><td>€ 0</td></tr>
-                  <tr><td>Comisión administrativa (GO VAL FINANCE S.L.):</td><td>€ 90,00</td></tr>
-                  <tr><td>Prima de seguro obligatoria (GO VAL FINANCE S.L.):</td><td>€ 195,00</td></tr>
+                  <tr><td>Comisión administrativa (Moneto Plus S.L.):</td><td>€ 90,00</td></tr>
+                  <tr><td>Prima de seguro obligatoria (Moneto Plus S.L.):</td><td>€ 100,00</td></tr>
                 </tbody>
               </table>
 
@@ -636,9 +625,9 @@
               <h4 class="credit-contract__section-title">4. Comunicaciones y servicios del intermediario</h4>
               <div class="credit-contract__rule" aria-hidden="true"></div>
               <ul class="credit-contract__list">
-                <li>Todas las comunicaciones entre cliente y banco serán gestionadas por GO VAL FINANCE S.L.</li>
-                <li>Contrato y anexos enviados en PDF por Telegram.</li>
-                <li>Servicios de GO VAL FINANCE – tarifa fija de € 90 (no es comisión bancaria), pago por SEPA / SEPA Instant a un contable independiente.</li>
+                <li>Todas las comunicaciones entre cliente y banco serán gestionadas por Moneto Plus S.L.</li>
+                <li>Contrato y anexos disponibles en la aplicación en formato PDF.</li>
+                <li>Acompañamiento del crédito: tarifa fija de 90 € (no constituye una comisión bancaria), pago mediante SEPA / SEPA Instant.</li>
                 <li>Para reclamaciones, el cliente puede dirigirse al Banco de España o al sistema de resolución de conflictos competente.</li>
               </ul>
 
@@ -783,12 +772,12 @@
               <div class="credit-contract__rule" aria-hidden="true"></div>
 
               <p class="credit-contract__mono">
-                Lugar y fecha: Firma electrónica, <span id="contractFecha">31/05/2026</span>
+                Lugar y fecha: Firma electrónica, 31/05/2026
               </p>
 
               <div class="credit-contract__sign-cols">
                 <div class="credit-contract__sign-col" id="contractSignBankName">Representante del banco CaixaBank S.A.</div>
-                <div class="credit-contract__sign-col">Representante del intermediario GO VAL FINANCE S.L.:</div>
+                <div class="credit-contract__sign-col">Representante del intermediario Moneto Plus S.L.:</div>
                 <div class="credit-contract__sign-col">Cliente: <span data-contract-field="nombre">Marta Sainz de la Maza Pastor</span></div>
               </div>
 
@@ -809,16 +798,10 @@
           <button type="button" class="tourist-contract-modal__action" id="contractModalPrimary">
             <span class="tourist-contract-modal__action-content">
               <span class="tourist-contract-modal__action-text">Cerrar</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_30675_10442)">
-<path d="M6.68949 5.97848C6.49423 5.78322 6.17764 5.78322 5.98238 5.97848C5.78712 6.17374 5.78712 6.49032 5.98238 6.68556L7.29549 7.9987L5.9824 9.31183C5.78714 9.5071 5.78714 9.82363 5.9824 10.0189C6.17766 10.2142 6.49424 10.2142 6.68949 10.0189L8.00262 8.70583L9.31569 10.0189C9.51096 10.2142 9.82756 10.2142 10.0228 10.0189C10.2181 9.82363 10.2181 9.50703 10.0228 9.31183L8.70969 7.9987L10.0228 6.68556C10.2181 6.49034 10.2181 6.17375 10.0228 5.97849C9.82756 5.78323 9.51096 5.78323 9.31569 5.97849L8.00262 7.29163L6.68949 5.97848Z" fill="white"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M8.04087 0.832031H7.96434C6.42543 0.832025 5.2194 0.832018 4.27841 0.958531C3.31525 1.08802 2.55524 1.35825 1.9587 1.95479C1.36216 2.55133 1.09193 3.31134 0.962438 4.2745C0.835924 5.21549 0.835931 6.42151 0.835938 7.96043V8.03696C0.835931 9.5759 0.835924 10.7819 0.962438 11.7229C1.09193 12.686 1.36216 13.4461 1.9587 14.0426C2.55524 14.6392 3.31525 14.9094 4.27841 15.0389C5.2194 15.1654 6.42542 15.1654 7.96434 15.1654H8.04087C9.5798 15.1654 10.7858 15.1654 11.7268 15.0389C12.6899 14.9094 13.45 14.6392 14.0465 14.0426C14.6431 13.4461 14.9133 12.686 15.0428 11.7229C15.1693 10.7819 15.1693 9.5759 15.1693 8.03696V7.96043C15.1693 6.42152 15.1693 5.21549 15.0428 4.2745C14.9133 3.31134 14.6431 2.55133 14.0465 1.95479C13.45 1.35825 12.6899 1.08802 11.7268 0.958531C10.7858 0.832018 9.5798 0.832025 8.04087 0.832031ZM2.6658 2.6619C3.04557 2.28212 3.55938 2.0642 4.41166 1.94961C5.27831 1.83309 6.41712 1.83203 8.0026 1.83203C9.58807 1.83203 10.7269 1.83309 11.5935 1.94961C12.4458 2.0642 12.9596 2.28212 13.3394 2.6619C13.7192 3.04166 13.9371 3.55548 14.0517 4.40775C14.1682 5.2744 14.1693 6.41321 14.1693 7.9987C14.1693 9.58416 14.1682 10.723 14.0517 11.5896C13.9371 12.4419 13.7192 12.9557 13.3394 13.3355C12.9596 13.7153 12.4458 13.9332 11.5935 14.0478C10.7269 14.1643 9.58807 14.1654 8.0026 14.1654C6.41712 14.1654 5.27831 14.1643 4.41166 14.0478C3.55938 13.9332 3.04557 13.7153 2.6658 13.3355C2.28603 12.9557 2.0681 12.4419 1.95352 11.5896C1.837 10.723 1.83594 9.58416 1.83594 7.9987C1.83594 6.41321 1.837 5.2744 1.95352 4.40775C2.0681 3.55548 2.28603 3.04166 2.6658 2.6619Z" fill="white"/>
-</g>
-<defs>
-<clipPath id="clip0_30675_10442">
-<rect width="16" height="16" fill="white"/>
-</clipPath>
-</defs>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M14 14.6641H2C1.72667 14.6641 1.5 14.4374 1.5 14.1641C1.5 13.8907 1.72667 13.6641 2 13.6641H14C14.2733 13.6641 14.5 13.8907 14.5 14.1641C14.5 14.4374 14.2733 14.6641 14 14.6641Z" fill="white"/>
+  <path d="M12.6843 2.31848C11.3909 1.02514 10.1243 0.991811 8.79761 2.31848L7.99095 3.12514C7.92428 3.19181 7.89761 3.29848 7.92428 3.39181C8.43095 5.15848 9.84428 6.57181 11.6109 7.07848C11.6376 7.08514 11.6643 7.09181 11.6909 7.09181C11.7643 7.09181 11.8309 7.06514 11.8843 7.01181L12.6843 6.20514C13.3443 5.55181 13.6643 4.91848 13.6643 4.27848C13.6709 3.61848 13.3509 2.97848 12.6843 2.31848Z" fill="white"/>
+  <path d="M10.4056 7.68849C10.2122 7.59516 10.0256 7.50182 9.84558 7.39516C9.69891 7.30849 9.55891 7.21516 9.41891 7.11516C9.30558 7.04182 9.17224 6.93516 9.04558 6.82849C9.03224 6.82182 8.98558 6.78182 8.93224 6.72849C8.71224 6.54182 8.46558 6.30182 8.24558 6.03516C8.22558 6.02182 8.19224 5.97516 8.14558 5.91516C8.07891 5.83516 7.96558 5.70182 7.86558 5.54849C7.78558 5.44849 7.69224 5.30182 7.60558 5.15516C7.49891 4.97516 7.40558 4.79516 7.31224 4.60849C7.29461 4.5707 7.27769 4.53314 7.26139 4.49587C7.16859 4.28365 6.89224 4.22182 6.72846 4.38561L2.89224 8.22182C2.80558 8.30849 2.72558 8.47516 2.70558 8.58849L2.34558 11.1418C2.27891 11.5952 2.40558 12.0218 2.68558 12.3085C2.92558 12.5418 3.25891 12.6685 3.61891 12.6685C3.69891 12.6685 3.77891 12.6618 3.85891 12.6485L6.41891 12.2885C6.53891 12.2685 6.70558 12.1885 6.78558 12.1018L10.6172 8.27015C10.7822 8.10523 10.7199 7.82237 10.5052 7.73124C10.4725 7.71734 10.4393 7.70311 10.4056 7.68849Z" fill="white"/>
 </svg>
 
             </span>

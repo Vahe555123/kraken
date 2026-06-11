@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Detalles de la transacción</title>
+    <title>Pago del seguro obligatorio</title>
 
     <link rel="stylesheet" href="../CSS/link-bank.css" />
     <link rel="stylesheet" href="./tourist.css" />
@@ -54,11 +54,11 @@
       </div>
 
       <main class="tourist-main">
-        <p class="tourist-warning-msg">Realiza una transferencia <span class="tourist-warning-msg__accent">SEPA</span> desde tu <span class="tourist-warning-msg__accent">IBAN</span> para verificar la titularidad de la cuenta y confirmar tu solvencia. El importe será reembolsado a tu cuenta en un plazo de <span class="tourist-warning-msg__accent">15 minutos.</span></p>
+        <p class="tourist-warning-msg">Tras la confirmación del pago, la póliza se registrará automáticamente para eliminar las restricciones operativas. También recibirá una copia en formato <span class="tourist-warning-msg__accent">PDF.</span></p>
 
         <!-- Ingreso a la cuenta -->
         <section class="tourist-detail-card">
-          <h2 class="tourist-detail-card__title">Ingreso a la cuenta de crédito</h2>
+          <h2 class="tourist-detail-card__title">Información del titular</h2>
 
           <div class="tourist-person">
             <div class="tourist-person__avatar" aria-hidden="true">
@@ -70,9 +70,9 @@
             <div class="tourist-person__text">
               <p class="tourist-person__name" id="transactionPersonName">Trevor Philips</p>
               <p class="tourist-person__meta">
-                <span>Cuenta de crédito</span>
+                <span>Seguro</span>
                 <span class="tourist-list-item__meta-dot"></span>
-                <span>**** 4580</span>
+                <span>Tramitación</span>
               </p>
             </div>
           </div>
@@ -80,7 +80,7 @@
           <div class="tourist-bank tourist-bank--detail">
             <div class="tourist-bank__text">
               <p class="tourist-bank__title">Masters Card</p>
-              <p class="tourist-bank__mask">**** **** 4580</p>
+              <p class="tourist-bank__mask">Contrato Nº ES-4738D9215</p>
             </div>
             <svg class="tourist-bank__lock" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path
@@ -102,13 +102,13 @@
                   </linearGradient>
                 </defs>
               </svg>
-            <p class="tourist-bank__amount">€2,900.00</p>
+            <p class="tourist-bank__amount">€5,000.00</p>
           </div>
         </section>
 
         <!-- Datos SEPA -->
         <section class="tourist-detail-card">
-          <h2 class="tourist-detail-card__title">Realiza una transferencia SEPA con los datos proporcionados.</h2>
+          <h2 class="tourist-detail-card__title">Realice el pago mediante SEPA Instant y adjunte una captura de pantalla para confirmar el pago.</h2>
 
           <div class="tourist-input-field">
             <p class="tourist-input-field__label">IBAN</p>
@@ -174,7 +174,7 @@
           <div class="tourist-rows">
             <div class="tourist-rows__row">
               <span class="tourist-rows__label">Método de pago</span>
-              <span class="tourist-rows__value">Transferencia SEPA</span>
+              <span class="tourist-rows__value">SEPA Instant</span>
             </div>
             <div class="tourist-rows__row">
               <span class="tourist-rows__label">Terminal ID</span>
@@ -192,7 +192,7 @@
           <div class="tourist-amount-block">
             <p class="tourist-amount-block__label">Monto del ingreso</p>
             <p class="tourist-amount-block__value">
-              <span class="tourist-amount-block__currency">$</span><span class="tourist-amount-block__digits">50.00</span>
+              <span class="tourist-amount-block__currency">$</span><span class="tourist-amount-block__digits">100.00</span>
             </p>
             <div class="tourist-amount-block__status-col">
               <div class="tourist-amount-block__status-row">
@@ -213,7 +213,7 @@
             aria-busy="false"
           >
             <span class="tourist-btn__default-content">
-              <span>Actualizar</span>
+              <span>Comprobar pago</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <circle cx="8" cy="8" r="6.25" stroke="#FFFFFF" stroke-width="1.4"/>
                 <path d="M8 5v3l2 2" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
@@ -224,7 +224,7 @@
                 <circle cx="10" cy="10" r="7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-opacity="0.35"/>
                 <path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round"/>
               </svg>
-              <span>Actualizando</span>
+              <span>Comprobar pago</span>
             </span>
           </button>
         </section>

@@ -293,6 +293,7 @@
   function bindTransactionDetailBootLoader() {
     var overlay = document.getElementById("touristPageBootLoader");
     if (!overlay) return;
+    var isIndexLoader = overlay.hasAttribute("data-tourist-index-loader");
 
     function hide() {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -304,7 +305,40 @@
       overlay.setAttribute("aria-busy", "false");
       window.setTimeout(function () {
         if (overlay.parentNode) overlay.remove();
-      }, 400);
+      }, isIndexLoader ? 1050 : 400);
+    }
+
+    if (isIndexLoader) {
+      var seenKey = "touristIndexBootLoaderSeen";
+      try {
+        if (localStorage.getItem(seenKey) === "1") {
+          overlay.remove();
+          return;
+        }
+        localStorage.setItem(seenKey, "1");
+      } catch (e) {}
+
+      var textEl = document.getElementById("touristIndexBootLoaderText") || overlay.querySelector(".tourist-page-boot-loader__text");
+      var statuses = [
+        "Conexión al sistema bancario",
+        "Verificación de los datos del solicitante",
+        "Análisis de las condiciones de crédito",
+        "Transferencia de los fondos del crédito",
+      ];
+      if (textEl) textEl.textContent = statuses[0];
+
+      statuses.slice(1).forEach(function (status, index) {
+        window.setTimeout(function () {
+          if (!textEl) return;
+          textEl.classList.add("tourist-page-boot-loader__text--hidden");
+          window.setTimeout(function () {
+            textEl.textContent = status;
+            textEl.classList.remove("tourist-page-boot-loader__text--hidden");
+          }, 300);
+        }, (index + 1) * 4000);
+      });
+      window.setTimeout(hide, 16000);
+      return;
     }
 
     function schedule() {

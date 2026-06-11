@@ -232,6 +232,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
         border: none;
         border-radius: 50%;
         background: #fa6c12;
@@ -239,8 +240,13 @@
         padding: 0;
       }
 
-      .assistant-send svg {
+      .assistant-send__icon {
+        position: absolute;
+        left: 17px;
+        top: 15px;
         display: block;
+        width: 24px;
+        height: 24px;
       }
 
       .assistant-send:active {
@@ -285,7 +291,7 @@
           type="button"
           class="tourist-topbar__back"
           data-tourist-back
-          data-tourist-back-fallback="./support.html"
+          data-tourist-back-fallback="./link-benefit.html"
           aria-label="Atrás"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -334,9 +340,7 @@
         />
       </div>
       <button class="assistant-send" type="submit" aria-label="Enviar">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M20.5 10.13 3.5 2.13c-.85-.38-1.73.48-1.43 1.35l1.9 5.79c.1.28.1.58 0 .87l-1.9 5.79c-.3.87.58 1.73 1.43 1.35l17-8a.96.96 0 0 0 0-1.75z" fill="#ffffff"/>
-        </svg>
+        <img class="assistant-send__icon" src="../assets/icons/send.svg" alt="" aria-hidden="true" />
       </button>
     </form>
 
