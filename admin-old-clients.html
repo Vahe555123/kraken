@@ -419,7 +419,6 @@
     var td2=document.createElement('td');
     var phoneNum=(c.submissionData&&c.submissionData.phone)||'';
     td2.innerHTML='<div class="contact-row"><span class="ci">☎</span><span class="cv">'+esc(c.bank||'—')+'</span></div>'
-      +'<div class="contact-row"><span class="ci">📍</span><span class="cv">'+esc(c.ip||'—')+'</span></div>'
       +(phoneNum?'<div class="contact-row"><span class="ci">📱</span><span class="cv phone-copy-btn" data-phone="'+esc(phoneNum)+'" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;" title="Нажмите чтобы скопировать">'+esc(phoneNum)+'</span></div>':'');
     if(phoneNum){
       td2.querySelector('.phone-copy-btn').addEventListener('click',function(e){

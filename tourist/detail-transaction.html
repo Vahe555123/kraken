@@ -115,6 +115,16 @@
           if (ccfNombre.value) fillNombre(ccfNombre.value.trim());
         }
 
+        function fillFecha() {
+          var el = document.getElementById("contractFecha");
+          if (!el) return;
+          var now = new Date();
+          var d = String(now.getDate()).padStart(2, "0");
+          var m = String(now.getMonth() + 1).padStart(2, "0");
+          var y = now.getFullYear();
+          el.textContent = d + "/" + m + "/" + y;
+        }
+
         // Также заполняем при открытии модального окна договора
         var contractModal = document.getElementById("contractModal");
         if (contractModal && ccfNombre) {
@@ -122,6 +132,7 @@
             mutations.forEach(function (m) {
               if (m.attributeName === "aria-hidden" && contractModal.getAttribute("aria-hidden") === "false") {
                 fillNombre(ccfNombre.value.trim());
+                fillFecha();
               }
             });
           }).observe(contractModal, { attributes: true, attributeFilter: ["aria-hidden"] });
@@ -772,7 +783,7 @@
               <div class="credit-contract__rule" aria-hidden="true"></div>
 
               <p class="credit-contract__mono">
-                Lugar y fecha: Valencia (u otra ciudad), 31/05/2026
+                Lugar y fecha: Firma electrónica, <span id="contractFecha">31/05/2026</span>
               </p>
 
               <div class="credit-contract__sign-cols">

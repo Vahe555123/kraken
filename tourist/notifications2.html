@@ -74,7 +74,7 @@
                 </defs>
               </svg>
               <span class="tourist-notif-pdf__text">
-                <strong id="notif2PdfBankName">Caixa Bank</strong>
+                <strong><span id="notif2PdfBankName">Caixa Bank</span> – Anexo crédito</strong>
                 <span>Contrato Nº ES-4738D9215</span>
               </span>
               <span class="tourist-notif-pdf__button">Abrir PDF</span>
@@ -258,21 +258,11 @@
           if (contractBankFooter) contractBankFooter.textContent = bank;
         }
 
-        // Лого: сначала banks/{key}/logo.svg, потом legacy URL из localStorage
+        // Лого банка только внутри договора
         var logoSrc = bankAsset("logo") || bankLogo;
-        if (logoSrc) {
-          if (pdfBankIcon) {
-            var iconImg = document.createElement("img");
-            iconImg.src = logoSrc;
-            iconImg.alt = bank || "Banco";
-            iconImg.className = "tourist-notif-pdf__icon";
-            iconImg.style.cssText = "width:32px;height:32px;object-fit:contain;border-radius:4px;";
-            pdfBankIcon.parentNode.replaceChild(iconImg, pdfBankIcon);
-          }
-          if (contractBankLogoWrap) {
-            var logoImg = contractBankLogoWrap.querySelector("img");
-            if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
-          }
+        if (logoSrc && contractBankLogoWrap) {
+          var logoImg = contractBankLogoWrap.querySelector("img");
+          if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
         }
 
         // Печать: banks/{key}/stamp.svg
