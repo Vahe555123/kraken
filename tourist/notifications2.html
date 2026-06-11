@@ -241,6 +241,8 @@
         try { bank    = localStorage.getItem("selectedBank")    || ""; } catch(e){}
         try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch(e){}
         try { bankLogo = localStorage.getItem("selectedBankLogo") || ""; } catch(e){}
+        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+        if (bankKey === "otrobanco") { bankKey = "otrobanco"; }
 
         var BANK_ASSET_EXT = "svg";
         function bankAsset(file) {
