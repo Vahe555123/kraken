@@ -41,6 +41,12 @@
     .btn-nav:hover{background:var(--panel2);}
     .btn-nav.active{border-color:var(--accent);color:var(--accent);background:rgba(250,108,18,.08);}
 
+    /* ── Lang switcher ─────────────────────────────────────── */
+    .lang-switcher{display:flex;gap:4px;align-items:center;}
+    .lang-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px;transition:all .15s;white-space:nowrap;}
+    .lang-btn:hover{background:var(--panel2);color:var(--text);}
+    .lang-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(250,108,18,.08);}
+
     /* ── Stats ─────────────────────────────────────────────── */
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
     @media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
@@ -155,9 +161,9 @@
 <!-- ── LOGIN ── -->
 <div id="loginWrap" class="login-wrap">
   <div class="login-box">
-    <h1>🔒 Панель прозвонщика</h1>
-    <div class="field"><label>Логин</label><input type="text" id="loginInput" placeholder="caller" autocomplete="username"/></div>
-    <div class="field"><label>Пароль</label><input type="password" id="passInput" placeholder="••••••" autocomplete="current-password"/></div>
+    <h1 id="i18n-loginTitle">🔒 Панель прозвонщика</h1>
+    <div class="field"><label id="i18n-loginLabel">Логин</label><input type="text" id="loginInput" placeholder="caller" autocomplete="username"/></div>
+    <div class="field"><label id="i18n-passLabel">Пароль</label><input type="password" id="passInput" placeholder="••••••" autocomplete="current-password"/></div>
     <button class="btn-primary" id="loginBtn">Войти</button>
     <p class="err-msg" id="loginErr"></p>
   </div>
@@ -169,13 +175,17 @@
 
     <div class="topbar">
       <div class="topbar-left">
-        <h1>Запросы на звонок</h1>
-        <p>Клиенты, нажавшие «Solicitar llamada»</p>
+        <h1 id="i18n-pageTitle">Запросы на звонок</h1>
+        <p id="i18n-pageSubtitle">Клиенты, нажавшие «Solicitar llamada»</p>
       </div>
       <div class="topbar-right">
+        <div class="lang-switcher">
+          <button class="lang-btn active" id="langRu">🇷🇺 RU</button>
+          <button class="lang-btn" id="langEs">🇪🇸 ES</button>
+        </div>
         <span class="sse-dot" id="sseDot" title="Авто-обновление"></span>
-        <a href="/caller" class="btn-nav active">🆕 Новые клиенты</a>
-        <a href="/caller/old-clients" class="btn-nav">👥 Старые клиенты</a>
+        <a href="/caller" class="btn-nav active" id="i18n-navNew">🆕 Новые клиенты</a>
+        <a href="/caller/old-clients" class="btn-nav" id="i18n-navOld">👥 Старые клиенты</a>
         <button class="btn-nav" id="refreshBtn">↻ Обновить</button>
         <button class="btn-nav" id="logoutBtn">Выйти</button>
       </div>
@@ -184,19 +194,19 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon si-green">☎</div>
-        <div><div class="stat-val" id="sTotal">—</div><div class="stat-lbl">Всего запросов</div></div>
+        <div><div class="stat-val" id="sTotal">—</div><div class="stat-lbl" id="i18n-statTotal">Всего запросов</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon si-orange">⏰</div>
-        <div><div class="stat-val" id="sPending">—</div><div class="stat-lbl">Ожидают звонка</div></div>
+        <div><div class="stat-val" id="sPending">—</div><div class="stat-lbl" id="i18n-statPending">Ожидают звонка</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon si-blue">📱</div>
-        <div><div class="stat-val" id="sDone">—</div><div class="stat-lbl">Прозвонено</div></div>
+        <div><div class="stat-val" id="sDone">—</div><div class="stat-lbl" id="i18n-statDone">Прозвонено</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon si-purple">📅</div>
-        <div><div class="stat-val" style="font-size:16px;font-weight:700;">Сегодня</div><div class="stat-lbl" id="todayDate">—</div></div>
+        <div><div class="stat-val" id="i18n-statTodayVal" style="font-size:16px;font-weight:700;">Сегодня</div><div class="stat-lbl" id="todayDate">—</div></div>
       </div>
     </div>
 
@@ -223,12 +233,12 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Клиент</th>
-            <th>Контакты</th>
-            <th>Статус</th>
-            <th>Запрос</th>
-            <th>Действия</th>
-            <th>Заметка</th>
+            <th id="i18n-thClient">Клиент</th>
+            <th id="i18n-thContacts">Контакты</th>
+            <th id="i18n-thStatus">Статус</th>
+            <th id="i18n-thRequest">Запрос</th>
+            <th id="i18n-thActions">Действия</th>
+            <th id="i18n-thNote">Заметка</th>
           </tr>
         </thead>
         <tbody id="tableBody">
@@ -253,10 +263,224 @@
 (function(){
   var API = window.location.origin;
   var TOKEN_KEY = 'callerToken';
+  var LANG_KEY  = 'callerLang';
   var PAGE_SIZE = 15;
   var currentPage = 1;
   var allClients = [];
   var filteredClients = [];
+
+  // ── Translations ──────────────────────────────────────────
+  var T = {
+    ru: {
+      loginTitle:       '🔒 Панель прозвонщика',
+      loginLabel:       'Логин',
+      passLabel:        'Пароль',
+      loginBtn:         'Войти',
+      errWrongCreds:    'Неверный логин или пароль',
+      errServer:        'Сервер недоступен',
+      pageTitle:        'Запросы на звонок',
+      pageSubtitle:     'Клиенты, нажавшие «Solicitar llamada»',
+      navNew:           '🆕 Новые клиенты',
+      navOld:           '👥 Старые клиенты',
+      btnRefresh:       '↻ Обновить',
+      btnLogout:        'Выйти',
+      statTotal:        'Всего запросов',
+      statPending:      'Ожидают звонка',
+      statDone:         'Прозвонено',
+      statToday:        'Сегодня',
+      thClient:         'Клиент',
+      thContacts:       'Контакты',
+      thStatus:         'Статус',
+      thRequest:        'Запрос',
+      thActions:        'Действия',
+      thNote:           'Заметка',
+      searchPh:         'Поиск по имени, email или телефону...',
+      statusAll:        'Статус: Все',
+      statusPending:    'Ожидает звонка',
+      statusCalled:     'Прозвонил',
+      statusPayment:    'На этапе оплаты',
+      dateAll:          'Дата: Все',
+      dateToday:        'Сегодня',
+      dateWeek:         'Эта неделя',
+      btnExport:        '↑ Экспорт',
+      pgShowing:        function(s,e,tot){ return 'Показано '+(s+1)+'–'+e+' из '+tot; },
+      pgEmpty:          'Нет записей',
+      loading:          'Загрузка…',
+      noRequests:       '📭 Нет запросов',
+      loadError:        '⚠️ Не удалось загрузить данные.',
+      badgePending:     '⏳ Ожидает',
+      badgeCalled:      '📍 Прозвонено',
+      badgePayment:     '💳 На этапе оплаты',
+      btnCall:          '📞 Позвонить',
+      btnDone:          '✓ Прозвонил',
+      notePh:           'Заметка…',
+      btnSave:          '✓',
+      btnSaveNote:      'Сохранить',
+      savedOk:          '✓ Сохранено',
+      btnExpand:        'Подробнее',
+      copied:           '✓ Скопировано',
+      copyTitle:        'Нажмите чтобы скопировать',
+      detBasic:         'Основное',
+      detName:          'Имя',
+      detPhone:         'Телефон',
+      detBank:          'Банк',
+      detReg:           'Регистрация',
+      detCallStatus:    'Статус звонка',
+      detStatus:        'Статус',
+      detCallDate:      'Дата звонка',
+      detStatusCalled:  '✅ Прозвонил',
+      detStatusPayment: '💳 На этапе оплаты',
+      detStatusPending: '⏳ Ожидает звонка',
+      detAnket:         'Анкета',
+      detNoForm:        'Форма не заполнена',
+      detFullname:      'ФИО',
+      detAddress:       'Адрес',
+      detEvents:        'История событий',
+      detNoEvents:      'Нет событий',
+      detNoteTitle:     'Заметка оператора',
+      dateLocale:       'ru',
+      expHeaders:       ['Имя','Email','IP','Банк','Статус','Запрос','Заметка'],
+      expPending:       'Ожидает',
+      expCalled:        'Прозвонил',
+      expPayment:       'На этапе оплаты',
+    },
+    es: {
+      loginTitle:       '🔒 Panel de operador',
+      loginLabel:       'Usuario',
+      passLabel:        'Contraseña',
+      loginBtn:         'Entrar',
+      errWrongCreds:    'Usuario o contraseña incorrectos',
+      errServer:        'Servidor no disponible',
+      pageTitle:        'Solicitudes de llamada',
+      pageSubtitle:     'Clientes que pulsaron «Solicitar llamada»',
+      navNew:           '🆕 Nuevos clientes',
+      navOld:           '👥 Clientes anteriores',
+      btnRefresh:       '↻ Actualizar',
+      btnLogout:        'Salir',
+      statTotal:        'Total solicitudes',
+      statPending:      'Esperan llamada',
+      statDone:         'Llamados',
+      statToday:        'Hoy',
+      thClient:         'Cliente',
+      thContacts:       'Contactos',
+      thStatus:         'Estado',
+      thRequest:        'Solicitud',
+      thActions:        'Acciones',
+      thNote:           'Nota',
+      searchPh:         'Buscar por nombre, email o teléfono...',
+      statusAll:        'Estado: Todos',
+      statusPending:    'Espera llamada',
+      statusCalled:     'Llamado',
+      statusPayment:    'En proceso de pago',
+      dateAll:          'Fecha: Todas',
+      dateToday:        'Hoy',
+      dateWeek:         'Esta semana',
+      btnExport:        '↑ Exportar',
+      pgShowing:        function(s,e,tot){ return 'Mostrando '+(s+1)+'–'+e+' de '+tot; },
+      pgEmpty:          'Sin registros',
+      loading:          'Cargando…',
+      noRequests:       '📭 Sin solicitudes',
+      loadError:        '⚠️ No se pudieron cargar los datos.',
+      badgePending:     '⏳ Espera',
+      badgeCalled:      '📍 Llamado',
+      badgePayment:     '💳 En proceso de pago',
+      btnCall:          '📞 Llamar',
+      btnDone:          '✓ Llamado',
+      notePh:           'Nota…',
+      btnSave:          '✓',
+      btnSaveNote:      'Guardar',
+      savedOk:          '✓ Guardado',
+      btnExpand:        'Más detalles',
+      copied:           '✓ Copiado',
+      copyTitle:        'Haga clic para copiar',
+      detBasic:         'Información básica',
+      detName:          'Nombre',
+      detPhone:         'Teléfono',
+      detBank:          'Banco',
+      detReg:           'Registro',
+      detCallStatus:    'Estado de llamada',
+      detStatus:        'Estado',
+      detCallDate:      'Fecha de llamada',
+      detStatusCalled:  '✅ Llamado',
+      detStatusPayment: '💳 En proceso de pago',
+      detStatusPending: '⏳ Espera llamada',
+      detAnket:         'Formulario',
+      detNoForm:        'Formulario no completado',
+      detFullname:      'Nombre completo',
+      detAddress:       'Dirección',
+      detEvents:        'Historial de eventos',
+      detNoEvents:      'Sin eventos',
+      detNoteTitle:     'Nota del operador',
+      dateLocale:       'es',
+      expHeaders:       ['Nombre','Email','IP','Banco','Estado','Solicitud','Nota'],
+      expPending:       'Espera',
+      expCalled:        'Llamado',
+      expPayment:       'En proceso de pago',
+    }
+  };
+
+  var currentLang = localStorage.getItem(LANG_KEY) || 'ru';
+
+  function t(key){ return T[currentLang][key] || T['ru'][key] || key; }
+
+  function applyI18n(){
+    var lang = T[currentLang];
+    var set = function(id, text){ var el=document.getElementById(id); if(el) el.textContent=text; };
+    // Login
+    set('i18n-loginTitle',   lang.loginTitle);
+    set('i18n-loginLabel',   lang.loginLabel);
+    set('i18n-passLabel',    lang.passLabel);
+    var lb=document.getElementById('loginBtn'); if(lb && !lb.disabled) lb.textContent=lang.loginBtn;
+    // Header
+    set('i18n-pageTitle',    lang.pageTitle);
+    set('i18n-pageSubtitle', lang.pageSubtitle);
+    set('i18n-navNew',       lang.navNew);
+    set('i18n-navOld',       lang.navOld);
+    var rb=document.getElementById('refreshBtn'); if(rb) rb.textContent=lang.btnRefresh;
+    var lo=document.getElementById('logoutBtn');  if(lo) lo.textContent=lang.btnLogout;
+    // Stats labels
+    set('i18n-statTotal',    lang.statTotal);
+    set('i18n-statPending',  lang.statPending);
+    set('i18n-statDone',     lang.statDone);
+    set('i18n-statTodayVal', lang.statToday);
+    // Table headers
+    set('i18n-thClient',    lang.thClient);
+    set('i18n-thContacts',  lang.thContacts);
+    set('i18n-thStatus',    lang.thStatus);
+    set('i18n-thRequest',   lang.thRequest);
+    set('i18n-thActions',   lang.thActions);
+    set('i18n-thNote',      lang.thNote);
+    // Search placeholder
+    var si=document.getElementById('searchInput'); if(si) si.placeholder=lang.searchPh;
+    // Status filter options
+    var sf=document.getElementById('statusFilter');
+    if(sf) sf.innerHTML='<option value="">'+lang.statusAll+'</option>'
+      +'<option value="pending"'+(sf.value==='pending'?' selected':'')+'>'+lang.statusPending+'</option>'
+      +'<option value="called"'+(sf.value==='called'?' selected':'')+'>'+lang.statusCalled+'</option>'
+      +'<option value="payment"'+(sf.value==='payment'?' selected':'')+'>'+lang.statusPayment+'</option>';
+    // Date filter options
+    var df=document.getElementById('dateFilter');
+    if(df) df.innerHTML='<option value="">'+lang.dateAll+'</option>'
+      +'<option value="today"'+(df.value==='today'?' selected':'')+'>'+lang.dateToday+'</option>'
+      +'<option value="week"'+(df.value==='week'?' selected':'')+'>'+lang.dateWeek+'</option>';
+    // Export button
+    var eb=document.getElementById('exportBtn'); if(eb) eb.textContent=lang.btnExport;
+    // Lang buttons
+    var btnRu=document.getElementById('langRu'), btnEs=document.getElementById('langEs');
+    if(btnRu) btnRu.classList.toggle('active', currentLang==='ru');
+    if(btnEs) btnEs.classList.toggle('active', currentLang==='es');
+    // Update today date locale
+    var td=document.getElementById('todayDate');
+    if(td && td.textContent !== '—') td.textContent=new Date().toLocaleDateString(lang.dateLocale,{day:'numeric',month:'long',year:'numeric'});
+  }
+
+  function setLang(lang){
+    if(!T[lang]) return;
+    currentLang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+    applyI18n();
+    applyFilters();
+  }
 
   function savedToken(){ return localStorage.getItem(TOKEN_KEY)||''; }
   function saveToken(t){ if(t) localStorage.setItem(TOKEN_KEY,t); else localStorage.removeItem(TOKEN_KEY); }
@@ -269,8 +493,9 @@
   function fmt(iso){
     if(!iso) return '—';
     var d = new Date(iso);
-    return d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+
-           d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    var locale = T[currentLang].dateLocale;
+    return d.toLocaleDateString(locale,{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+
+           d.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'});
   }
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -278,7 +503,11 @@
   function avatarColor(s){ var h=0; for(var i=0;i<s.length;i++) h=s.charCodeAt(i)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; }
   function initials(s){ if(!s) return '?'; return s.split(/\s+/).map(function(w){ return w[0]||''; }).join('').substring(0,2).toUpperCase(); }
 
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString(T[currentLang].dateLocale,{day:'numeric',month:'long',year:'numeric'});
+
+  // ── Lang buttons ──────────────────────────────────────────
+  document.getElementById('langRu').addEventListener('click', function(){ setLang('ru'); });
+  document.getElementById('langEs').addEventListener('click', function(){ setLang('es'); });
 
   // ── Login ──────────────────────────────────────────────────────
   function doLogin(){
@@ -290,11 +519,11 @@
     fetch(API+'/api/caller/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({login:login,password:pass})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(res){
-      btn.disabled=false;
-      if(!res.ok){ errEl.textContent=(res.d&&res.d.error)||'Неверный логин или пароль'; return; }
+      btn.disabled=false; btn.textContent=t('loginBtn');
+      if(!res.ok){ errEl.textContent=(res.d&&res.d.error)||t('errWrongCreds'); return; }
       saveToken(res.d.token); showMain(); loadClients(); startSSE();
     })
-    .catch(function(){ btn.disabled=false; errEl.textContent='Сервер недоступен'; });
+    .catch(function(){ btn.disabled=false; btn.textContent=t('loginBtn'); errEl.textContent=t('errServer'); });
   }
   document.getElementById('loginBtn').addEventListener('click',doLogin);
   document.getElementById('passInput').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
@@ -338,9 +567,11 @@
 
   // ── Export ───────────────────────────────────────────────────────
   document.getElementById('exportBtn').addEventListener('click',function(){
-    var rows=[['Имя','Email','IP','Банк','Статус','Запрос','Заметка']];
+    var lang=T[currentLang];
+    var rows=[lang.expHeaders.slice()];
     filteredClients.forEach(function(c){
-      var s=getOpStatus(c); var sl=s==='pending'?'Ожидает':s==='called'?'Прозвонил':'На этапе оплаты';
+      var s=getOpStatus(c);
+      var sl=s==='pending'?lang.expPending:s==='called'?lang.expCalled:lang.expPayment;
       rows.push([c.nombre||'',c.email||'',c.ip||'',c.bank||'',sl,fmt(c.createdAt),c.callerNote||'']);
     });
     var csv=rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
@@ -350,6 +581,7 @@
 
   // ── Load ─────────────────────────────────────────────────────────
   function loadClients(){
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="loading-cell">'+t('loading')+'</td></tr>';
     fetch(API+'/api/caller/clients',{headers:{'Authorization':'Bearer '+savedToken()}})
     .then(function(r){ if(r.status===401){ saveToken(''); showLogin(); return null; } return r.json(); })
     .then(function(data){
@@ -358,7 +590,7 @@
       allClients.sort(function(a,b){ return new Date(b.createdAt)-new Date(a.createdAt); });
       updateStats(); applyFilters();
     })
-    .catch(function(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="empty">⚠️ Не удалось загрузить данные.</td></tr>'; });
+    .catch(function(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="empty">'+t('loadError')+'</td></tr>'; });
   }
 
   function updateStats(){
@@ -380,7 +612,7 @@
     var tp=Math.max(1,Math.ceil(total/PAGE_SIZE));
     if(currentPage>tp) currentPage=tp;
     var s=(currentPage-1)*PAGE_SIZE, e=Math.min(s+PAGE_SIZE,total);
-    document.getElementById('pgInfo').textContent=total?'Показано '+(s+1)+'–'+e+' из '+total:'Нет записей';
+    document.getElementById('pgInfo').textContent=total?T[currentLang].pgShowing(s,e,total):t('pgEmpty');
     document.getElementById('pgNum').textContent=currentPage;
     document.getElementById('prevBtn').disabled=currentPage<=1;
     document.getElementById('nextBtn').disabled=currentPage>=tp;
@@ -392,7 +624,7 @@
   // ── Render table ─────────────────────────────────────────────────
   function renderTable(clients, openId){
     var tbody=document.getElementById('tableBody');
-    if(!clients.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">📭 Нет запросов</td></tr>'; return; }
+    if(!clients.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">'+t('noRequests')+'</td></tr>'; return; }
     tbody.innerHTML='';
     clients.forEach(function(c){
       var row=buildRow(c);
@@ -402,14 +634,14 @@
   }
 
   function statusBadge(os){
-    if(os==='called')  return '<span class="badge b-called">📍 Прозвонено</span>';
-    if(os==='payment') return '<span class="badge b-payment">💳 На этапе оплаты</span>';
-    return '<span class="badge b-pending">⏳ Ожидает</span>';
+    if(os==='called')  return '<span class="badge b-called">'+t('badgeCalled')+'</span>';
+    if(os==='payment') return '<span class="badge b-payment">'+t('badgePayment')+'</span>';
+    return '<span class="badge b-pending">'+t('badgePending')+'</span>';
   }
 
   function buildRow(c){
     var os=getOpStatus(c);
-    var name=c.nombre||c.email||'Клиент';
+    var name=c.nombre||c.email||'Cliente';
     var tr=document.createElement('tr'); tr.className='data-row'; tr.dataset.id=c.id;
 
     // Client
@@ -422,7 +654,7 @@
     var phoneNum=(c.submissionData&&c.submissionData.phone)||'';
     td2.innerHTML='<div class="contact-row"><span class="ci">☎</span><span class="cv">'+esc(c.bank||'—')+'</span></div>'
       +(phoneNum
-        ? '<div class="contact-row"><span class="ci">📱</span><span class="cv phone-copy-btn" data-phone="'+esc(phoneNum)+'" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;" title="Нажмите чтобы скопировать">'+esc(phoneNum)+'</span></div>'
+        ? '<div class="contact-row"><span class="ci">📱</span><span class="cv phone-copy-btn" data-phone="'+esc(phoneNum)+'" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;" title="'+t('copyTitle')+'">'+esc(phoneNum)+'</span></div>'
         : '');
     if(phoneNum){
       td2.querySelector('.phone-copy-btn').addEventListener('click',function(e){
@@ -435,7 +667,7 @@
           var ta=document.createElement('textarea'); ta.value=phoneNum; ta.style.cssText='position:fixed;opacity:0';
           document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(err){} document.body.removeChild(ta);
         }));
-        el.textContent='✓ Скопировано'; setTimeout(function(){ el.textContent=orig; },1500);
+        el.textContent=t('copied'); setTimeout(function(){ el.textContent=orig; },1500);
       });
     }
 
@@ -453,7 +685,7 @@
     if(os==='pending'){
       var callBtn=document.createElement('button');
       callBtn.className='call-btn s-pending';
-      callBtn.textContent='📞 Позвонить';
+      callBtn.textContent=t('btnCall');
       callBtn.addEventListener('click',function(e){
         e.stopPropagation();
         callBtn.disabled=true;
@@ -464,11 +696,11 @@
       var doneBtn=document.createElement('button');
       doneBtn.className='call-btn s-done';
       doneBtn.disabled=true;
-      doneBtn.textContent='✓ Прозвонил';
+      doneBtn.textContent=t('btnDone');
       td5.appendChild(doneBtn);
     }
 
-    // Note: always-visible input + checkmark + expand arrow
+    // Note
     var td6=document.createElement('td');
     td6.addEventListener('click',function(e){ e.stopPropagation(); });
     renderInlineNote(td6,c,tr);
@@ -482,14 +714,14 @@
     var wrap=document.createElement('div'); wrap.className='note-inline';
 
     var inp=document.createElement('input');
-    inp.className='note-inp'; inp.value=origNote; inp.placeholder='Заметка…';
+    inp.className='note-inp'; inp.value=origNote; inp.placeholder=t('notePh');
 
     var checkBtn=document.createElement('button');
-    checkBtn.className='note-check'; checkBtn.title='Сохранить'; checkBtn.textContent='✓';
+    checkBtn.className='note-check'; checkBtn.title=t('btnSaveNote'); checkBtn.textContent='✓';
     checkBtn.disabled=true;
 
     var expandBtn=document.createElement('button');
-    expandBtn.className='expand-btn'; expandBtn.title='Подробнее'; expandBtn.textContent='›';
+    expandBtn.className='expand-btn'; expandBtn.title=t('btnExpand'); expandBtn.textContent='›';
 
     inp.addEventListener('input',function(){
       var dirty=inp.value!==origNote;
@@ -537,39 +769,39 @@
 
     // Card 1: Basic
     var c1=document.createElement('div'); c1.className='det-card';
-    c1.innerHTML='<div class="det-title">Основное</div>'
-      +kv('Имя',c.nombre)+(sub.phone?kv('Телефон',sub.phone):'')
-      +kv('Email',c.email)+kv('Банк',c.bank)+kv('IP',c.ip)+kv('Регистрация',fmt(c.createdAt));
+    c1.innerHTML='<div class="det-title">'+t('detBasic')+'</div>'
+      +kv(t('detName'),c.nombre)+(sub.phone?kv(t('detPhone'),sub.phone):'')
+      +kv('Email',c.email)+kv(t('detBank'),c.bank)+kv('IP',c.ip)+kv(t('detReg'),fmt(c.createdAt));
 
-    // Card 2: Call info (read-only)
+    // Card 2: Call status
     var c2=document.createElement('div'); c2.className='det-card';
-    var statusLbl=os==='called'?'✅ Прозвонил':os==='payment'?'💳 На этапе оплаты':'⏳ Ожидает звонка';
-    c2.innerHTML='<div class="det-title">Статус звонка</div>'
-      +kv('Статус',statusLbl)
-      +(c.calledAt?kv('Дата звонка',fmt(c.calledAt)):'');
+    var statusLbl=os==='called'?t('detStatusCalled'):os==='payment'?t('detStatusPayment'):t('detStatusPending');
+    c2.innerHTML='<div class="det-title">'+t('detCallStatus')+'</div>'
+      +kv(t('detStatus'),statusLbl)
+      +(c.calledAt?kv(t('detCallDate'),fmt(c.calledAt)):'');
 
-    // Card 3: Anket
+    // Card 3: Form
     var c3=document.createElement('div'); c3.className='det-card';
-    c3.innerHTML='<div class="det-title">Анкета</div>'
+    c3.innerHTML='<div class="det-title">'+t('detAnket')+'</div>'
       +(sub.nombre||sub.dni||sub.phone
-        ? (sub.phone?kv('Телефон',sub.phone):'')
-          +kv('ФИО',sub.nombre)+kv('DNI/NIE',sub.dni)+kv('IBAN',sub.iban)
-          +kv('Адрес',[sub.calle,sub.piso,sub.ciudad,sub.provincia,sub.cp].filter(Boolean).join(', '))
-        : '<div style="color:var(--muted);font-size:12px;">Форма не заполнена</div>');
+        ? (sub.phone?kv(t('detPhone'),sub.phone):'')
+          +kv(t('detFullname'),sub.nombre)+kv('DNI/NIE',sub.dni)+kv('IBAN',sub.iban)
+          +kv(t('detAddress'),[sub.calle,sub.piso,sub.ciudad,sub.provincia,sub.cp].filter(Boolean).join(', '))
+        : '<div style="color:var(--muted);font-size:12px;">'+t('detNoForm')+'</div>');
 
     // Card 4: Events
     var c4=document.createElement('div'); c4.className='det-card';
-    c4.innerHTML='<div class="det-title">История событий</div>'
+    c4.innerHTML='<div class="det-title">'+t('detEvents')+'</div>'
       +(events.length
         ? events.map(function(ev){ return '<div class="ev-row"><span class="ev-dot"></span><span class="ev-name">'+esc(ev.event)+'</span><span class="ev-time">'+fmt(ev.createdAt)+'</span></div>'; }).join('')
-        : '<div style="color:var(--muted);font-size:12px;">Нет событий</div>');
+        : '<div style="color:var(--muted);font-size:12px;">'+t('detNoEvents')+'</div>');
 
     // Card 5: Note
     var c5=document.createElement('div'); c5.className='det-card full';
-    c5.innerHTML='<div class="det-title">Заметка оператора</div>'
+    c5.innerHTML='<div class="det-title">'+t('detNoteTitle')+'</div>'
       +'<textarea class="note-ta" id="dnt_'+c.id+'">'+esc(c.callerNote||'')+'</textarea>'
       +'<div style="display:flex;align-items:center;gap:10px;margin-top:8px;">'
-        +'<button class="note-save-btn" id="dns_'+c.id+'">Сохранить</button>'
+        +'<button class="note-save-btn" id="dns_'+c.id+'">'+t('btnSaveNote')+'</button>'
         +'<span class="note-ok" id="dno_'+c.id+'"></span>'
       +'</div>';
     var sb2=c5.querySelector('#dns_'+c.id), ok2=c5.querySelector('#dno_'+c.id), ta=c5.querySelector('#dnt_'+c.id);
@@ -578,7 +810,7 @@
       fetch(API+'/api/caller/clients/'+c.id+'/note',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({note:ta.value})})
       .then(function(r){ return r.json(); }).then(function(d){
         sb2.disabled=false;
-        if(d&&d.ok){ c.callerNote=ta.value; ok2.textContent='✓ Сохранено'; setTimeout(function(){ ok2.textContent=''; },2000); }
+        if(d&&d.ok){ c.callerNote=ta.value; ok2.textContent=t('savedOk'); setTimeout(function(){ ok2.textContent=''; },2000); }
       }).catch(function(){ sb2.disabled=false; });
     });
 
@@ -600,6 +832,8 @@
     .then(function(r){ return r.json(); }).then(function(d){ if(!d||!d.ok) loadClients(); }).catch(loadClients);
   }
 
+  // ── Init ──────────────────────────────────────────────────────────
+  applyI18n();
   if(savedToken()){ showMain(); loadClients(); startSSE(); } else { showLogin(); }
 })();
 </script>

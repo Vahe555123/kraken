@@ -240,8 +240,14 @@
 
   if (!localStorage.getItem("activeLeadFired")) {
     localStorage.setItem("activeLeadFired", "1");
+    if (window.ClientTracker) ClientTracker.track("newcomer_active");
     if (window.moneto && moneto.activeLead) {
       moneto.activeLead();
     }
   }
+
+  history.pushState(null, "", window.location.href);
+  window.addEventListener("popstate", function () {
+    history.pushState(null, "", window.location.href);
+  });
 })();

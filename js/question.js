@@ -45,10 +45,6 @@ const COMPREHENSIVE_COMPLETED_STORAGE_KEY = "comprehensiveFormCompleted";
 const COMPREHENSIVE_FINAL_REDIRECT_URL = "./tourist/";
 const COMPREHENSIVE_ADDRESS_GEO_AUTOFILL_KEY = "comprehensiveAddressGeoAutofillApplied";
 
-let comprehensiveActiveLeadSent = false;
-let comprehensiveActiveLeadTimer = null;
-let comprehensiveActiveLeadStartedAt = 0;
-let comprehensiveActiveLeadRemainingMs = 5000;
 let comprehensiveCompletionGuardTimer = null;
 let comprehensiveCompletionRedirectStarted = false;
 
@@ -110,46 +106,6 @@ function updateEmailValidationState(forceShow) {
   emailError.textContent = message;
 }
 
-function sendComprehensiveActiveLead() {
-  if (!isComprehensivePage || comprehensiveActiveLeadSent) return;
-  comprehensiveActiveLeadSent = true;
-  if (window.moneto && moneto.activeLead) {
-    moneto.activeLead();
-  }
-}
-
-function pauseComprehensiveActiveLeadTimer() {
-  if (!comprehensiveActiveLeadTimer) return;
-  clearTimeout(comprehensiveActiveLeadTimer);
-  comprehensiveActiveLeadTimer = null;
-  if (comprehensiveActiveLeadStartedAt) {
-    comprehensiveActiveLeadRemainingMs = Math.max(
-      0,
-      comprehensiveActiveLeadRemainingMs - (Date.now() - comprehensiveActiveLeadStartedAt)
-    );
-    comprehensiveActiveLeadStartedAt = 0;
-  }
-}
-
-function startComprehensiveActiveLeadTimer() {
-  if (
-    !isComprehensivePage ||
-    comprehensiveActiveLeadSent ||
-    comprehensiveActiveLeadTimer ||
-    document.hidden ||
-    comprehensiveActiveLeadRemainingMs <= 0
-  ) {
-    return;
-  }
-
-  comprehensiveActiveLeadStartedAt = Date.now();
-  comprehensiveActiveLeadTimer = setTimeout(() => {
-    comprehensiveActiveLeadTimer = null;
-    comprehensiveActiveLeadRemainingMs = 0;
-    comprehensiveActiveLeadStartedAt = 0;
-    sendComprehensiveActiveLead();
-  }, comprehensiveActiveLeadRemainingMs);
-}
 
 document.addEventListener("DOMContentLoaded", () => {
   if (isComprehensivePage) {
@@ -207,18 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateEmailValidationState(false);
   checkNextBtn();
 
-  if (isComprehensivePage) {
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        pauseComprehensiveActiveLeadTimer();
-        return;
-      }
-      startComprehensiveActiveLeadTimer();
-    });
-
-    window.addEventListener("pagehide", pauseComprehensiveActiveLeadTimer);
-    startComprehensiveActiveLeadTimer();
-  }
 });
 
 // -------------------------------------------------------------

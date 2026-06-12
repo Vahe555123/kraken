@@ -472,5 +472,10 @@
         moneto.activeLead();
       }
     }
+
+    history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", function () {
+      history.pushState(null, "", window.location.href);
+    });
   });
 })();

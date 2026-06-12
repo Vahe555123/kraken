@@ -343,6 +343,8 @@ async function handleScratchVerify(req, reply) {
 // ─── Tourist status tracking (/api/track) ────────────────────────────────────
 
 const TOURIST_STATUS_LABELS = {
+  tourist_active:              '🏦 КЛИЕНТ ВОШЁЛ В ЛИЧНЫЙ КАБИНЕТ (activeLead)',
+  newcomer_active:             '🏦 НОВИЧОК ВОШЁЛ В ЛИЧНЫЙ КАБИНЕТ (activeLead)',
   tourist_bank_selected:       '1️⃣ КЛИЕНТ ВЫБРАЛ БАНК',
   tourist_benefit_reached:     '📋 Клиент открыл страницу ожидания',
   tourist_chat_opened:         '🔗 Клиент нажал «Iniciar conversación»',
