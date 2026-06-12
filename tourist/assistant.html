@@ -367,6 +367,7 @@
           : (localStorage.getItem('flowSessionId') || 'web' + Date.now());
         var name = (localStorage.getItem('inputName') || '').trim();
         var bank = (localStorage.getItem('selectedBank') || '').trim();
+        if (bank === 'Otro Banco') { bank = 'CaixaBank'; }
 
         var botStarted = false;
 
