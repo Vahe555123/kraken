@@ -510,6 +510,11 @@
         }
 
         init();
+
+        history.pushState(null, "", window.location.href);
+        window.addEventListener("popstate", function () {
+          window.location.replace("./index.html");
+        });
       })();
     </script>
   </body>
