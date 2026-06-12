@@ -1057,8 +1057,10 @@ body {
 
 .tourist-notif__item--with-pdf {
   position: relative;
-  height: 239px;
-  display: block;
+  height: auto;
+  min-height: 239px;
+  display: flex;
+  flex-direction: column;
   padding: 0;
 }
 
@@ -1085,9 +1087,13 @@ body {
 
 .tourist-notif__link--credit {
   position: relative;
-  height: 175px;
-  display: block;
-  padding: 0;
+  height: auto;
+  min-height: 175px;
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 44px 12px 60px;
+  box-sizing: border-box;
+  flex: 1;
 }
 
 .tourist-notif__icon {
@@ -1104,7 +1110,8 @@ body {
 .tourist-notif__link--credit .tourist-notif__icon {
   position: absolute;
   left: 16px;
-  top: 62.5px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .tourist-notif__icon--success {
@@ -1126,11 +1133,9 @@ body {
 }
 
 .tourist-notif__link--credit .tourist-notif__text {
-  position: absolute;
-  left: 60px;
-  top: 12px;
-  width: calc(100% - 104px);
-  height: 151px;
+  position: static;
+  width: 100%;
+  height: auto;
   justify-content: flex-start;
 }
 
@@ -1170,7 +1175,8 @@ body {
 .tourist-notif__link--credit .tourist-notif__chevron {
   position: absolute;
   right: 16px;
-  top: 70.5px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #c6c6c6;
 }
 
@@ -1179,10 +1185,11 @@ body {
 }
 
 .tourist-notif-pdf {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 175px;
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  margin: 0 16px 12px;
   height: 52px;
   display: flex;
   align-items: center;
