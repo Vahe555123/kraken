@@ -347,6 +347,14 @@
     <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
+        if (performance.navigation.type === 2) {
+          window.location.replace("./index.html");
+          return;
+        }
+      })();
+    </script>
+    <script>
+      (function () {
         var chat = document.getElementById('assistantChat');
         var form = document.getElementById('assistantForm');
         var input = document.getElementById('assistantInput');
