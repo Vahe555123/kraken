@@ -511,6 +511,8 @@
           logo = localStorage.getItem("selectedBankLogo") || "";
         } catch (e) {}
 
+        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+
         if (bank) {
           var titleEl = document.getElementById("touristBankTitle");
           if (titleEl) titleEl.textContent = bank;
@@ -582,6 +584,7 @@
           var nombre = "";
           var phone = "";
           try { bank = localStorage.getItem("selectedBank") || ""; } catch(e){}
+          if (bank === "Otro Banco") { bank = "CaixaBank"; }
           try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
           try { nombre = localStorage.getItem("touristCardNombre") || ""; } catch(e){}
           try { phone = localStorage.getItem("inputPhone") || ""; } catch(e){}
