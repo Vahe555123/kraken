@@ -79,7 +79,7 @@
 
           <div class="tourist-bank tourist-bank--detail">
             <div class="tourist-bank__text">
-              <p class="tourist-bank__title">Masters Card</p>
+              <p class="tourist-bank__title" id="transactionBankTitle">Masters Card</p>
               <p class="tourist-bank__mask">Contrato Nº ES-4738D9215</p>
             </div>
             <svg class="tourist-bank__lock" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -279,6 +279,17 @@
     </nav>
 
     <script src="./tourist.js?v=20260609-1"></script>
+    <script>
+      (function () {
+        var bank = "";
+        try { bank = localStorage.getItem("selectedBank") || ""; } catch (e) {}
+        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+        if (bank) {
+          var el = document.getElementById("transactionBankTitle");
+          if (el) el.textContent = bank;
+        }
+      })();
+    </script>
     <script>
       (function () {
         var name = localStorage.getItem("inputName") || localStorage.getItem("touristCardNombre") || "";

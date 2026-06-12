@@ -45,6 +45,8 @@
           legacyLogo = localStorage.getItem("selectedBankLogo") || "";
         } catch (e) {}
 
+        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+
         // Путь к ресурсу конкретного банка
         function bankAsset(file) {
           return bankKey ? ("../banks/" + bankKey + "/" + file + "." + BANK_ASSET_EXT) : null;
