@@ -1059,8 +1059,7 @@ body {
   position: relative;
   height: auto;
   min-height: 239px;
-  display: flex;
-  flex-direction: column;
+  display: block;
   padding: 0;
 }
 
@@ -1089,11 +1088,9 @@ body {
   position: relative;
   height: auto;
   min-height: 175px;
-  display: flex;
-  align-items: flex-start;
-  padding: 12px 44px 12px 60px;
+  display: block;
+  padding: 12px 44px 64px 60px;
   box-sizing: border-box;
-  flex: 1;
 }
 
 .tourist-notif__icon {
@@ -1110,8 +1107,7 @@ body {
 .tourist-notif__link--credit .tourist-notif__icon {
   position: absolute;
   left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 62.5px;
 }
 
 .tourist-notif__icon--success {
@@ -1134,7 +1130,7 @@ body {
 
 .tourist-notif__link--credit .tourist-notif__text {
   position: static;
-  width: 100%;
+  width: auto;
   height: auto;
   justify-content: flex-start;
 }
@@ -1175,8 +1171,7 @@ body {
 .tourist-notif__link--credit .tourist-notif__chevron {
   position: absolute;
   right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 70.5px;
   color: #c6c6c6;
 }
 
@@ -1185,11 +1180,11 @@ body {
 }
 
 .tourist-notif-pdf {
-  position: relative;
-  left: auto;
-  right: auto;
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 8px;
   top: auto;
-  margin: 0 16px 12px;
   height: 52px;
   display: flex;
   align-items: center;
