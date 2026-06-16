@@ -669,6 +669,54 @@ h2 {
 .bubble.bubble--image.incoming { background: #111e31; }
 .bubble.bubble--image.outgoing { background: var(--blue-2); }
 
+.payment-card {
+  align-self: stretch;
+  background: #131f10;
+  border: 1px dashed #f1a720;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.payment-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.payment-card__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.payment-card__title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d4e8c2;
+}
+.payment-card__time {
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.payment-card__actions {
+  display: flex;
+  gap: 8px;
+}
+.payment-card__btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+.payment-card__btn--view    { background: #1e3a5f; color: #7ab4f5; }
+.payment-card__btn--confirm { background: #14391f; color: #4ade80; }
+.payment-card__btn--reject  { background: #3b1219; color: #f87171; }
+
 .details {
   grid-column: 3;
   grid-row: 2 / 4;

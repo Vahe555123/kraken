@@ -68,6 +68,7 @@ const els = {
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 function isImg(s) { return typeof s === 'string' && s.startsWith('/uploads/'); }
+function isPaymentScreenshot(s) { return typeof s === 'string' && s.startsWith('PAYMENT_SCREENSHOT:'); }
 
 async function uploadImage(file) {
   return new Promise((resolve, reject) => {
@@ -283,7 +284,9 @@ function renderConversations() {
         : '';
     const active = c.flowSessionId === state.activeSessionId ? ' active' : '';
     const preview = c.lastMsg
-      ? (isImg(c.lastMsg.content) ? '📷 Изображение' : esc(c.lastMsg.content.slice(0, 40)))
+      ? (isPaymentScreenshot(c.lastMsg.content) ? '📎 Скриншот оплаты'
+        : isImg(c.lastMsg.content) ? '📷 Изображение'
+        : esc(c.lastMsg.content.slice(0, 40)))
       : '&nbsp;';
     const timeStr = c.lastMsg ? fmtTime(c.lastMsg.createdAt) : fmtTime(c.updatedAt);
     return `<article class="conversation${active}" data-session-id="${esc(c.flowSessionId)}" tabindex="0">
@@ -380,6 +383,21 @@ function renderMessages(messages, callerNote) {
       tick = isRead
         ? '<span class="msg-tick msg-tick--read">✓✓</span>'
         : '<span class="msg-tick">✓</span>';
+    }
+    if (isPaymentScreenshot(m.content)) {
+      const imgUrl = esc(m.content.slice('PAYMENT_SCREENSHOT:'.length));
+      return `<div class="payment-card">
+        <div class="payment-card__header">
+          <span class="payment-card__icon">💰</span>
+          <span class="payment-card__title">Пользователь отправил скриншот оплаты</span>
+          <time class="payment-card__time">${fmtTime(m.createdAt)}</time>
+        </div>
+        <div class="payment-card__actions">
+          <button class="payment-card__btn payment-card__btn--view" onclick="window.open('${imgUrl}','_blank')">Посмотреть</button>
+          <button class="payment-card__btn payment-card__btn--confirm">Подтвердить</button>
+          <button class="payment-card__btn payment-card__btn--reject">Отказать</button>
+        </div>
+      </div>`;
     }
     if (imageContent) {
       return `<div class="bubble bubble--image ${cls}">${prefix}<img src="${esc(m.content)}" alt="" /><time>${fmtTime(m.createdAt)}${tick}</time></div>`;
