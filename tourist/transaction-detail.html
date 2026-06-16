@@ -10,17 +10,18 @@
     <style>
       .tx-upload-btn {
         width: 100%;
-        padding: 16px 20px;
-        border: 1.5px solid #d5d5d5;
-        border-radius: 14px;
+        height: 44px;
+        padding: 0 14px;
+        border: 1px solid #e7e7e7;
+        border-radius: 12px;
         background: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        font-weight: 500;
+        gap: 8px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 400;
         color: #0f0f0f;
         cursor: pointer;
         margin-bottom: 12px;
@@ -272,7 +273,7 @@
               <path d="M21.44 11.05L12.25 20.24C11.12 21.37 9.6 22 8 22C6.4 22 4.88 21.37 3.75 20.24C2.62 19.11 2 17.59 2 16C2 14.41 2.62 12.89 3.75 11.76L12.94 2.57C13.7 1.81 14.73 1.38 15.8 1.38C16.87 1.38 17.9 1.81 18.66 2.57C19.42 3.33 19.85 4.36 19.85 5.43C19.85 6.5 19.42 7.53 18.66 8.29L9.46 17.48C9.08 17.86 8.56 18.08 8.02 18.08C7.48 18.08 6.96 17.86 6.58 17.48C6.2 17.1 5.98 16.58 5.98 16.04C5.98 15.5 6.2 14.98 6.58 14.6L15.07 6.12" stroke="#0f0f0f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <div class="tx-file-preview" id="txFilePreview">
+          <div class="tx-file-preview" id="txFilePreview" style="display:none">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" flex-shrink="0" aria-hidden="true" style="flex-shrink:0">
               <path d="M9 19c-4.286 1.35-4.286-2.55-6-3m12 5v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -281,7 +282,7 @@
               <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <div class="tx-wait-text" id="txWaitText">Espere la verificación.</div>
+          <div class="tx-wait-text" id="txWaitText" style="display:none">Espere la verificación.</div>
 
           <button
             type="button"
