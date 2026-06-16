@@ -18,6 +18,7 @@ import { getBotConfig, updateBotConfig } from './ai/botConfig.js';
 import { deepseekChat } from './ai/deepseek.js';
 import { buildSystemPrompt } from './ai/promptBuilder.js';
 import { randomUUID } from 'node:crypto';
+import { sendPush } from './firebase.js';
 
 // ── Sessions with 72-hour TTL, persisted to disk ─────────────────────────────
 const SESSION_TTL = 72 * 60 * 60 * 1000;
@@ -1241,6 +1242,9 @@ async function handleSupportChat(req, reply) {
 
     if (!start && !message) return reply.status(400).send({ error: 'message required' });
 
+    // Client is active — cancel any pending push notification
+    if (!start) cancelPush(sessionId);
+
     const key = chatLeadKey(sessionId);
     const lead = await prisma.lead.upsert({
       where: { tgId: key },
@@ -1503,6 +1507,8 @@ async function handleChatOpSend(req, reply) {
       update: {},
     });
     await prisma.message.create({ data: { leadId: lead.id, role: 'SYSTEM', content: message } });
+    // Schedule push notification if client doesn't respond within configured delay
+    schedulePush(sessionId);
     return reply.send({ ok: true });
   } catch (err) {
     console.error('[chat-op/send]', err?.message || err);
@@ -1572,6 +1578,75 @@ async function handleSupportChatMarkRead(req, reply) {
     });
     return reply.send({ ok: true });
   } catch { return reply.send({ ok: true }); }
+}
+
+// ── Push notifications ────────────────────────────────────────────────────────
+const PUSH_SETTINGS_FILE = join(process.cwd(), 'data', 'push-settings.json');
+const DEFAULT_PUSH = { title: 'Новое сообщение', body: 'Оператор ответил вам в чате', delayMinutes: 3, enabled: true };
+
+// sessionId -> FCM device token
+const pushTokens = new Map();
+// sessionId -> setTimeout handle (pending push)
+const pendingPush = new Map();
+
+async function readPushSettings() {
+  try { return { ...DEFAULT_PUSH, ...JSON.parse(await readFile(PUSH_SETTINGS_FILE, 'utf8')) }; }
+  catch { return { ...DEFAULT_PUSH }; }
+}
+async function writePushSettings(data) {
+  await mkdir(join(process.cwd(), 'data'), { recursive: true });
+  await writeFile(PUSH_SETTINGS_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+async function schedulePush(sessionId) {
+  const settings = await readPushSettings();
+  if (!settings.enabled) return;
+  const token = pushTokens.get(sessionId);
+  if (!token) return;
+  cancelPush(sessionId);
+  const delay = Math.max(1, Number(settings.delayMinutes) || 3) * 60 * 1000;
+  const handle = setTimeout(async () => {
+    pendingPush.delete(sessionId);
+    await sendPush(token, settings.title, settings.body);
+  }, delay);
+  pendingPush.set(sessionId, handle);
+}
+
+function cancelPush(sessionId) {
+  const h = pendingPush.get(sessionId);
+  if (h) { clearTimeout(h); pendingPush.delete(sessionId); }
+}
+
+async function handleRegisterPushToken(req, reply) {
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    const token = sanitizeString(getString(body.token), 200);
+    if (!sessionId || !token) return reply.status(400).send({ error: 'missing fields' });
+    pushTokens.set(sessionId, token);
+    return reply.send({ ok: true });
+  } catch (e) {
+    return reply.status(500).send({ error: 'server error' });
+  }
+}
+
+async function handleGetPushSettings(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  return reply.send(await readPushSettings());
+}
+
+async function handleSavePushSettings(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  const body = asRecord(req.body) ?? {};
+  const current = await readPushSettings();
+  const updated = {
+    title: sanitizeString(getString(body.title) || current.title, 100),
+    body: sanitizeString(getString(body.body) || current.body, 200),
+    delayMinutes: Math.max(1, Math.min(60, Number(body.delayMinutes) || current.delayMinutes)),
+    enabled: body.enabled !== undefined ? !!body.enabled : current.enabled,
+  };
+  await writePushSettings(updated);
+  return reply.send(updated);
 }
 
 // ── Image upload ──────────────────────────────────────────────────────────────
@@ -1660,6 +1735,11 @@ export async function registerApiRoutes(app) {
 
   // Image upload (client + operator)
   app.post('/api/upload-image', handleUploadImage);
+
+  // Push notification token registration + admin settings
+  app.post('/api/push/register', handleRegisterPushToken);
+  app.get('/api/admin/push-settings', handleGetPushSettings);
+  app.put('/api/admin/push-settings', handleSavePushSettings);
 
   // SSE for real-time updates
   app.get('/api/sse', handleSSE);

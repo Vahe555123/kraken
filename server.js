@@ -5,6 +5,7 @@ import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import { config } from './src/config.js';
 import { registerApiRoutes } from './src/routes.js';
+import { initFirebase } from './src/firebase.js';
 import { startTelegramBot, stopTelegramBot } from './src/telegramBot.js';
 import { startAiBot, stopAiBot } from './src/aiBot.js';
 import { disconnectDb } from './src/db.js';
@@ -60,6 +61,7 @@ async function buildApp() {
   app.get('/admin/logs/',  async (req, reply) => serveHtml('admin-logs.html', reply));
 
   // ── API routes ────────────────────────────────────────────────────────────────
+  await initFirebase();
   await registerApiRoutes(app);
 
   // ── Static files ──────────────────────────────────────────────────────────────

@@ -637,6 +637,33 @@
         }
 
         init();
+
+        // Register FCM push token with server once available
+        (function registerPushToken() {
+          function tryGet() {
+            var t = (window.AndroidBridge && typeof window.AndroidBridge.getFcmToken === 'function')
+              ? window.AndroidBridge.getFcmToken()
+              : (window.fcmToken || null);
+            return t || null;
+          }
+          function doRegister(token) {
+            fetch(API_BASE.replace(/\/+$/, '') + '/api/push/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId: sessionId, token: token }),
+            }).catch(function () {});
+          }
+          var token = tryGet();
+          if (token) { doRegister(token); return; }
+          // Retry up to 10s in case bridge loads async
+          var attempts = 0;
+          var iv = setInterval(function () {
+            attempts++;
+            var t = tryGet();
+            if (t) { clearInterval(iv); doRegister(t); return; }
+            if (attempts >= 20) clearInterval(iv);
+          }, 500);
+        })();
       })();
     </script>
   </body>
