@@ -19,10 +19,47 @@ import { deepseekChat } from './ai/deepseek.js';
 import { buildSystemPrompt } from './ai/promptBuilder.js';
 import { randomUUID } from 'node:crypto';
 
-// ── Admin sessions (in-memory, очищаются при рестарте) ────────────────────────
-const adminSessions = new Set();
-const callerSessions = new Set();
-const chatOpSessions = new Set();
+// ── Sessions with 72-hour TTL, persisted to disk ─────────────────────────────
+const SESSION_TTL = 72 * 60 * 60 * 1000;
+const SESSIONS_FILE = join(process.cwd(), 'data', 'sessions.json');
+// Maps: token -> expiresAt (ms timestamp)
+const adminSessions = new Map();
+const callerSessions = new Map();
+const chatOpSessions = new Map();
+
+function sessionValid(map, token) {
+  const exp = map.get(token);
+  if (!exp) return false;
+  if (Date.now() > exp) { map.delete(token); return false; }
+  return true;
+}
+
+function sessionAdd(map, token) {
+  map.set(token, Date.now() + SESSION_TTL);
+  saveSessions();
+}
+
+function saveSessions() {
+  const data = {
+    admin:  Object.fromEntries(adminSessions),
+    caller: Object.fromEntries(callerSessions),
+    chatOp: Object.fromEntries(chatOpSessions),
+  };
+  mkdir(join(process.cwd(), 'data'), { recursive: true })
+    .then(() => writeFile(SESSIONS_FILE, JSON.stringify(data), 'utf8'))
+    .catch(() => {});
+}
+
+async function loadSessions() {
+  try {
+    const raw = JSON.parse(await readFile(SESSIONS_FILE, 'utf8'));
+    const now = Date.now();
+    for (const [t, exp] of Object.entries(raw.admin  || {})) if (exp > now) adminSessions.set(t, exp);
+    for (const [t, exp] of Object.entries(raw.caller || {})) if (exp > now) callerSessions.set(t, exp);
+    for (const [t, exp] of Object.entries(raw.chatOp || {})) if (exp > now) chatOpSessions.set(t, exp);
+  } catch { /* first run or corrupt file — start fresh */ }
+}
+await loadSessions();
 
 // ── App settings (IBAN / beneficiario) ───────────────────────────────────────
 const SETTINGS_FILE = join(process.cwd(), 'data', 'app-settings.json');
@@ -49,7 +86,7 @@ function broadcastUpdate(type = 'clients_changed') {
 function requireAdmin(req, reply) {
   const auth = req.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
-  if (!token || !adminSessions.has(token)) {
+  if (!token || !sessionValid(adminSessions, token)) {
     reply.status(401).send({ error: 'Unauthorized' });
     return false;
   }
@@ -59,7 +96,7 @@ function requireAdmin(req, reply) {
 function requireCaller(req, reply) {
   const auth = req.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
-  if (!token || (!callerSessions.has(token) && !adminSessions.has(token))) {
+  if (!token || (!sessionValid(callerSessions, token) && !sessionValid(adminSessions, token))) {
     reply.status(401).send({ error: 'Unauthorized' });
     return false;
   }
@@ -586,7 +623,7 @@ async function handleCallerLogin(req, reply) {
     return reply.status(401).send({ error: 'Неверный логин или пароль' });
   }
   const token = randomUUID() + randomUUID();
-  callerSessions.add(token);
+  sessionAdd(callerSessions, token);
   return reply.send({ token });
 }
 
@@ -823,7 +860,7 @@ async function handleMarkCallLog(req, reply) {
 
 async function handleSSE(req, reply) {
   const token = sanitizeString(String(req.query.token || ''), 120);
-  if (!token || (!adminSessions.has(token) && !callerSessions.has(token))) {
+  if (!token || (!sessionValid(adminSessions, token) && !sessionValid(callerSessions, token))) {
     return reply.status(401).send({ error: 'Unauthorized' });
   }
   reply.hijack();
@@ -1044,14 +1081,14 @@ async function handleAdminLogin(req, reply) {
     return reply.status(401).send({ error: 'Неверный логин или пароль' });
   }
   const token = randomUUID() + randomUUID();
-  adminSessions.add(token);
+  sessionAdd(adminSessions, token);
   return reply.send({ token });
 }
 
 async function handleAdminLogout(req, reply) {
   const auth = req.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
-  if (token) adminSessions.delete(token);
+  if (token) { adminSessions.delete(token); saveSessions(); }
   return reply.send({ ok: true });
 }
 
@@ -1367,7 +1404,7 @@ async function handleUpdateChatPrompt(req, reply) {
 function requireChatOp(req, reply) {
   const auth = req.headers['authorization'] || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
-  if (!token || !chatOpSessions.has(token)) {
+  if (!token || !sessionValid(chatOpSessions, token)) {
     reply.status(401).send({ error: 'unauthorized' });
     return false;
   }
@@ -1382,7 +1419,7 @@ async function handleChatOpLogin(req, reply) {
     return reply.status(401).send({ error: 'Неверный логин или пароль' });
   }
   const token = randomUUID() + randomUUID();
-  chatOpSessions.add(token);
+  sessionAdd(chatOpSessions, token);
   return reply.send({ token });
 }
 
