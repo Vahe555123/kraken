@@ -47,4 +47,8 @@ export const config = {
     login: envStr('CALLER_LOGIN', 'caller'),
     password: envStr('CALLER_PASSWORD', 'caller123'),
   },
+  chatOp: {
+    login: envStr('CHAT_OP_LOGIN', 'chatop'),
+    password: envStr('CHAT_OP_PASSWORD', 'chatop123'),
+  },
 };

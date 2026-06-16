@@ -199,6 +199,9 @@
         </div>
       </div>
 
+      <!-- CHAT SUPPORT PROMPT -->
+
+
       <!-- CLIENTS TAB -->
       <div id="tab-clients" class="tab-content">
         <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
@@ -286,6 +289,7 @@
           setTok(res.d.token);
           showPanel();
           loadBotConfig();
+          loadChatPrompt();
         })
         .catch(function(){ btn.disabled = false; err.textContent = 'Сервер недоступен'; });
       }
@@ -346,6 +350,28 @@
           .catch(function(e){ btn.disabled=false; st.className='status err'; st.textContent='Ошибка: '+e.message; });
       });
       document.getElementById('reloadBtn').addEventListener('click', loadBotConfig);
+
+      // ── Chat support prompt ───────────────────────────────────────────────────
+      function loadChatPrompt(){
+        document.getElementById('chatPromptStatus').textContent = '';
+        return apiFetch('/api/admin/chat-prompt')
+          .then(function(d){ document.getElementById('chatPrompt').value = d.chatPrompt || ''; })
+          .catch(function(){});
+      }
+
+      document.getElementById('chatPromptSaveBtn').addEventListener('click', function(){
+        var btn = this; var st = document.getElementById('chatPromptStatus');
+        btn.disabled = true; st.className = 'status'; st.textContent = 'Сохраняю…';
+        apiFetch('/api/admin/chat-prompt', { method: 'PUT', body: JSON.stringify({ chatPrompt: document.getElementById('chatPrompt').value }) })
+          .then(function(d){
+            document.getElementById('chatPrompt').value = d.chatPrompt || '';
+            btn.disabled = false; st.className = 'status ok'; st.textContent = '✓ Сохранено';
+            setTimeout(function(){ st.textContent = ''; }, 2500);
+          })
+          .catch(function(e){ btn.disabled = false; st.className = 'status err'; st.textContent = 'Ошибка: ' + e.message; });
+      });
+
+      document.getElementById('chatPromptReloadBtn').addEventListener('click', loadChatPrompt);
 
       // ── Clients ───────────────────────────────────────────────────────────────
       var currentPage = 1;
@@ -652,6 +678,7 @@
       if(tok()){
         showPanel();
         loadBotConfig();
+        loadChatPrompt();
         startAdminSSE();
       } else {
         showLogin();

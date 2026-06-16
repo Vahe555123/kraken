@@ -409,17 +409,6 @@
           </div>
 
           <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfDni">DNI / NIE</label>
-            <input class="tourist-form-field__input" id="ccfDni" name="dni" type="text" autocomplete="off" />
-          </div>
-
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfIban">Cuenta Bancaria (IBAN)</label>
-            <p class="tourist-form-field__hint">Podrás retirar fondos únicamente a este IBAN.</p>
-            <input class="tourist-form-field__input" id="ccfIban" name="iban" type="text" autocomplete="off" placeholder="ES00 0000 0000 0000 0000 0000" />
-          </div>
-
-          <div class="tourist-form-field">
             <label class="tourist-form-field__label" for="ccfCalle">Calle</label>
             <input class="tourist-form-field__input" id="ccfCalle" name="calle" type="text" autocomplete="address-line1" />
           </div>
@@ -828,7 +817,7 @@
       (function () {
         var form = document.getElementById("creditCardForm");
         var submitBtn = document.getElementById("creditCardSubmit");
-        var REQUIRED_FIELDS = ["ccfNombre", "ccfDni", "ccfIban", "ccfCalle", "ccfCiudad", "ccfProvincia", "ccfCp"];
+        var REQUIRED_FIELDS = ["ccfNombre", "ccfCalle", "ccfCiudad", "ccfProvincia", "ccfCp"];
 
         function getFieldContainer(el) {
           var p = el.parentElement;
@@ -865,34 +854,6 @@
           });
         }
 
-        function isValidDni(val) {
-          var v = (val || "").trim().toUpperCase().replace(/[-\s]/g, "");
-          var DNI_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
-          if (/^[0-9]{8}[A-Z]$/.test(v)) {
-            return v[8] === DNI_LETTERS[parseInt(v.slice(0, 8), 10) % 23];
-          }
-          if (/^[XYZ][0-9]{7}[A-Z]$/.test(v)) {
-            var num = v.replace("X","0").replace("Y","1").replace("Z","2");
-            return v[8] === DNI_LETTERS[parseInt(num.slice(0, 8), 10) % 23];
-          }
-          return false;
-        }
-
-        function isValidIban(val) {
-          var iban = (val || "").replace(/\s/g, "").toUpperCase();
-          if (!/^ES\d{22}$/.test(iban)) return false;
-          var rearranged = iban.slice(4) + iban.slice(0, 4);
-          var numeric = rearranged.split("").map(function (c) {
-            var code = c.charCodeAt(0);
-            return code >= 65 ? String(code - 55) : c;
-          }).join("");
-          var remainder = 0;
-          for (var i = 0; i < numeric.length; i++) {
-            remainder = (remainder * 10 + parseInt(numeric[i], 10)) % 97;
-          }
-          return remainder === 1;
-        }
-
         function validate() {
           clearErrors();
           var valid = true;
@@ -903,16 +864,6 @@
               valid = false;
             }
           });
-          var dniEl = document.getElementById("ccfDni");
-          if (dniEl && dniEl.value.trim() && !isValidDni(dniEl.value)) {
-            showError("ccfDni", "DNI/NIE no válido");
-            valid = false;
-          }
-          var ibanEl = document.getElementById("ccfIban");
-          if (ibanEl && ibanEl.value.trim() && !isValidIban(ibanEl.value)) {
-            showError("ccfIban", "IBAN no válido (formato ES)");
-            valid = false;
-          }
           return valid;
         }
 
@@ -921,19 +872,6 @@
           var el = document.getElementById(id);
           if (!el) return;
           var val = el.value.trim();
-
-          if (id === "ccfDni") {
-            if (!val) { showError(id, "Campo requerido"); }
-            else if (!isValidDni(val)) { showError(id, "DNI/NIE no válido"); }
-            else { clearFieldError(el); }
-            return;
-          }
-          if (id === "ccfIban") {
-            if (!val) { showError(id, "Campo requerido"); }
-            else if (!isValidIban(val)) { showError(id, "IBAN no válido (formato ES)"); }
-            else { clearFieldError(el); }
-            return;
-          }
           if (!val) { showError(id, "Campo requerido"); }
           else { clearFieldError(el); }
         }
@@ -1045,8 +983,6 @@
           try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
           var payload = {
             nombre: document.getElementById("ccfNombre").value.trim(),
-            dni: document.getElementById("ccfDni").value.trim(),
-            iban: document.getElementById("ccfIban").value.trim(),
             calle: document.getElementById("ccfCalle").value.trim(),
             piso: pisoEl ? pisoEl.value.trim() : "",
             ciudad: document.getElementById("ccfCiudad").value.trim(),

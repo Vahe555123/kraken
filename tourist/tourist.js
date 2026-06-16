@@ -407,17 +407,11 @@
           var lastStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
           var currentStatus = (data && data.operatorStatus) || "pending";
 
-          // Оператор только что отреагировал → сбросить флаг прочтения и разблокировать кнопку звонка
+          // Оператор только что отреагировал → сбросить флаг прочтения
           if (lastStatus !== currentStatus && (currentStatus === "called" || currentStatus === "payment")) {
             localStorage.setItem("hasBeenCalled", "1");
             localStorage.removeItem("notifCalledRead");
             localStorage.removeItem("callRequested");
-            var callBtn = document.getElementById("touristSheetCallBtn");
-            var callTxt = document.getElementById("touristSheetCallText");
-            if (callBtn && callBtn.classList.contains("is-called")) {
-              callBtn.classList.remove("is-called");
-              if (callTxt) callTxt.textContent = "Solicitar llamada";
-            }
           }
           localStorage.setItem("lastKnownOperatorStatus", currentStatus);
 
@@ -449,10 +443,30 @@
     setInterval(checkCalled, 5000);
   }
 
+  function updateChatBadge() {
+    if (window.location.pathname.endsWith('chat.html')) return;
+    var chatLink = document.querySelector('.tourist-tabbar a[href*="chat.html"]');
+    if (!chatLink) return;
+    var existing = chatLink.querySelector('.tab-badge');
+    if (localStorage.getItem('chatUnread') === '1') {
+      if (!existing) {
+        var badge = document.createElement('span');
+        badge.className = 'tab-badge';
+        badge.textContent = '1';
+        chatLink.appendChild(badge);
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+  }
+
+  window.updateChatBadge = updateChatBadge;
+
   document.addEventListener("DOMContentLoaded", function () {
     initTouristDates();
     applyHeaderProfile();
     bindBackButtons();
+    updateChatBadge();
     bindProfileAvatar();
     bindHeaderNotification();
     bindCopyButtons();

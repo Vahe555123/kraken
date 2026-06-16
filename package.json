@@ -15,6 +15,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@fastify/multipart": "^10.0.0",
     "@fastify/static": "^7.0.4",
     "@prisma/client": "^5.22.0",
     "dotenv": "^16.4.5",

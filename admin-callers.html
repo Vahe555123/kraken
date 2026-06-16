@@ -338,6 +338,8 @@
       detEvents:        'История событий',
       detNoEvents:      'Нет событий',
       detNoteTitle:     'Заметка оператора',
+      chatOpNoteLabel:  'Комментарий чат-оператора:',
+      chatOpLink:       '→ Открыть чат',
       dateLocale:       'ru',
       expHeaders:       ['Имя','Email','IP','Банк','Статус','Запрос','Заметка'],
       expPending:       'Ожидает',
@@ -411,6 +413,8 @@
       detEvents:        'Historial de eventos',
       detNoEvents:      'Sin eventos',
       detNoteTitle:     'Nota del operador',
+      chatOpNoteLabel:  'Comentario del chat-operador:',
+      chatOpLink:       '→ Abrir chat',
       dateLocale:       'es',
       expHeaders:       ['Nombre','Email','IP','Banco','Estado','Solicitud','Nota'],
       expPending:       'Espera',
@@ -629,6 +633,14 @@
     clients.forEach(function(c){
       var row=buildRow(c);
       tbody.appendChild(row);
+      var chatOpNote=c.submissionData&&c.submissionData.chatOpNote;
+      if(chatOpNote){
+        var noteRow=document.createElement('tr');
+        noteRow.innerHTML='<td colspan="6" style="padding:0 14px 8px 72px;font-size:12px;color:var(--accent);border-bottom:1px solid var(--border);">'
+          +'<strong style="color:var(--muted);">'+t('chatOpNoteLabel')+'</strong> '+esc(chatOpNote)
+          +'&nbsp;&nbsp;</td>';
+        tbody.appendChild(noteRow);
+      }
       if(openId&&c.id===openId){ row.classList.add('active'); tbody.appendChild(buildDetailTr(c)); }
     });
   }
