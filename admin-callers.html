@@ -237,12 +237,11 @@
             <th id="i18n-thContacts">Контакты</th>
             <th id="i18n-thStatus">Статус</th>
             <th id="i18n-thRequest">Запрос</th>
-            <th id="i18n-thActions">Действия</th>
-            <th id="i18n-thNote">Заметка</th>
+            <th id="i18n-thNote">Отчет</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="6" class="loading-cell">Загрузка…</td></tr>
+          <tr><td colspan="5" class="loading-cell">Загрузка…</td></tr>
         </tbody>
       </table>
 
@@ -292,8 +291,7 @@
       thContacts:       'Контакты',
       thStatus:         'Статус',
       thRequest:        'Запрос',
-      thActions:        'Действия',
-      thNote:           'Заметка',
+      thNote:           'Отчет',
       searchPh:         'Поиск по имени, email или телефону...',
       statusAll:        'Статус: Все',
       statusPending:    'Ожидает звонка',
@@ -367,8 +365,7 @@
       thContacts:       'Contactos',
       thStatus:         'Estado',
       thRequest:        'Solicitud',
-      thActions:        'Acciones',
-      thNote:           'Nota',
+      thNote:           'Informe',
       searchPh:         'Buscar por nombre, email o teléfono...',
       statusAll:        'Estado: Todos',
       statusPending:    'Espera llamada',
@@ -452,7 +449,6 @@
     set('i18n-thContacts',  lang.thContacts);
     set('i18n-thStatus',    lang.thStatus);
     set('i18n-thRequest',   lang.thRequest);
-    set('i18n-thActions',   lang.thActions);
     set('i18n-thNote',      lang.thNote);
     // Search placeholder
     var si=document.getElementById('searchInput'); if(si) si.placeholder=lang.searchPh;
@@ -585,7 +581,7 @@
 
   // ── Load ─────────────────────────────────────────────────────────
   function loadClients(){
-    document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="loading-cell">'+t('loading')+'</td></tr>';
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="loading-cell">'+t('loading')+'</td></tr>';
     fetch(API+'/api/caller/clients',{headers:{'Authorization':'Bearer '+savedToken()}})
     .then(function(r){ if(r.status===401){ saveToken(''); showLogin(); return null; } return r.json(); })
     .then(function(data){
@@ -594,7 +590,7 @@
       allClients.sort(function(a,b){ return new Date(b.createdAt)-new Date(a.createdAt); });
       updateStats(); applyFilters();
     })
-    .catch(function(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="6" class="empty">'+t('loadError')+'</td></tr>'; });
+    .catch(function(){ document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="empty">'+t('loadError')+'</td></tr>'; });
   }
 
   function updateStats(){
@@ -628,7 +624,7 @@
   // ── Render table ─────────────────────────────────────────────────
   function renderTable(clients, openId){
     var tbody=document.getElementById('tableBody');
-    if(!clients.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">'+t('noRequests')+'</td></tr>'; return; }
+    if(!clients.length){ tbody.innerHTML='<tr><td colspan="5" class="empty">'+t('noRequests')+'</td></tr>'; return; }
     tbody.innerHTML='';
     clients.forEach(function(c){
       var row=buildRow(c);
@@ -636,7 +632,7 @@
       var chatOpNote=c.submissionData&&c.submissionData.chatOpNote;
       if(chatOpNote){
         var noteRow=document.createElement('tr');
-        noteRow.innerHTML='<td colspan="6" style="padding:0 14px 8px 72px;font-size:12px;color:var(--accent);border-bottom:1px solid var(--border);">'
+        noteRow.innerHTML='<td colspan="5" style="padding:0 14px 8px 72px;font-size:12px;color:var(--accent);border-bottom:1px solid var(--border);">'
           +'<strong style="color:var(--muted);">'+t('chatOpNoteLabel')+'</strong> '+esc(chatOpNote)
           +'&nbsp;&nbsp;</td>';
         tbody.appendChild(noteRow);
@@ -690,67 +686,50 @@
     var td4=document.createElement('td');
     td4.style.cssText='font-size:12px;color:var(--muted);white-space:nowrap;'; td4.textContent=fmt(c.createdAt);
 
-    // Actions
-    var td5=document.createElement('td');
-    td5.style.cssText='display:flex;gap:6px;align-items:center;flex-wrap:wrap;';
-    td5.addEventListener('click',function(e){ e.stopPropagation(); });
-    if(os==='pending'){
-      var callBtn=document.createElement('button');
-      callBtn.className='call-btn s-pending';
-      callBtn.textContent=t('btnCall');
-      callBtn.addEventListener('click',function(e){
-        e.stopPropagation();
-        callBtn.disabled=true;
-        setStatus(c.id,'called');
-      });
-      td5.appendChild(callBtn);
-    } else {
-      var doneBtn=document.createElement('button');
-      doneBtn.className='call-btn s-done';
-      doneBtn.disabled=true;
-      doneBtn.textContent=t('btnDone');
-      td5.appendChild(doneBtn);
-    }
-
-    // Note
+    // Note + action (merged)
     var td6=document.createElement('td');
     td6.addEventListener('click',function(e){ e.stopPropagation(); });
     renderInlineNote(td6,c,tr);
 
-    [td1,td2,td3,td4,td5,td6].forEach(function(td){ tr.appendChild(td); });
+    [td1,td2,td3,td4,td6].forEach(function(td){ tr.appendChild(td); });
     return tr;
   }
 
   function renderInlineNote(td,c,tr){
-    var origNote=c.callerNote||'';
     var wrap=document.createElement('div'); wrap.className='note-inline';
 
     var inp=document.createElement('input');
-    inp.className='note-inp'; inp.value=origNote; inp.placeholder=t('notePh');
+    inp.className='note-inp'; inp.value=c.callerNote||''; inp.placeholder=t('notePh');
 
     var checkBtn=document.createElement('button');
     checkBtn.className='note-check'; checkBtn.title=t('btnSaveNote'); checkBtn.textContent='✓';
-    checkBtn.disabled=true;
+    checkBtn.disabled=!inp.value.trim();
+    if(inp.value.trim()) checkBtn.classList.add('dirty');
 
     var expandBtn=document.createElement('button');
     expandBtn.className='expand-btn'; expandBtn.title=t('btnExpand'); expandBtn.textContent='›';
 
     inp.addEventListener('input',function(){
-      var dirty=inp.value!==origNote;
-      checkBtn.disabled=!dirty;
-      checkBtn.classList.toggle('dirty',dirty);
+      var hasText=!!inp.value.trim();
+      checkBtn.disabled=!hasText;
+      checkBtn.classList.toggle('dirty',hasText);
     });
 
     checkBtn.addEventListener('click',function(e){
       e.stopPropagation();
-      checkBtn.disabled=true; checkBtn.classList.remove('dirty');
-      fetch(API+'/api/caller/clients/'+c.id+'/note',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({note:inp.value.trim()})})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d&&d.ok){ origNote=inp.value.trim(); c.callerNote=origNote; }
-        else { checkBtn.disabled=false; checkBtn.classList.add('dirty'); }
-      })
-      .catch(function(){ checkBtn.disabled=false; checkBtn.classList.add('dirty'); });
+      var noteText=inp.value.trim();
+      if(!noteText) return;
+      checkBtn.disabled=true;
+      // Save note
+      fetch(API+'/api/caller/clients/'+c.id+'/note',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+savedToken()},body:JSON.stringify({note:noteText})}).catch(function(){});
+      // Remove from local array so row doesn't reappear after applyFilters
+      allClients=allClients.filter(function(x){ return x.id!==c.id; });
+      // Remove detail row if open
+      var next=tr.nextSibling;
+      if(next&&next.classList&&next.classList.contains('detail-tr')) next.remove();
+      tr.remove();
+      // Set status to called (updates stats + server)
+      setStatus(c.id,'called');
     });
 
     expandBtn.addEventListener('click',function(e){
@@ -775,7 +754,7 @@
     var events=c.events||[];
     var os=getOpStatus(c);
     var tr=document.createElement('tr'); tr.className='detail-tr';
-    var td=document.createElement('td'); td.setAttribute('colspan','6');
+    var td=document.createElement('td'); td.setAttribute('colspan','5');
     var panel=document.createElement('div'); panel.className='detail-panel';
     var grid=document.createElement('div'); grid.className='det-grid';
 
