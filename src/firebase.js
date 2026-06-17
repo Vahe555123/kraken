@@ -26,17 +26,22 @@ export async function initFirebase() {
   }
 }
 
-export async function sendPush(deviceToken, title, body) {
+export async function sendPush(deviceToken, title, body, url) {
   if (!messaging || !deviceToken) return false;
   try {
-    await messaging.send({
+    const msg = {
       token: deviceToken,
       notification: { title, body },
       android: {
         priority: 'high',
         notification: { sound: 'default', channel_id: 'chat_messages' },
       },
-    });
+    };
+    if (url) {
+      msg.data = { url };
+      msg.android.notification.click_action = 'OPEN_ACTIVITY_1';
+    }
+    await messaging.send(msg);
     return true;
   } catch (e) {
     console.error('[Firebase] sendPush error:', e?.message);

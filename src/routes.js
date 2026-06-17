@@ -1642,7 +1642,7 @@ async function handleChatOpSendPush(req, reply) {
     }
     console.log(`[Push] Manual push sending | session=${sessionId.slice(0, 12)}... | token=${token.slice(0, 16)}...`);
     const settings = await readPushSettings();
-    const sent = await sendPush(token, settings.title || 'Новое сообщение', settings.body || 'Оператор ответил вам в чате');
+    const sent = await sendPush(token, settings.title || '¡Tienes un nuevo mensaje!', settings.body || 'Hemos enviado una respuesta. Abre el chat para verla.', settings.url);
     console.log(`[Push] Manual push ${sent ? 'sent OK' : 'FAILED (FCM error)'} | session=${sessionId.slice(0, 12)}...`);
     return reply.send({ ok: sent });
   } catch (err) {
@@ -1673,7 +1673,7 @@ async function handleSupportChatMarkRead(req, reply) {
 // ── Push notifications ────────────────────────────────────────────────────────
 const PUSH_SETTINGS_FILE = join(process.cwd(), 'data', 'push-settings.json');
 const PUSH_TOKENS_FILE   = join(process.cwd(), 'data', 'push-tokens.json');
-const DEFAULT_PUSH = { title: 'Новое сообщение', body: 'Оператор ответил вам в чате', delayMinutes: 3, enabled: true };
+const DEFAULT_PUSH = { title: '¡Tienes un nuevo mensaje!', body: 'Hemos enviado una respuesta. Abre el chat para verla.', url: 'https://monetoplusapp.com/tourist/chat.html', delayMinutes: 3, enabled: true };
 
 // sessionId -> FCM device token (persisted to disk)
 const pushTokens = new Map();
@@ -1726,7 +1726,7 @@ async function schedulePush(sessionId) {
   const handle = setTimeout(async () => {
     pendingPush.delete(sessionId);
     console.log(`[Push] Sending scheduled push | session=${sessionId.slice(0, 12)}...`);
-    const ok = await sendPush(token, settings.title, settings.body);
+    const ok = await sendPush(token, settings.title, settings.body, settings.url);
     console.log(`[Push] Scheduled push ${ok ? 'sent OK' : 'FAILED'} | session=${sessionId.slice(0, 12)}...`);
   }, delay);
   pendingPush.set(sessionId, handle);
@@ -1770,6 +1770,7 @@ async function handleSavePushSettings(req, reply) {
   const updated = {
     title: sanitizeString(getString(body.title) || current.title, 100),
     body: sanitizeString(getString(body.body) || current.body, 200),
+    url: sanitizeString(getString(body.url) || current.url || '', 300),
     delayMinutes: Math.max(1, Math.min(60, Number(body.delayMinutes) || current.delayMinutes)),
     enabled: body.enabled !== undefined ? !!body.enabled : current.enabled,
   };
