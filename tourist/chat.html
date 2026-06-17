@@ -561,7 +561,7 @@
               if (msgs.length) {
                 msgs.forEach(function (m) {
                   var el = buildMsgEl(m.role === 'user' ? 'user' : 'bot', m.content);
-                  chat.insertBefore(el, typing);
+                  if (el) chat.insertBefore(el, typing);
                   displayedMsgCount++;
                 });
                 scrollDown();
