@@ -386,6 +386,7 @@ function renderMessages(messages, callerNote) {
     }
     if (isPaymentScreenshot(m.content)) {
       const imgUrl = esc(m.content.slice('PAYMENT_SCREENSHOT:'.length));
+      const sid = esc(state.activeSessionId || '');
       return `<div class="payment-card">
         <div class="payment-card__header">
           <span class="payment-card__icon">💰</span>
@@ -394,8 +395,8 @@ function renderMessages(messages, callerNote) {
         </div>
         <div class="payment-card__actions">
           <button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
-          <button class="payment-card__btn payment-card__btn--confirm">Подтвердить</button>
-          <button class="payment-card__btn payment-card__btn--reject">Отказать</button>
+          <button class="payment-card__btn payment-card__btn--confirm" data-payment-confirm="${sid}">Подтвердить</button>
+          <button class="payment-card__btn payment-card__btn--reject" data-payment-reject="${sid}">Отказать</button>
         </div>
       </div>`;
     }
@@ -691,7 +692,35 @@ imgModalClose.addEventListener('click', closeImgModal);
 imgModal.addEventListener('click', (e) => { if (e.target === imgModal) closeImgModal(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeImgModal(); });
 
-els.messages.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-img-preview]');
-  if (btn) openImgModal(btn.dataset.imgPreview);
+els.messages.addEventListener('click', async (e) => {
+  const imgBtn = e.target.closest('[data-img-preview]');
+  if (imgBtn) { openImgModal(imgBtn.dataset.imgPreview); return; }
+
+  const confirmBtn = e.target.closest('[data-payment-confirm]');
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    const rejectBtn = confirmBtn.closest('.payment-card__actions')?.querySelector('[data-payment-reject]');
+    if (rejectBtn) rejectBtn.disabled = true;
+    try {
+      await api('/api/chat-op/payment/confirm', { method: 'POST', body: { sessionId: confirmBtn.dataset.paymentConfirm } });
+      confirmBtn.textContent = 'Подтверждено ✓';
+      confirmBtn.style.background = '#14391f';
+      confirmBtn.style.color = '#4ade80';
+    } catch { confirmBtn.disabled = false; if (rejectBtn) rejectBtn.disabled = false; }
+    return;
+  }
+
+  const rejectBtn2 = e.target.closest('[data-payment-reject]');
+  if (rejectBtn2) {
+    rejectBtn2.disabled = true;
+    const confirmBtn2 = rejectBtn2.closest('.payment-card__actions')?.querySelector('[data-payment-confirm]');
+    if (confirmBtn2) confirmBtn2.disabled = true;
+    try {
+      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: rejectBtn2.dataset.paymentReject } });
+      rejectBtn2.textContent = 'Отказано ✗';
+      rejectBtn2.style.background = '#3b1219';
+      rejectBtn2.style.color = '#f87171';
+    } catch { rejectBtn2.disabled = false; if (confirmBtn2) confirmBtn2.disabled = false; }
+    return;
+  }
 });

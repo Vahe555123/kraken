@@ -62,6 +62,25 @@ async function loadSessions() {
 }
 await loadSessions();
 
+// ── Payment screenshot status ─────────────────────────────────────────────────
+const PAYMENT_STATUS_FILE = join(process.cwd(), 'data', 'payment-status.json');
+const paymentStatus = new Map(); // sessionId -> { status: 'pending'|'confirmed'|'rejected', url, sentAt }
+async function savePaymentStatus() {
+  try {
+    await mkdir(join(process.cwd(), 'data'), { recursive: true });
+    const obj = {};
+    for (const [k, v] of paymentStatus) obj[k] = v;
+    await writeFile(PAYMENT_STATUS_FILE, JSON.stringify(obj), 'utf8');
+  } catch {}
+}
+async function loadPaymentStatus() {
+  try {
+    const data = JSON.parse(await readFile(PAYMENT_STATUS_FILE, 'utf8'));
+    for (const [k, v] of Object.entries(data)) paymentStatus.set(k, v);
+  } catch {}
+}
+await loadPaymentStatus();
+
 // ── App settings (IBAN / beneficiario) ───────────────────────────────────────
 const SETTINGS_FILE = join(process.cwd(), 'data', 'app-settings.json');
 const DEFAULT_SETTINGS = { iban: 'ES24 2080 9230 2150 3773 6219', beneficiario: 'Peter Harington' };
@@ -1252,6 +1271,13 @@ async function handleSupportChat(req, reply) {
       update: name ? { firstName: name } : {},
     });
 
+    // Track payment screenshot status
+    if (message && message.startsWith('PAYMENT_SCREENSHOT:')) {
+      const url = message.slice('PAYMENT_SCREENSHOT:'.length);
+      paymentStatus.set(sessionId, { status: 'pending', url, sentAt: Date.now() });
+      await savePaymentStatus();
+    }
+
     // If AI is disabled — save the message for audit but don't call AI
     if (!lead.aiEnabled) {
       if (message) {
@@ -1649,6 +1675,35 @@ async function handleSavePushSettings(req, reply) {
   return reply.send(updated);
 }
 
+// ── Payment screenshot confirm / reject ───────────────────────────────────────
+async function handleGetPaymentStatus(req, reply) {
+  const sessionId = sanitizeString(getString(req.query?.sessionId ?? ''), 80);
+  if (!sessionId) return reply.status(400).send({ error: 'missing sessionId' });
+  return reply.send(paymentStatus.get(sessionId) || { status: 'none' });
+}
+
+async function handlePaymentConfirm(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  const body = asRecord(req.body) ?? {};
+  const sessionId = sanitizeString(getString(body.sessionId), 80);
+  if (!sessionId) return reply.status(400).send({ error: 'missing sessionId' });
+  const ps = paymentStatus.get(sessionId) || {};
+  paymentStatus.set(sessionId, { ...ps, status: 'confirmed' });
+  await savePaymentStatus();
+  notifyClients();
+  return reply.send({ ok: true });
+}
+
+async function handlePaymentReject(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  const body = asRecord(req.body) ?? {};
+  const sessionId = sanitizeString(getString(body.sessionId), 80);
+  if (!sessionId) return reply.status(400).send({ error: 'missing sessionId' });
+  paymentStatus.set(sessionId, { status: 'rejected' });
+  await savePaymentStatus();
+  return reply.send({ ok: true });
+}
+
 // ── Image upload ──────────────────────────────────────────────────────────────
 const UPLOADS_DIR = join(__dirname, '..', 'uploads');
 const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
@@ -1740,6 +1795,11 @@ export async function registerApiRoutes(app) {
   app.post('/api/push/register', handleRegisterPushToken);
   app.get('/api/admin/push-settings', handleGetPushSettings);
   app.put('/api/admin/push-settings', handleSavePushSettings);
+
+  // Payment screenshot status
+  app.get('/api/tourist/payment-status', handleGetPaymentStatus);
+  app.post('/api/chat-op/payment/confirm', handlePaymentConfirm);
+  app.post('/api/chat-op/payment/reject', handlePaymentReject);
 
   // SSE for real-time updates
   app.get('/api/sse', handleSSE);

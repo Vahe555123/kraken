@@ -390,6 +390,8 @@
         if (!refreshBtn) return;
 
         var selectedFile = null;
+        var sessionId = "";
+        try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
 
         uploadBtn.addEventListener("click", function () {
           if (!uploadBtn.disabled) fileInput.click();
@@ -400,6 +402,7 @@
           if (!file) return;
           selectedFile = file;
           fileInput.value = "";
+          localStorage.setItem("txLastScreenshotName", file.name);
           fileNameEl.textContent = file.name;
           filePreview.style.display = "flex";
           uploadBtn.style.display = "none";
@@ -407,11 +410,64 @@
           if (label) label.textContent = "Enviar para verificación";
         });
 
+        // ── Restore state on load ──
+        function applyStatus(ps) {
+          var statusEl = document.getElementById("txStatusNote");
+          if (ps.status === "pending") {
+            var savedName = localStorage.getItem("txLastScreenshotName") || "Captura enviada";
+            fileNameEl.textContent = savedName;
+            filePreview.style.display = "flex";
+            uploadBtn.style.display = "none";
+            waitText.style.display = "block";
+            refreshBtn.style.display = "none";
+            if (statusEl) { statusEl.textContent = "En revisión"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
+          } else if (ps.status === "confirmed") {
+            var savedName2 = localStorage.getItem("txLastScreenshotName") || "Captura enviada";
+            fileNameEl.textContent = savedName2;
+            filePreview.style.display = "flex";
+            uploadBtn.style.display = "none";
+            refreshBtn.style.display = "none";
+            waitText.style.display = "none";
+            if (statusEl) { statusEl.textContent = "Aprobado"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
+          } else if (ps.status === "rejected" || ps.status === "none") {
+            // Reset to initial state — can upload again
+            localStorage.removeItem("txLastScreenshotName");
+            selectedFile = null;
+            filePreview.style.display = "none";
+            uploadBtn.style.display = "";
+            waitText.style.display = "none";
+            refreshBtn.style.display = "";
+            refreshBtn.setAttribute("aria-busy", "false");
+            refreshBtn.disabled = false;
+            var label2 = refreshBtn.querySelector(".tourist-btn__default-content span:first-child");
+            if (label2) label2.textContent = "Comprobar pago";
+            if (statusEl) { statusEl.textContent = "Sin transacción"; statusEl.className = "tourist-amount-block__status-note"; }
+          }
+        }
+
+        var pollTimer = null;
+        function startPolling() {
+          if (pollTimer) return;
+          pollTimer = setInterval(function () {
+            fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId))
+              .then(function (r) { return r.json(); })
+              .then(function (ps) { applyStatus(ps); })
+              .catch(function () {});
+          }, 5000);
+        }
+
+        // Check status on load
+        fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId))
+          .then(function (r) { return r.json(); })
+          .then(function (ps) {
+            applyStatus(ps);
+            if (ps.status === "pending") startPolling(); // poll until confirmed/rejected
+          })
+          .catch(function () {});
+
         refreshBtn.addEventListener("click", function () {
           var email = "";
           try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
-          var sessionId = "";
-          try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
 
           fetch(apiBase + "/api/track", {
             method: "POST",
@@ -464,6 +520,7 @@
                     waitText.style.display = "block";
                     var statusEl = document.getElementById("txStatusNote");
                     if (statusEl) { statusEl.textContent = "En revisión"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
+                    startPolling();
                   })
                   .catch(function () {
                     refreshBtn.setAttribute("aria-busy", "false");
