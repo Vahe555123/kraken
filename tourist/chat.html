@@ -710,12 +710,19 @@
           }, 4000);
         }
 
+        function saveCollectedData(data) {
+          if (data.collectedIban)  localStorage.setItem('chatIban',  data.collectedIban);
+          if (data.collectedDni)   localStorage.setItem('chatDni',   data.collectedDni);
+          if (data.collectedPhone) localStorage.setItem('chatPhone', data.collectedPhone);
+        }
+
         function send(content) {
           localStorage.removeItem('chatUnread');
           setBusy(true);
           postChat({ sessionId: sessionId, message: content, name: name, bank: bank })
             .then(function (data) {
               setBusy(false);
+              saveCollectedData(data || {});
               if (data && data.reply) addMessage('bot', data.reply);
               if (data && data.done) showDoneBanner();
             })
@@ -753,6 +760,7 @@
             addMessage('user', url);
             postChat({ sessionId: sessionId, message: url, name: name, bank: bank })
               .then(function (data) {
+                saveCollectedData(data || {});
                 if (data && data.reply) addMessage('bot', data.reply);
                 if (data && data.done) showDoneBanner();
               })
