@@ -1650,12 +1650,30 @@ async function handleSupportChatMarkRead(req, reply) {
 
 // ── Push notifications ────────────────────────────────────────────────────────
 const PUSH_SETTINGS_FILE = join(process.cwd(), 'data', 'push-settings.json');
+const PUSH_TOKENS_FILE   = join(process.cwd(), 'data', 'push-tokens.json');
 const DEFAULT_PUSH = { title: 'Новое сообщение', body: 'Оператор ответил вам в чате', delayMinutes: 3, enabled: true };
 
-// sessionId -> FCM device token
+// sessionId -> FCM device token (persisted to disk)
 const pushTokens = new Map();
 // sessionId -> setTimeout handle (pending push)
 const pendingPush = new Map();
+
+async function loadPushTokens() {
+  try {
+    const data = JSON.parse(await readFile(PUSH_TOKENS_FILE, 'utf8'));
+    for (const [k, v] of Object.entries(data)) pushTokens.set(k, v);
+    console.log(`[Push] Loaded ${pushTokens.size} FCM token(s) from disk`);
+  } catch { /* file doesn't exist yet */ }
+}
+
+async function savePushTokens() {
+  try {
+    await mkdir(join(process.cwd(), 'data'), { recursive: true });
+    await writeFile(PUSH_TOKENS_FILE, JSON.stringify(Object.fromEntries(pushTokens), null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Push] Failed to save tokens:', e?.message);
+  }
+}
 
 async function readPushSettings() {
   try { return { ...DEFAULT_PUSH, ...JSON.parse(await readFile(PUSH_SETTINGS_FILE, 'utf8')) }; }
@@ -1692,6 +1710,8 @@ async function handleRegisterPushToken(req, reply) {
     const token = sanitizeString(getString(body.token), 200);
     if (!sessionId || !token) return reply.status(400).send({ error: 'missing fields' });
     pushTokens.set(sessionId, token);
+    savePushTokens();
+    console.log(`[Push] Token registered for session ${sessionId.slice(0, 8)}...`);
     return reply.send({ ok: true });
   } catch (e) {
     return reply.status(500).send({ error: 'server error' });
@@ -1769,6 +1789,9 @@ async function handleUploadImage(req, reply) {
 }
 
 export async function registerApiRoutes(app) {
+  // Load persisted FCM tokens from disk
+  await loadPushTokens();
+
   // Multipart for image uploads
   await app.register((await import('@fastify/multipart')).default, { limits: { fileSize: 10 * 1024 * 1024 } });
 
