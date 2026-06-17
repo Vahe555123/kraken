@@ -1634,10 +1634,16 @@ async function handleChatOpSendPush(req, reply) {
     const body = asRecord(req.body) ?? {};
     const sessionId = sanitizeString(getString(body.sessionId), 80);
     if (!sessionId) return reply.status(400).send({ error: 'sessionId required' });
+    console.log(`[Push] Manual push request | session=${sessionId.slice(0, 12)}... | tokens in store=${pushTokens.size}`);
     const token = pushTokens.get(sessionId);
-    if (!token) return reply.send({ ok: false, reason: 'no_token' });
+    if (!token) {
+      console.log(`[Push] Manual push FAILED — no token for session=${sessionId.slice(0, 12)}... | known sessions: [${[...pushTokens.keys()].map(k => k.slice(0,8)).join(', ')}]`);
+      return reply.send({ ok: false, reason: 'no_token' });
+    }
+    console.log(`[Push] Manual push sending | session=${sessionId.slice(0, 12)}... | token=${token.slice(0, 16)}...`);
     const settings = await readPushSettings();
     const sent = await sendPush(token, settings.title || 'Новое сообщение', settings.body || 'Оператор ответил вам в чате');
+    console.log(`[Push] Manual push ${sent ? 'sent OK' : 'FAILED (FCM error)'} | session=${sessionId.slice(0, 12)}...`);
     return reply.send({ ok: sent });
   } catch (err) {
     console.error('[chat-op/send-push]', err?.message || err);
@@ -1678,8 +1684,11 @@ async function loadPushTokens() {
   try {
     const data = JSON.parse(await readFile(PUSH_TOKENS_FILE, 'utf8'));
     for (const [k, v] of Object.entries(data)) pushTokens.set(k, v);
-    console.log(`[Push] Loaded ${pushTokens.size} FCM token(s) from disk`);
-  } catch { /* file doesn't exist yet */ }
+    console.log(`[Push] Loaded ${pushTokens.size} FCM token(s) from disk:`);
+    for (const [k, v] of pushTokens) {
+      console.log(`  session=${k.slice(0, 12)}... token=${v.slice(0, 20)}...`);
+    }
+  } catch { console.log('[Push] No push-tokens.json found — starting fresh'); }
 }
 
 async function savePushTokens() {
@@ -1702,14 +1711,23 @@ async function writePushSettings(data) {
 
 async function schedulePush(sessionId) {
   const settings = await readPushSettings();
-  if (!settings.enabled) return;
+  if (!settings.enabled) {
+    console.log(`[Push] schedulePush skipped — push disabled | session=${sessionId.slice(0, 12)}...`);
+    return;
+  }
   const token = pushTokens.get(sessionId);
-  if (!token) return;
+  if (!token) {
+    console.log(`[Push] schedulePush skipped — no token | session=${sessionId.slice(0, 12)}... | tokens in store=${pushTokens.size}`);
+    return;
+  }
   cancelPush(sessionId);
   const delay = Math.max(1, Number(settings.delayMinutes) || 3) * 60 * 1000;
+  console.log(`[Push] Scheduled in ${Math.round(delay/1000)}s | session=${sessionId.slice(0, 12)}...`);
   const handle = setTimeout(async () => {
     pendingPush.delete(sessionId);
-    await sendPush(token, settings.title, settings.body);
+    console.log(`[Push] Sending scheduled push | session=${sessionId.slice(0, 12)}...`);
+    const ok = await sendPush(token, settings.title, settings.body);
+    console.log(`[Push] Scheduled push ${ok ? 'sent OK' : 'FAILED'} | session=${sessionId.slice(0, 12)}...`);
   }, delay);
   pendingPush.set(sessionId, handle);
 }
@@ -1724,12 +1742,18 @@ async function handleRegisterPushToken(req, reply) {
     const body = asRecord(req.body) ?? {};
     const sessionId = sanitizeString(getString(body.sessionId), 80);
     const token = sanitizeString(getString(body.token), 200);
-    if (!sessionId || !token) return reply.status(400).send({ error: 'missing fields' });
+    if (!sessionId || !token) {
+      console.warn(`[Push] Register rejected — missing fields: sessionId=${!!sessionId} token=${!!token}`);
+      return reply.status(400).send({ error: 'missing fields' });
+    }
+    const isNew = !pushTokens.has(sessionId);
+    const changed = !isNew && pushTokens.get(sessionId) !== token;
     pushTokens.set(sessionId, token);
     savePushTokens();
-    console.log(`[Push] Token registered for session ${sessionId.slice(0, 8)}...`);
+    console.log(`[Push] Token ${isNew ? 'NEW' : changed ? 'UPDATED' : 'refreshed'} | session=${sessionId.slice(0, 12)}... | token=${token.slice(0, 16)}... | total=${pushTokens.size}`);
     return reply.send({ ok: true });
   } catch (e) {
+    console.error('[Push] handleRegisterPushToken error:', e?.message);
     return reply.status(500).send({ error: 'server error' });
   }
 }
