@@ -59,13 +59,7 @@
         color: #22c55e;
         padding: 14px 0 4px;
       }
-      .tourist-btn--submit-ready {
-        background: #ffffff !important;
-        border: 1.5px solid #22c55e;
-        color: #16a34a !important;
-      }
-      .tourist-btn--submit-ready p,
-      .tourist-btn--submit-ready span { color: #16a34a !important; }
+      .tx-status--review { color: #22c55e !important; }
     </style>
 
     <script src="../js/api-config.js?v=20260321-6"></script>
@@ -411,7 +405,6 @@
           uploadBtn.style.display = "none";
           var label = refreshBtn.querySelector(".tourist-btn__default-content span:first-child");
           if (label) label.textContent = "Enviar para verificación";
-          refreshBtn.classList.add("tourist-btn--submit-ready");
         });
 
         refreshBtn.addEventListener("click", function () {
@@ -469,6 +462,8 @@
                   .then(function () {
                     refreshBtn.style.display = "none";
                     waitText.style.display = "block";
+                    var statusEl = document.getElementById("txStatusNote");
+                    if (statusEl) { statusEl.textContent = "En revisión"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
                   })
                   .catch(function () {
                     refreshBtn.setAttribute("aria-busy", "false");

@@ -393,7 +393,7 @@ function renderMessages(messages, callerNote) {
           <time class="payment-card__time">${fmtTime(m.createdAt)}</time>
         </div>
         <div class="payment-card__actions">
-          <button class="payment-card__btn payment-card__btn--view" onclick="window.open('${imgUrl}','_blank')">Посмотреть</button>
+          <button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
           <button class="payment-card__btn payment-card__btn--confirm">Подтвердить</button>
           <button class="payment-card__btn payment-card__btn--reject">Отказать</button>
         </div>
@@ -670,3 +670,28 @@ function init() {
 }
 
 init();
+
+// ─── Image preview modal ───────────────────────────────────────────────────────
+const imgModal     = document.getElementById('imgModal');
+const imgModalImg  = document.getElementById('imgModalImg');
+const imgModalClose = document.getElementById('imgModalClose');
+
+function openImgModal(url) {
+  imgModalImg.src = url;
+  imgModal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeImgModal() {
+  imgModal.style.display = 'none';
+  imgModalImg.src = '';
+  document.body.style.overflow = '';
+}
+
+imgModalClose.addEventListener('click', closeImgModal);
+imgModal.addEventListener('click', (e) => { if (e.target === imgModal) closeImgModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeImgModal(); });
+
+els.messages.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-img-preview]');
+  if (btn) openImgModal(btn.dataset.imgPreview);
+});

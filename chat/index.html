@@ -126,6 +126,12 @@
       </section>
     </main>
 
+    <!-- Image viewer modal -->
+    <div id="imgModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
+      <button id="imgModalClose" style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;background:#1d2b44;border:1px solid #263654;color:#edf4ff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1">✕</button>
+      <img id="imgModalImg" src="" alt="" style="max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.6)" />
+    </div>
+
     <script src="app.js"></script>
   </body>
 </html>
