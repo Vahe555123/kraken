@@ -455,6 +455,35 @@
 
   window.updateChatBadge = updateChatBadge;
 
+  function registerFcmToken() {
+    var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
+    var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
+    if (!sessionId || !apiBase) return;
+
+    function tryRegister() {
+      if (!window.AndroidBridge || typeof window.AndroidBridge.getFcmToken !== "function") return false;
+      var token = window.AndroidBridge.getFcmToken();
+      if (!token) return false;
+      fetch(apiBase + "/api/push/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sessionId, token: token }),
+        mode: "cors", credentials: "omit",
+      }).catch(function () {});
+      return true;
+    }
+
+    // First attempt after 5s (as recommended by APK developer)
+    setTimeout(function () {
+      if (tryRegister()) return;
+      // Retry every 3s up to 5 more times if token not ready yet
+      var retries = 0;
+      var iv = setInterval(function () {
+        if (tryRegister() || ++retries >= 5) clearInterval(iv);
+      }, 3000);
+    }, 5000);
+  }
+
   function startChatBadgePoller() {
     if (window.location.pathname.endsWith("chat.html")) return;
     var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
@@ -499,6 +528,7 @@
     bindNotificationPdfModal();
     startCalledPoller();
     startChatBadgePoller();
+    registerFcmToken();
 
     if (!localStorage.getItem("activeLeadFired")) {
       localStorage.setItem("activeLeadFired", "1");
