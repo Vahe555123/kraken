@@ -419,8 +419,27 @@
         }
 
         function buildMsgEl(role, content) {
-          var isImg = isImgContent(content);
           var el = document.createElement('div');
+          if (content === 'CALLER_ACTION_BUTTONS') {
+            el.className = 'assistant-msg assistant-msg--bot';
+            el.style.cssText = 'display:flex;flex-direction:column;gap:10px;padding:14px 16px;max-width:80%;';
+            var lbl = document.createElement('p');
+            lbl.style.cssText = 'margin:0;font-size:13px;font-weight:500;color:#0f0f0f;line-height:22px;';
+            lbl.textContent = 'Su solicitud ha sido procesada. Elija una opción:';
+            var a1 = document.createElement('a');
+            a1.href = './notifications2.html';
+            a1.style.cssText = 'display:block;text-align:center;padding:12px 16px;background:#fa6c12;color:#ffffff;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none;font-family:inherit;';
+            a1.textContent = 'Ver notificación';
+            var a2 = document.createElement('a');
+            a2.href = './credit-card.html';
+            a2.style.cssText = 'display:block;text-align:center;padding:12px 16px;background:#ffffff;color:#fa6c12;border:1.5px solid #fa6c12;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none;font-family:inherit;';
+            a2.textContent = 'Realizar pago';
+            el.appendChild(lbl);
+            el.appendChild(a1);
+            el.appendChild(a2);
+            return el;
+          }
+          var isImg = isImgContent(content);
           el.className = 'assistant-msg '
             + (role === 'user' ? 'assistant-msg--user' : 'assistant-msg--bot')
             + (isImg ? ' assistant-msg--image' : '');

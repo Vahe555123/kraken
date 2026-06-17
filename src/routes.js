@@ -713,6 +713,20 @@ async function handleCallerSetOperatorStatus(req, reply) {
       }
     }
     broadcastUpdate('clients_changed');
+    if (status === 'called') {
+      try {
+        const wc = await prisma.webClient.findUnique({ where: { id }, select: { flowSessionId: true } });
+        if (wc?.flowSessionId) {
+          const lead = await prisma.lead.findUnique({ where: { tgId: chatLeadKey(wc.flowSessionId) } });
+          if (lead) {
+            await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: 'CALLER_ACTION_BUTTONS' } });
+            schedulePush(wc.flowSessionId);
+          }
+        }
+      } catch (chainErr) {
+        console.error('[caller-set-status] chain error:', chainErr?.message || chainErr);
+      }
+    }
     return reply.send({ ok: true });
   } catch (err) {
     console.error('[caller-set-status] error:', err?.message || err);
