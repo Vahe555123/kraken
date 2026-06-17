@@ -246,6 +246,37 @@
 
       .chat-send:active:not(:disabled) { opacity: 0.9; }
 
+      /* ── Image button ── */
+      .chat-img-btn {
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid #e2e2e2;
+        border-radius: 12px;
+        background: #ffffff;
+        cursor: pointer;
+        padding: 0;
+        flex-shrink: 0;
+      }
+      .chat-img-btn:active:not(:disabled) { background: #f0f0f0; }
+      .chat-img-btn:disabled { opacity: 0.4; cursor: default; }
+
+      /* ── Image bubble ── */
+      .assistant-msg--image { padding: 5px !important; }
+      .assistant-msg--image img {
+        display: block;
+        max-width: 210px;
+        max-height: 210px;
+        border-radius: 14px;
+        object-fit: cover;
+        cursor: pointer;
+      }
+      .assistant-msg--user.assistant-msg--image img  { border-radius: 14px 14px 2px 14px; }
+      .assistant-msg--bot.assistant-msg--image img   { border-radius: 14px 14px 14px 2px; }
+
       /* ── Closed banner ── */
       .chat-closed-banner {
         align-self: center;
@@ -285,7 +316,15 @@
         </main>
       </div>
 
+      <input type="file" id="chatImgInput" accept="image/*" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px" />
       <form class="chat-inputbar" id="supportForm" autocomplete="off">
+        <button type="button" class="chat-img-btn" id="chatImgBtn" aria-label="Adjuntar imagen">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="3" stroke="#787878" stroke-width="1.5"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="#787878"/>
+            <path d="M3 15.5L8 10.5L12 14.5L15 11.5L21 17" stroke="#787878" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <div class="chat-input-wrap">
           <input class="chat-input" type="text" id="supportInput" placeholder="Escriba su mensaje..." aria-label="Mensaje" />
         </div>
@@ -360,6 +399,8 @@
         var input    = document.getElementById('supportInput');
         var typing   = document.getElementById('supportTyping');
         var sendBtn  = document.getElementById('supportSendBtn');
+        var imgBtn   = document.getElementById('chatImgBtn');
+        var imgInput = document.getElementById('chatImgInput');
 
         var API_BASE = window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || window.location.origin;
         var sessionId = (typeof window.getFlowSessionId === 'function')
@@ -376,6 +417,13 @@
           return String(s)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;')
             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function isImgContent(s) {
+          return s && (s.indexOf('/uploads/') === 0 || s.indexOf('PAYMENT_SCREENSHOT:') === 0);
+        }
+        function imgUrl(s) {
+          return s.indexOf('PAYMENT_SCREENSHOT:') === 0 ? s.slice('PAYMENT_SCREENSHOT:'.length) : s;
         }
 
         function scrollDown() {
@@ -406,10 +454,28 @@
             el.appendChild(a2);
             return el;
           }
-          if (content && content.indexOf('PAYMENT_SCREENSHOT:') === 0) return null;
+          var isImg = isImgContent(content);
           el.className = 'assistant-msg '
-            + (role === 'user' ? 'assistant-msg--user' : 'assistant-msg--bot');
-          el.innerHTML = '<p>' + escapeHtml(content).replace(/\n/g, '<br>') + '</p>';
+            + (role === 'user' ? 'assistant-msg--user' : 'assistant-msg--bot')
+            + (isImg ? ' assistant-msg--image' : '');
+          if (isImg) {
+            var imgEl = document.createElement('img');
+            imgEl.src = imgUrl(content);
+            imgEl.alt = '';
+            imgEl.addEventListener('click', function () {
+              var ov = document.createElement('div');
+              ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+              var bi = document.createElement('img');
+              bi.src = imgEl.src;
+              bi.style.cssText = 'max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;';
+              ov.appendChild(bi);
+              ov.addEventListener('click', function () { document.body.removeChild(ov); });
+              document.body.appendChild(ov);
+            });
+            el.appendChild(imgEl);
+          } else {
+            el.innerHTML = '<p>' + escapeHtml(content).replace(/\n/g, '<br>') + '</p>';
+          }
           return el;
         }
 
@@ -480,7 +546,39 @@
         function setBusy(on) {
           input.disabled = on;
           sendBtn.disabled = on;
+          imgBtn.disabled = on;
           showTyping(on);
+        }
+
+        function uploadImage(file, onSuccess, onError) {
+          var reader = new FileReader();
+          reader.onload = function (ev) {
+            var img = new Image();
+            img.onload = function () {
+              var MAX = 1200, w = img.width, h = img.height;
+              if (w > MAX || h > MAX) {
+                if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+                else { w = Math.round(w * MAX / h); h = MAX; }
+              }
+              var canvas = document.createElement('canvas');
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              canvas.toBlob(function (blob) {
+                var fd = new FormData();
+                fd.append('image', blob, 'photo.jpg');
+                fetch(API_BASE.replace(/\/+$/, '') + '/api/upload-image', {
+                  method: 'POST', body: fd, mode: 'cors', credentials: 'omit',
+                })
+                  .then(function (r) { return r.json(); })
+                  .then(function (d) { d && d.url ? onSuccess(d.url) : onError(); })
+                  .catch(onError);
+              }, 'image/jpeg', 0.85);
+            };
+            img.onerror = onError;
+            img.src = ev.target.result;
+          };
+          reader.onerror = onError;
+          reader.readAsDataURL(file);
         }
 
         function postChat(payload) {
@@ -547,6 +645,36 @@
           addMessage('user', text);
           input.value = '';
           send(text);
+        });
+
+        imgBtn.addEventListener('click', function () {
+          if (input.disabled) return;
+          imgInput.click();
+        });
+
+        imgInput.addEventListener('change', function () {
+          var file = imgInput.files && imgInput.files[0];
+          imgInput.value = '';
+          if (!file || input.disabled) return;
+          imgBtn.disabled = true;
+          input.disabled = true;
+          sendBtn.disabled = true;
+          uploadImage(file, function (url) {
+            imgBtn.disabled = false;
+            input.disabled = false;
+            sendBtn.disabled = false;
+            addMessage('user', url);
+            postChat({ sessionId: sessionId, message: url, name: name, bank: bank })
+              .then(function (data) {
+                if (data && data.reply) addMessage('bot', data.reply);
+                if (data && data.done) showDoneBanner();
+              })
+              .catch(function () {});
+          }, function () {
+            imgBtn.disabled = false;
+            input.disabled = false;
+            sendBtn.disabled = false;
+          });
         });
 
         function init() {
