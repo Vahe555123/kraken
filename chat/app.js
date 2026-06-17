@@ -228,31 +228,33 @@ function getIndicator(lastMsg) {
 }
 
 function updateConversationIndicator(sessionId, messages) {
+  const c = state.clients.find((x) => x.flowSessionId === sessionId);
   const lastMsg = messages && messages.length ? messages[messages.length - 1] : null;
   const indicator = getIndicator(lastMsg);
   const row = document.querySelector(`[data-session-id="${CSS.escape(sessionId)}"]`);
   if (!row) return;
-  const dot = row.querySelector('.reply-needed');
-  if (indicator === 'green') {
-    if (!dot) {
-      const d = document.createElement('span');
-      d.className = 'reply-needed';
-      d.style.background = 'var(--green)';
-      row.querySelector('.conversation-meta')?.appendChild(d);
-    } else {
-      dot.style.background = 'var(--green)';
-    }
+  const meta = row.querySelector('.conversation-meta');
+  if (!meta) return;
+
+  // Remove all existing indicators
+  meta.querySelectorAll('.reply-needed, .coin-indicator').forEach((el) => el.remove());
+
+  if (c?.paymentPending) {
+    const coin = document.createElement('span');
+    coin.className = 'coin-indicator';
+    coin.textContent = '💰';
+    meta.appendChild(coin);
+  } else if (indicator === 'green') {
+    const d = document.createElement('span');
+    d.className = 'reply-needed';
+    d.style.background = 'var(--green)';
+    meta.appendChild(d);
   } else if (indicator === 'yellow') {
-    if (dot) dot.style.background = 'var(--yellow)';
-    else {
-      const d = document.createElement('span');
-      d.className = 'reply-needed';
-      d.style.background = 'var(--yellow)';
-      d.style.animation = 'none';
-      row.querySelector('.conversation-meta')?.appendChild(d);
-    }
-  } else if (dot) {
-    dot.remove();
+    const d = document.createElement('span');
+    d.className = 'reply-needed';
+    d.style.background = 'var(--yellow)';
+    d.style.animation = 'none';
+    meta.appendChild(d);
   }
 }
 
@@ -280,11 +282,13 @@ function renderConversations() {
   els.conversations.innerHTML = page.map((c) => {
     const name = c.nombre || c.email || 'Cliente';
     const ind = getIndicator(c.lastMsg);
-    const dot = ind === 'green'
-      ? '<span class="reply-needed" style="background:var(--green)" aria-label="Нужен ответ"></span>'
-      : ind === 'yellow'
-        ? '<span class="reply-needed" style="background:var(--yellow);animation:none" aria-label="Ответил"></span>'
-        : '';
+    const dot = c.paymentPending
+      ? '<span class="coin-indicator" aria-label="Ожидает оплаты">💰</span>'
+      : ind === 'green'
+        ? '<span class="reply-needed" style="background:var(--green)" aria-label="Нужен ответ"></span>'
+        : ind === 'yellow'
+          ? '<span class="reply-needed" style="background:var(--yellow);animation:none" aria-label="Ответил"></span>'
+          : '';
     const active = c.flowSessionId === state.activeSessionId ? ' active' : '';
     const preview = c.lastMsg
       ? (isPaymentScreenshot(c.lastMsg.content) ? '📎 Скриншот оплаты'
@@ -306,6 +310,14 @@ function renderConversations() {
   }).join('');
 
   renderPagination(totalPages);
+  updatePaymentBell();
+}
+
+function updatePaymentBell() {
+  const bell = document.getElementById('paymentBell');
+  if (!bell) return;
+  const hasPending = state.clients.some((c) => c.paymentPending);
+  bell.classList.toggle('payment-bell--active', hasPending);
 }
 
 function renderPagination(totalPages) {
@@ -712,13 +724,19 @@ els.messages.addEventListener('click', async (e) => {
   const confirmBtn = e.target.closest('[data-payment-confirm]');
   if (confirmBtn) {
     confirmBtn.disabled = true;
+    const sid = confirmBtn.dataset.paymentConfirm;
     state.activePaymentStatus = 'confirmed';
+    const ci = state.clients.findIndex((c) => c.flowSessionId === sid);
+    if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: false };
     renderMessages(state.activeMessages, state.activeClient?.callerNote);
+    renderConversations();
     try {
-      await api('/api/chat-op/payment/confirm', { method: 'POST', body: { sessionId: confirmBtn.dataset.paymentConfirm } });
+      await api('/api/chat-op/payment/confirm', { method: 'POST', body: { sessionId: sid } });
     } catch {
       state.activePaymentStatus = 'none';
+      if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: true };
       renderMessages(state.activeMessages, state.activeClient?.callerNote);
+      renderConversations();
     }
     return;
   }
@@ -726,13 +744,19 @@ els.messages.addEventListener('click', async (e) => {
   const rejectBtn = e.target.closest('[data-payment-reject]');
   if (rejectBtn) {
     rejectBtn.disabled = true;
+    const sid = rejectBtn.dataset.paymentReject;
     state.activePaymentStatus = 'rejected';
+    const ci = state.clients.findIndex((c) => c.flowSessionId === sid);
+    if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: false };
     renderMessages(state.activeMessages, state.activeClient?.callerNote);
+    renderConversations();
     try {
-      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: rejectBtn.dataset.paymentReject } });
+      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: sid } });
     } catch {
       state.activePaymentStatus = 'none';
+      if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: true };
       renderMessages(state.activeMessages, state.activeClient?.callerNote);
+      renderConversations();
     }
     return;
   }

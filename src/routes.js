@@ -1481,8 +1481,8 @@ async function handleChatOpClients(req, reply) {
           });
           if (last) lastMsg = { role: last.role === 'SYSTEM' ? 'operator' : last.role.toLowerCase(), content: last.content, createdAt: last.createdAt };
         }
-        return { ...c, lastMsg };
-      } catch { return { ...c, lastMsg: null }; }
+        return { ...c, lastMsg, paymentPending: paymentStatus.get(c.flowSessionId)?.status === 'pending' };
+      } catch { return { ...c, lastMsg: null, paymentPending: false }; }
     }));
     return reply.send({ clients: enriched });
   } catch (err) {
