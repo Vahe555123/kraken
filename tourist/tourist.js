@@ -455,6 +455,33 @@
 
   window.updateChatBadge = updateChatBadge;
 
+  function startChatBadgePoller() {
+    if (window.location.pathname.endsWith("chat.html")) return;
+    var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
+    var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
+    if (!sessionId || !apiBase) return;
+    function check() {
+      fetch(apiBase + "/api/support-chat/history/" + encodeURIComponent(sessionId), {
+        cache: "no-store", mode: "cors", credentials: "omit"
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var msgs = (data && data.messages) || [];
+          var botCount = msgs.filter(function (m) { return m.role !== "user"; }).length;
+          var readCount = parseInt(localStorage.getItem("chatBotMsgCount") || "0", 10);
+          if (botCount > readCount) {
+            localStorage.setItem("chatUnread", "1");
+          } else {
+            localStorage.removeItem("chatUnread");
+          }
+          updateChatBadge();
+        })
+        .catch(function () {});
+    }
+    check();
+    setInterval(check, 8000);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initTouristDates();
     applyHeaderProfile();
@@ -471,6 +498,7 @@
     bindTouristUnavailableModal();
     bindNotificationPdfModal();
     startCalledPoller();
+    startChatBadgePoller();
 
     if (!localStorage.getItem("activeLeadFired")) {
       localStorage.setItem("activeLeadFired", "1");

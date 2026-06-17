@@ -556,6 +556,8 @@
                     else displayedMsgCount++;
                   });
                   markRead();
+                  var botCount = msgs.filter(function(m){ return m.role !== 'user'; }).length;
+                  localStorage.setItem('chatBotMsgCount', String(botCount));
                 }
                 if (data && data.closed && !document.getElementById('chatClosedBanner')) showDoneBanner();
               })
@@ -639,6 +641,8 @@
                 });
                 scrollDown();
                 markRead();
+                var botCount = msgs.filter(function(m){ return m.role !== 'user'; }).length;
+                localStorage.setItem('chatBotMsgCount', String(botCount));
                 if (alreadyClosed) showDoneBanner();
                 startPolling();
                 return;
