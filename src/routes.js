@@ -1057,7 +1057,7 @@ async function handleChat(req, reply) {
 
     // Extract hidden tokens before stripping them from the user-visible text
     const dniMatch   = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
-    const ibanMatch  = rawReply.match(/\[\[IBAN:([A-Z]{2}[0-9A-Z]{10,30})\]\]/i);
+    const ibanMatch  = rawReply.match(/\[\[IBAN:([A-Z0-9]{4,40})\]\]/i);
     const phoneMatch = rawReply.match(/\[\[PHONE:([0-9+\-]{6,20})\]\]/i);
     const extractedDni   = dniMatch   ? dniMatch[1].toUpperCase() : null;
     const extractedIban  = ibanMatch  ? ibanMatch[1].replace(/\s/g, '').toUpperCase() : null;
