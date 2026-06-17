@@ -518,6 +518,11 @@
           logo = localStorage.getItem("selectedBankLogo") || "";
         } catch (e) {}
 
+        var bankKey = "";
+        try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch (e) {}
+        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+        if (bankKey === "otrobanco") { logo = "../banks/caixabank/logo.svg"; }
+
         if (bank) {
           var titleEl = document.getElementById("touristBankTitle");
           if (titleEl) titleEl.textContent = bank;
