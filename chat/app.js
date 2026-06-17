@@ -687,6 +687,24 @@ els.notes.addEventListener('keydown', (e) => {
   btn.click();
 });
 
+// ─── Manual push ──────────────────────────────────────────────────────────────
+const pushBtn = $('[data-send-push]');
+if (pushBtn) {
+  pushBtn.addEventListener('click', async () => {
+    if (!state.activeSessionId) return;
+    pushBtn.disabled = true;
+    const orig = pushBtn.textContent;
+    pushBtn.textContent = '⌛';
+    try {
+      const data = await api('/api/chat-op/send-push', { method: 'POST', body: { sessionId: state.activeSessionId } });
+      pushBtn.textContent = data.ok ? '✓ Отправлен' : '✗ Нет токена';
+    } catch {
+      pushBtn.textContent = '✗ Ошибка';
+    }
+    setTimeout(() => { pushBtn.textContent = orig; pushBtn.disabled = false; }, 2000);
+  });
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init() {
   renderNotes();

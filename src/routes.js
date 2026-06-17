@@ -1612,6 +1612,23 @@ async function handleChatOpSaveNote(req, reply) {
   }
 }
 
+async function handleChatOpSendPush(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    if (!sessionId) return reply.status(400).send({ error: 'sessionId required' });
+    const token = pushTokens.get(sessionId);
+    if (!token) return reply.send({ ok: false, reason: 'no_token' });
+    const settings = await readPushSettings();
+    const sent = await sendPush(token, settings.title || 'Новое сообщение', settings.body || 'Оператор ответил вам в чате');
+    return reply.send({ ok: sent });
+  } catch (err) {
+    console.error('[chat-op/send-push]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
 async function handleSupportChatMarkRead(req, reply) {
   try {
     const body = asRecord(req.body) ?? {};
@@ -1812,6 +1829,7 @@ export async function registerApiRoutes(app) {
   app.post('/api/chat-op/send', handleChatOpSend);
   app.post('/api/chat-op/request-call', handleChatOpRequestCall);
   app.put('/api/chat-op/note', handleChatOpSaveNote);
+  app.post('/api/chat-op/send-push', handleChatOpSendPush);
 
   // Image upload (client + operator)
   app.post('/api/upload-image', handleUploadImage);
