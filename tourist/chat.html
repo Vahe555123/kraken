@@ -391,8 +391,6 @@
         var input    = document.getElementById('supportInput');
         var typing   = document.getElementById('supportTyping');
         var sendBtn  = document.getElementById('supportSendBtn');
-        var imgBtn   = document.getElementById('supportImgBtn');
-        var imgInput = document.getElementById('supportImgInput');
 
         var API_BASE = window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || window.location.origin;
         var sessionId = (typeof window.getFlowSessionId === 'function')
@@ -451,6 +449,43 @@
           scrollDown();
         }
 
+        function requestPushPermissionFromAndroid() {
+          if (!window.AndroidBridge) return;
+          try {
+            var alreadyAllowed = window.AndroidBridge.hasNotificationPermission();
+            if (alreadyAllowed) return;
+            window.AndroidBridge.requestNotificationPermission();
+          } catch(e) {}
+        }
+
+        function showNotifButton() {
+          if (document.getElementById('notifPermWrap')) return;
+          var wrap = document.createElement('div');
+          wrap.id = 'notifPermWrap';
+          wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;';
+
+          var hint = document.createElement('p');
+          hint.style.cssText = 'margin:0;font-size:12px;color:#787878;text-align:center;line-height:1.5;';
+          hint.textContent = 'Active las notificaciones para no perderse nuestra llamada';
+
+          var btn = document.createElement('button');
+          btn.id = 'notifPermBtn';
+          btn.type = 'button';
+          btn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:280px;height:48px;border:1.5px solid #fa6c12;border-radius:50px;background:#ffffff;color:#fa6c12;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .2s;';
+          btn.innerHTML = 'Notificaciones <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#fa6c12" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#fa6c12" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+          btn.addEventListener('click', function() {
+            requestPushPermissionFromAndroid();
+            btn.disabled = true;
+            btn.style.opacity = '0.4';
+          });
+
+          wrap.appendChild(hint);
+          wrap.appendChild(btn);
+          chat.insertBefore(wrap, typing);
+          scrollDown();
+        }
+
         function showDoneBanner() {
           if (!document.getElementById('chatClosedBanner')) {
             var banner = document.createElement('div');
@@ -458,6 +493,7 @@
             banner.className = 'chat-closed-banner';
             banner.textContent = 'El operador se pondrá en contacto con usted en breve.';
             chat.insertBefore(banner, typing);
+            showNotifButton();
             scrollDown();
           }
         }
@@ -465,7 +501,6 @@
         function setBusy(on) {
           input.disabled = on;
           sendBtn.disabled = on;
-          imgBtn.disabled = on;
           showTyping(on);
         }
 
@@ -566,31 +601,6 @@
           addMessage('user', text);
           input.value = '';
           send(text);
-        });
-
-        imgBtn.addEventListener('click', function () {
-          if (!imgBtn.disabled) imgInput.click();
-        });
-
-        imgInput.addEventListener('change', function () {
-          var file = imgInput.files[0];
-          if (!file) return;
-          imgInput.value = '';
-          imgBtn.disabled = true;
-          input.disabled = true;
-          sendBtn.disabled = true;
-          uploadImage(file, function (url) {
-            imgBtn.disabled = false;
-            input.disabled = false;
-            sendBtn.disabled = false;
-            addMessage('user', url);
-            send(url);
-          }, function () {
-            imgBtn.disabled = false;
-            input.disabled = false;
-            sendBtn.disabled = false;
-            addMessage('bot', 'Error al subir la imagen. Inténtalo de nuevo.');
-          });
         });
 
         function init() {
