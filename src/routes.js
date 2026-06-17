@@ -1512,6 +1512,7 @@ async function handleChatOpMessages(req, reply) {
       callerNote: wc?.callerNote || null,
       chatLastReadAt: sub.chatLastReadAt || null,
       client: wc,
+      paymentStatus: paymentStatus.get(sessionId)?.status || 'none',
     });
   } catch (err) {
     console.error('[chat-op/messages]', err?.message || err);

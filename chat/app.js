@@ -24,6 +24,7 @@ let state = {
   callPending: false,
   clientPollTimer: null,
   msgPollTimer: null,
+  activePaymentStatus: 'none',
 };
 let notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
 let idCounter = 0;
@@ -207,9 +208,11 @@ function startMsgPoll() {
       const data = await api('/api/chat-op/messages/' + encodeURIComponent(state.activeSessionId));
       const newReadAt = data.chatLastReadAt || null;
       const readChanged = newReadAt !== state.chatLastReadAt;
-      if (data.messages && (data.messages.length > state.activeMessages.length || readChanged)) {
+      const psChanged = (data.paymentStatus || 'none') !== state.activePaymentStatus;
+      if (data.messages && (data.messages.length > state.activeMessages.length || readChanged || psChanged)) {
         state.chatLastReadAt = newReadAt;
         state.activeMessages = data.messages;
+        state.activePaymentStatus = data.paymentStatus || 'none';
         renderMessages(state.activeMessages, state.activeClient?.callerNote);
         updateConversationIndicator(state.activeSessionId, state.activeMessages);
       }
@@ -335,6 +338,7 @@ async function selectClient(sessionId) {
     const data = await api('/api/chat-op/messages/' + encodeURIComponent(sessionId));
     state.activeMessages = data.messages || [];
     state.chatLastReadAt = data.chatLastReadAt || null;
+    state.activePaymentStatus = data.paymentStatus || 'none';
     if (data.client) state.activeClient = { ...c, ...data.client, callerNote: data.callerNote };
     renderMessages(state.activeMessages, data.callerNote);
     renderDetails(state.activeClient);
@@ -387,17 +391,26 @@ function renderMessages(messages, callerNote) {
     if (isPaymentScreenshot(m.content)) {
       const imgUrl = esc(m.content.slice('PAYMENT_SCREENSHOT:'.length));
       const sid = esc(state.activeSessionId || '');
+      const ps = state.activePaymentStatus || 'none';
+      let actionBtns;
+      if (ps === 'confirmed') {
+        actionBtns = `<button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
+          <button class="payment-card__btn payment-card__btn--confirm" disabled style="opacity:.65;cursor:default">Подтверждено ✓</button>`;
+      } else if (ps === 'rejected') {
+        actionBtns = `<button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
+          <button class="payment-card__btn payment-card__btn--reject" disabled style="opacity:.65;cursor:default">Отказано ✗</button>`;
+      } else {
+        actionBtns = `<button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
+          <button class="payment-card__btn payment-card__btn--confirm" data-payment-confirm="${sid}">Подтвердить</button>
+          <button class="payment-card__btn payment-card__btn--reject" data-payment-reject="${sid}">Отказать</button>`;
+      }
       return `<div class="payment-card">
         <div class="payment-card__header">
           <span class="payment-card__icon">💰</span>
           <span class="payment-card__title">Пользователь отправил скриншот оплаты</span>
           <time class="payment-card__time">${fmtTime(m.createdAt)}</time>
         </div>
-        <div class="payment-card__actions">
-          <button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
-          <button class="payment-card__btn payment-card__btn--confirm" data-payment-confirm="${sid}">Подтвердить</button>
-          <button class="payment-card__btn payment-card__btn--reject" data-payment-reject="${sid}">Отказать</button>
-        </div>
+        <div class="payment-card__actions">${actionBtns}</div>
       </div>`;
     }
     if (imageContent) {
@@ -699,28 +712,28 @@ els.messages.addEventListener('click', async (e) => {
   const confirmBtn = e.target.closest('[data-payment-confirm]');
   if (confirmBtn) {
     confirmBtn.disabled = true;
-    const rejectBtn = confirmBtn.closest('.payment-card__actions')?.querySelector('[data-payment-reject]');
-    if (rejectBtn) rejectBtn.disabled = true;
+    state.activePaymentStatus = 'confirmed';
+    renderMessages(state.activeMessages, state.activeClient?.callerNote);
     try {
       await api('/api/chat-op/payment/confirm', { method: 'POST', body: { sessionId: confirmBtn.dataset.paymentConfirm } });
-      confirmBtn.textContent = 'Подтверждено ✓';
-      confirmBtn.style.background = '#14391f';
-      confirmBtn.style.color = '#4ade80';
-    } catch { confirmBtn.disabled = false; if (rejectBtn) rejectBtn.disabled = false; }
+    } catch {
+      state.activePaymentStatus = 'none';
+      renderMessages(state.activeMessages, state.activeClient?.callerNote);
+    }
     return;
   }
 
-  const rejectBtn2 = e.target.closest('[data-payment-reject]');
-  if (rejectBtn2) {
-    rejectBtn2.disabled = true;
-    const confirmBtn2 = rejectBtn2.closest('.payment-card__actions')?.querySelector('[data-payment-confirm]');
-    if (confirmBtn2) confirmBtn2.disabled = true;
+  const rejectBtn = e.target.closest('[data-payment-reject]');
+  if (rejectBtn) {
+    rejectBtn.disabled = true;
+    state.activePaymentStatus = 'rejected';
+    renderMessages(state.activeMessages, state.activeClient?.callerNote);
     try {
-      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: rejectBtn2.dataset.paymentReject } });
-      rejectBtn2.textContent = 'Отказано ✗';
-      rejectBtn2.style.background = '#3b1219';
-      rejectBtn2.style.color = '#f87171';
-    } catch { rejectBtn2.disabled = false; if (confirmBtn2) confirmBtn2.disabled = false; }
+      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: rejectBtn.dataset.paymentReject } });
+    } catch {
+      state.activePaymentStatus = 'none';
+      renderMessages(state.activeMessages, state.activeClient?.callerNote);
+    }
     return;
   }
 });
