@@ -409,7 +409,8 @@
             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        function isImgContent(s) { return s && s.indexOf('/uploads/') === 0; }
+        function isImgContent(s) { return s && (s.indexOf('/uploads/') === 0 || s.indexOf('PAYMENT_SCREENSHOT:/uploads/') === 0); }
+        function imgUrl(s) { return s.indexOf('PAYMENT_SCREENSHOT:') === 0 ? s.slice('PAYMENT_SCREENSHOT:'.length) : s; }
 
         function scrollDown() {
           requestAnimationFrame(function () {
@@ -445,7 +446,7 @@
             + (isImg ? ' assistant-msg--image' : '');
           if (isImg) {
             var imgEl = document.createElement('img');
-            imgEl.src = content;
+            imgEl.src = imgUrl(content);
             imgEl.alt = '';
             el.appendChild(imgEl);
           } else {
