@@ -1350,6 +1350,8 @@ async function handleSupportChat(req, reply) {
     const replyText = rawReply.replace(/\[\[DONE\]\]/g, '').trim();
 
     await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: replyText } });
+    // Schedule push if client doesn't reply within configured delay
+    schedulePush(sessionId);
 
     if (isDone) {
       // Disable further AI replies for this lead
