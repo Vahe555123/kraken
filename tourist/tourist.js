@@ -461,10 +461,14 @@
     var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
     if (!sessionId || !apiBase) return;
 
+    var registered = false;
+
     function tryRegister() {
+      if (registered) return true;
       if (!window.AndroidBridge || typeof window.AndroidBridge.getFcmToken !== "function") return false;
       var token = window.AndroidBridge.getFcmToken();
       if (!token) return false;
+      registered = true;
       fetch(apiBase + "/api/push/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -474,15 +478,28 @@
       return true;
     }
 
-    // First attempt after 5s (as recommended by APK developer)
-    setTimeout(function () {
-      if (tryRegister()) return;
-      // Retry every 3s up to 5 more times if token not ready yet
+    function startRetryLoop() {
+      if (registered) return;
+      // 20 retries × 3s = up to 60 extra seconds
       var retries = 0;
       var iv = setInterval(function () {
-        if (tryRegister() || ++retries >= 5) clearInterval(iv);
+        if (tryRegister() || ++retries >= 20) clearInterval(iv);
       }, 3000);
+    }
+
+    // First attempt after 5s (as recommended by APK developer)
+    setTimeout(function () {
+      if (!tryRegister()) startRetryLoop();
     }, 5000);
+
+    // Re-try whenever the app comes back to foreground (e.g. user switched away and back)
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible" && !registered) {
+        setTimeout(function () {
+          if (!tryRegister()) startRetryLoop();
+        }, 2000);
+      }
+    });
   }
 
   function startChatBadgePoller() {

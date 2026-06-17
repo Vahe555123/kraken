@@ -813,13 +813,14 @@
 
         // Register FCM push token — wait 5s as recommended by APK developer
         (function registerPushToken() {
+          var registered = false;
           function tryGet() {
-            var t = (window.AndroidBridge && typeof window.AndroidBridge.getFcmToken === 'function')
-              ? window.AndroidBridge.getFcmToken()
-              : (window.fcmToken || null);
-            return t || null;
+            return (window.AndroidBridge && typeof window.AndroidBridge.getFcmToken === 'function')
+              ? (window.AndroidBridge.getFcmToken() || null) : null;
           }
           function doRegister(token) {
+            if (registered) return;
+            registered = true;
             fetch(API_BASE.replace(/\/+$/, '') + '/api/push/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -827,17 +828,28 @@
               mode: 'cors', credentials: 'omit',
             }).catch(function () {});
           }
-          setTimeout(function () {
-            var token = tryGet();
-            if (token) { doRegister(token); return; }
-            // Retry every 3s up to 5 more times
+          function startRetryLoop() {
+            if (registered) return;
             var retries = 0;
             var iv = setInterval(function () {
               var t = tryGet();
               if (t) { clearInterval(iv); doRegister(t); return; }
-              if (++retries >= 5) clearInterval(iv);
+              if (++retries >= 20) clearInterval(iv);
             }, 3000);
+          }
+          setTimeout(function () {
+            var t = tryGet();
+            if (t) { doRegister(t); return; }
+            startRetryLoop();
           }, 5000);
+          document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible' && !registered) {
+              setTimeout(function () {
+                var t = tryGet();
+                if (t) { doRegister(t); } else { startRetryLoop(); }
+              }, 2000);
+            }
+          });
         })();
       })();
     </script>
