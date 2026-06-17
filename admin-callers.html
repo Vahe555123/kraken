@@ -728,8 +728,8 @@
       var next=tr.nextSibling;
       if(next&&next.classList&&next.classList.contains('detail-tr')) next.remove();
       tr.remove();
-      // Set status to called (updates stats + server)
-      setStatus(c.id,'called');
+      // Set status to called only if still pending (avoid re-triggering action buttons)
+      if(!c.operatorStatus || c.operatorStatus==='pending') setStatus(c.id,'called');
     });
 
     expandBtn.addEventListener('click',function(e){

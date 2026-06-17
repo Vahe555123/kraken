@@ -693,6 +693,13 @@ async function handleCallerSetOperatorStatus(req, reply) {
     if (!['pending', 'called', 'payment'].includes(status)) {
       return reply.status(400).send({ error: 'invalid_status' });
     }
+    // Read previous status before update so we can detect first-time 'called'
+    let prevOperatorStatus = null;
+    try {
+      const prev = await prisma.webClient.findUnique({ where: { id }, select: { operatorStatus: true } });
+      prevOperatorStatus = prev?.operatorStatus ?? null;
+    } catch { /* ignore */ }
+
     const data = { operatorStatus: status };
     if (status !== 'pending') {
       data.operatorCalled = true;
@@ -713,7 +720,8 @@ async function handleCallerSetOperatorStatus(req, reply) {
       }
     }
     broadcastUpdate('clients_changed');
-    if (status === 'called') {
+    // Only inject action buttons on the very first 'called' transition (was pending before)
+    if (status === 'called' && (!prevOperatorStatus || prevOperatorStatus === 'pending')) {
       try {
         const wc = await prisma.webClient.findUnique({ where: { id }, select: { flowSessionId: true } });
         if (wc?.flowSessionId) {
