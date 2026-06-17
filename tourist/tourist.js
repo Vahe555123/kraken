@@ -69,13 +69,10 @@
         var badge = bell.querySelector(".tourist-bell-badge");
         if (badge) badge.remove();
 
-        var currentStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
-        var isCalled = currentStatus === "called" || currentStatus === "payment";
         var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1";
 
-        // Как только оператор позвонил хоть раз — всегда в notifications2
-        if (isCalled || hasEverBeenCalled) {
-          localStorage.setItem("notifCalledRead", "1");
+        // Только если оператор пометил «Прозвонил» — открываем notifications2
+        if (hasEverBeenCalled) {
           window.location.replace("./notifications2.html");
         } else {
           localStorage.setItem("notifInitialRead", "1");
@@ -407,22 +404,19 @@
           var lastStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
           var currentStatus = (data && data.operatorStatus) || "pending";
 
-          // Оператор только что отреагировал → сбросить флаг прочтения
-          if (lastStatus !== currentStatus && (currentStatus === "called" || currentStatus === "payment")) {
+          // Оператор поставил «Прозвонил» → разблокировать notifications2
+          if (lastStatus !== currentStatus && currentStatus === "called") {
             localStorage.setItem("hasBeenCalled", "1");
             localStorage.removeItem("notifCalledRead");
             localStorage.removeItem("callRequested");
           }
           localStorage.setItem("lastKnownOperatorStatus", currentStatus);
 
-          var isCalled = currentStatus === "called" || currentStatus === "payment";
           var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1";
           var isCalledRead = localStorage.getItem("notifCalledRead") === "1";
-          var isInitialRead = localStorage.getItem("notifInitialRead") === "1";
 
-          // Badge: если хоть раз позвонили — показывать пока не прочитал notifications2
-          // Если ни разу не звонили — показывать пока не открыл notifications.html
-          if ((hasEverBeenCalled && !isCalledRead) || (!hasEverBeenCalled && !isInitialRead)) {
+          // Badge «1» — только когда оператор позвонил и клиент ещё не открыл notifications2
+          if (hasEverBeenCalled && !isCalledRead) {
             showBadge();
           } else {
             hideBadge();
@@ -435,8 +429,7 @@
     (function () {
       var hbc = localStorage.getItem("hasBeenCalled") === "1";
       var cr = localStorage.getItem("notifCalledRead") === "1";
-      var ir = localStorage.getItem("notifInitialRead") === "1";
-      if ((hbc && !cr) || (!hbc && !ir)) { showBadge(); } else { hideBadge(); }
+      if (hbc && !cr) { showBadge(); } else { hideBadge(); }
     })();
 
     checkCalled();

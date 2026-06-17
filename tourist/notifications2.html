@@ -25,7 +25,7 @@
         <h1 class="tourist-topbar__title">Notificaciones</h1>
       </div>
 
-      <div class="tourist-alert">1 nueva notificación</div>
+      <div class="tourist-alert" id="notif2Alert" style="display:none">1 nueva notificación</div>
 
       <main>
         <ul class="tourist-notif" style="list-style:none;margin:0;padding:0;">
@@ -241,6 +241,12 @@
     <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
+        // Показать «1 nueva notificación» только если ещё не было прочитано
+        var alertEl = document.getElementById("notif2Alert");
+        if (alertEl && localStorage.getItem("notifCalledRead") !== "1") {
+          alertEl.style.display = "";
+        }
+        // Пометить как прочитанное
         localStorage.setItem("notifCalledRead", "1");
 
         var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");

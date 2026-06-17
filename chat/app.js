@@ -262,7 +262,9 @@ function updateConversationIndicator(sessionId, messages) {
 function getVisibleClients() {
   const q = state.search.trim().toLowerCase();
   return state.clients.filter((c) => {
-    const matchFilter = state.filter === 'all' || getIndicator(c.lastMsg) === 'green';
+    const matchFilter = state.filter === 'all'
+      || (state.filter === 'unanswered' && getIndicator(c.lastMsg) === 'green')
+      || (state.filter === 'payment' && c.paymentPending === true);
     const matchSearch = !q || `${c.nombre||''} ${c.email||''}`.toLowerCase().includes(q);
     return matchFilter && matchSearch;
   });
