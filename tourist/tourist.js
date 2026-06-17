@@ -51,8 +51,9 @@
     });
   }
 
-  // Клик по аватару — переход к профилю
+  // Клик по аватару — переход к профилю (не на главной)
   function bindProfileAvatar() {
+    if (window.location.pathname.endsWith("index.html") || window.location.pathname.endsWith("/tourist/")) return;
     var avatar = document.getElementById("touristAvatar");
     if (avatar) {
       avatar.addEventListener("click", function () {

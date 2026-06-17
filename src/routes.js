@@ -720,15 +720,20 @@ async function handleCallerSetOperatorStatus(req, reply) {
       }
     }
     broadcastUpdate('clients_changed');
-    // Only inject action buttons on the very first 'called' transition (was pending before)
-    if (status === 'called' && (!prevOperatorStatus || prevOperatorStatus === 'pending')) {
+    // Inject action buttons only once — check DB to avoid re-sending on repeated calls
+    if (status === 'called') {
       try {
         const wc = await prisma.webClient.findUnique({ where: { id }, select: { flowSessionId: true } });
         if (wc?.flowSessionId) {
           const lead = await prisma.lead.findUnique({ where: { tgId: chatLeadKey(wc.flowSessionId) } });
           if (lead) {
-            await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: 'CALLER_ACTION_BUTTONS' } });
-            schedulePush(wc.flowSessionId);
+            const alreadySent = await prisma.message.findFirst({
+              where: { leadId: lead.id, content: 'CALLER_ACTION_BUTTONS' },
+            });
+            if (!alreadySent) {
+              await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: 'CALLER_ACTION_BUTTONS' } });
+              schedulePush(wc.flowSessionId);
+            }
           }
         }
       } catch (chainErr) {
