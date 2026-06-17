@@ -9,14 +9,17 @@ export async function initFirebase() {
     return;
   }
   try {
-    const { default: admin } = await import('firebase-admin');
     let serviceAccount;
     try { serviceAccount = JSON.parse(sa); }
     catch { serviceAccount = JSON.parse(await readFile(sa, 'utf8')); }
-    if (!admin.apps.length) {
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+
+    const { initializeApp, getApps, cert } = await import('firebase-admin/app');
+    const { getMessaging } = await import('firebase-admin/messaging');
+
+    if (!getApps().length) {
+      initializeApp({ credential: cert(serviceAccount) });
     }
-    messaging = admin.messaging();
+    messaging = getMessaging();
     console.log('[Firebase] FCM ready');
   } catch (e) {
     console.warn('[Firebase] init failed (push disabled):', e.message);
