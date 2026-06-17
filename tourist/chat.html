@@ -505,14 +505,14 @@
           scrollDown();
         }
 
-        function showDoneBanner() {
+        function showDoneBanner(withNotif) {
           if (!document.getElementById('chatClosedBanner')) {
             var banner = document.createElement('div');
             banner.id = 'chatClosedBanner';
             banner.className = 'chat-closed-banner';
             banner.textContent = 'El operador se pondrá en contacto con usted en breve.';
             chat.insertBefore(banner, typing);
-            showNotifButton();
+            if (withNotif !== false) showNotifButton();
             scrollDown();
           }
         }
@@ -643,7 +643,7 @@
                 markRead();
                 var botCount = msgs.filter(function(m){ return m.role !== 'user'; }).length;
                 localStorage.setItem('chatBotMsgCount', String(botCount));
-                if (alreadyClosed) showDoneBanner();
+                if (alreadyClosed) showDoneBanner(false);
                 startPolling();
                 return;
               }
