@@ -338,6 +338,7 @@ async function selectClient(sessionId) {
   state.activeSessionId = sessionId;
   state.callPending = false;
   state.editingComment = false;
+  els.callComment.value = ''; // не переносим комментарий для звонка на другой чат
   clearInterval(state.msgPollTimer);
 
   const c = state.clients.find((x) => x.flowSessionId === sessionId);

@@ -198,9 +198,19 @@
           <button class="btn-ghost" id="reloadBtn">Сбросить</button>
           <span class="status" id="saveStatus"></span>
         </div>
-      </div>
 
-      <!-- CHAT SUPPORT PROMPT -->
+        <!-- CHAT SUPPORT PROMPT (второй чат — chat.html) -->
+        <div class="card" style="margin-top:24px;">
+          <h2>Промпт второго чата (поддержка)</h2>
+          <textarea id="chatPrompt" spellcheck="false"></textarea>
+          <p class="hint">Отдельный промпт для <code>chat.html</code> (этап верификации: DNI/NIE + телефон). Переменные: <code>{{name}}</code>, <code>{{bank}}</code>. Токены <code>[[DNI:…]]</code>, <code>[[PHONE:…]]</code>, <code>[[FIN]]</code> обрабатываются системой.</p>
+          <div class="actions">
+            <button id="chatPromptSaveBtn">Сохранить</button>
+            <button class="btn-ghost" id="chatPromptReloadBtn">Сбросить</button>
+            <span class="status" id="chatPromptStatus"></span>
+          </div>
+        </div>
+      </div>
 
 
       <!-- CLIENTS TAB -->
