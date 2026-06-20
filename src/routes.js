@@ -651,7 +651,15 @@ async function handleCallerClients(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { callRequested: true, clientType: { not: 'olduser' }, operatorCalled: false },
+      // Chat-op requested calls (status='ЧАТ: НУЖЕН ЗВОНОК') always visible, even if clientType='olduser'
+      where: {
+        callRequested: true,
+        operatorCalled: false,
+        OR: [
+          { clientType: { not: 'olduser' } },
+          { status: 'ЧАТ: НУЖЕН ЗВОНОК' },
+        ],
+      },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, email: true, bank: true,
