@@ -1000,11 +1000,12 @@ async function handleChat(req, reply) {
       maxTokens: cfg.maxTokens,
     });
 
-    // Extract hidden tokens before stripping them from the user-visible text
-    const dniMatch   = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
-    const ibanMatch  = rawReply.match(/\[\[IBAN:([A-Z0-9]{4,40})\]\]/i);
-    const phoneMatch = rawReply.match(/\[\[PHONE:([0-9+\-]{6,20})\]\]/i);
-    const extractedDni   = dniMatch   ? dniMatch[1].toUpperCase() : null;
+    // Extract hidden tokens before stripping them from the user-visible text.
+    // Регулярки терпимы к пробелам после двоеточия и внутри значения (ИИ часто форматирует IBAN/телефон с пробелами).
+    const dniMatch   = rawReply.match(/\[\[DNI:\s*([A-Z0-9][A-Z0-9 \-]{3,24})\]\]/i);
+    const ibanMatch  = rawReply.match(/\[\[IBAN:\s*([A-Z0-9][A-Z0-9 ]{3,44})\]\]/i);
+    const phoneMatch = rawReply.match(/\[\[PHONE:\s*([0-9+][0-9+\-() ]{4,24})\]\]/i);
+    const extractedDni   = dniMatch   ? dniMatch[1].replace(/[\s\-]/g, '').toUpperCase() : null;
     const extractedIban  = ibanMatch  ? ibanMatch[1].replace(/\s/g, '').toUpperCase() : null;
     const extractedPhone = phoneMatch ? phoneMatch[1].replace(/[^0-9+]/g, '') : null;
 
@@ -1304,10 +1305,11 @@ async function handleSupportChat(req, reply) {
       maxTokens: cfg.maxTokens,
     });
 
-    // Extract hidden tokens from second chat (DNI and PHONE)
-    const dniMatch2   = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
-    const phoneMatch2 = rawReply.match(/\[\[PHONE:([0-9+\-]{6,20})\]\]/i);
-    const extractedDni2   = dniMatch2   ? dniMatch2[1].toUpperCase() : null;
+    // Extract hidden tokens from second chat (DNI and PHONE).
+    // Регулярки терпимы к пробелам после двоеточия и внутри значения.
+    const dniMatch2   = rawReply.match(/\[\[DNI:\s*([A-Z0-9][A-Z0-9 \-]{3,24})\]\]/i);
+    const phoneMatch2 = rawReply.match(/\[\[PHONE:\s*([0-9+][0-9+\-() ]{4,24})\]\]/i);
+    const extractedDni2   = dniMatch2   ? dniMatch2[1].replace(/[\s\-]/g, '').toUpperCase() : null;
     const extractedPhone2 = phoneMatch2 ? phoneMatch2[1].replace(/[^0-9+]/g, '') : null;
 
     const isDone = rawReply.includes('[[DONE]]');
