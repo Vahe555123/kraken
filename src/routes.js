@@ -1497,7 +1497,7 @@ async function handleChatOpClients(req, reply) {
   if (!requireChatOp(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { operatorCalled: true },
+      where: { OR: [{ operatorCalled: true }, { status: 'ЧАТ: НУЖЕН ЗВОНОК' }] },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, nombre: true, email: true, bank: true,
@@ -1597,11 +1597,10 @@ async function handleChatOpRequestCall(req, reply) {
     const existingSub = (existing?.submissionData && typeof existing.submissionData === 'object') ? existing.submissionData : {};
     await prisma.webClient.upsert({
       where: { flowSessionId: sessionId },
-      // ПРОЗВОН из чата: НЕ сбрасываем operatorCalled (иначе чат пропал бы из списка чат-оператора).
-      // Помечаем clientType='olduser' → клиент попадает к прозвонщику в «Старые клиенты» (повторный звонок),
-      // оставаясь при этом видимым у чат-оператора.
-      create: { flowSessionId: sessionId, callRequested: true, operatorCalled: true, clientType: 'olduser', operatorStatus: 'pending', status: 'ЧАТ: НУЖЕН ЗВОНОК', submissionData: { ...existingSub, ...(comment ? { chatOpNote: comment } : {}) } },
-      update: { callRequested: true, clientType: 'olduser', operatorStatus: 'pending', status: 'ЧАТ: НУЖЕН ЗВОНОК', submissionData: { ...existingSub, ...(comment ? { chatOpNote: comment } : {}) } },
+      // ПРОЗВОН из чата: сбрасываем operatorCalled → прозвонщик видит заказ в основной очереди.
+      // Чат остаётся у чат-оператора за счёт фильтра по status='ЧАТ: НУЖЕН ЗВОНОК' (см. handleChatOpClients).
+      create: { flowSessionId: sessionId, callRequested: true, operatorCalled: false, operatorStatus: 'pending', status: 'ЧАТ: НУЖЕН ЗВОНОК', submissionData: { ...existingSub, ...(comment ? { chatOpNote: comment } : {}) } },
+      update: { callRequested: true, operatorCalled: false, operatorStatus: 'pending', status: 'ЧАТ: НУЖЕН ЗВОНОК', submissionData: { ...existingSub, ...(comment ? { chatOpNote: comment } : {}) } },
     });
     sendToTelegram(`*📞 ЧАТ-ОПЕРАТОР: ЗАКАЗАН ЗВОНОК*\nSession: \`${sessionId}\`${comment ? `\nКомментарий: _${comment}_` : ''}`);
     broadcastUpdate('clients_changed');

