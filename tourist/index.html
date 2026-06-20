@@ -521,12 +521,12 @@
         var bankKey = "";
         try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch (e) {}
 
+        if (bankKey === "otrobanco") { logo = "../banks/caixabank/icon.svg"; bank = "CaixaBank"; }
+
         if (bank) {
           var titleEl = document.getElementById("touristBankTitle");
           if (titleEl) titleEl.textContent = bank;
         }
-
-        if (bankKey === "otrobanco") { logo = "../banks/caixabank/icon.svg"; bank = "CaixaBank"; }
 
         if (logo) {
           var logoWrap = document.getElementById("touristBankLogoWrap");
