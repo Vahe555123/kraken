@@ -564,13 +564,13 @@ els.callButton.addEventListener('click', async () => {
   renderCallControls();
   try {
     await api('/api/chat-op/request-call', { method: 'POST', body: { sessionId: state.activeSessionId, comment } });
-    // Сбрасываем состояние — кнопка становится доступной для других чатов
     els.callComment.value = '';
     els.callButton.textContent = '✓ Заказан';
-    setTimeout(function() { els.callButton.textContent = 'Заказать звонок'; }, 2000);
-  } catch {}
-  state.callPending = false;
-  renderCallControls();
+    // callPending остаётся true — кнопка заблокирована до смены чата
+  } catch {
+    state.callPending = false;
+    renderCallControls();
+  }
 });
 
 // Send message
