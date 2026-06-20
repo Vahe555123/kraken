@@ -1391,6 +1391,8 @@ async function handleSupportChat(req, reply) {
         `IP: \`${ip}\`${country ? ' · ' + country : ''}`,
       ].filter(Boolean);
       sendToTelegram(lines.join('\n'));
+      // Уведомляем прозвонщика/чат-оператора по SSE — новый заказ появляется без ручного обновления
+      broadcastUpdate('clients_changed');
     }
 
     const extra2 = {};
