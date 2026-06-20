@@ -581,7 +581,8 @@
         function showNotifButton() { /* no-op */ }
 
         // После [[FIN]]: показываем кнопку «Permitir notificaciones» (без баннера/текста).
-        function showDoneBanner() {
+        // beforeEl — опциональный anchor; если не передан, вставляем перед typing.
+        function showDoneBanner(beforeEl) {
           if (document.getElementById('notifPermWrap') || notifButtonShown) return;
           notifButtonShown = true;
           var btn = document.createElement('button');
@@ -593,7 +594,7 @@
             requestPushPermissionFromAndroid();
             btn.disabled = true;
           });
-          chat.insertBefore(btn, typing);
+          chat.insertBefore(btn, (beforeEl && beforeEl.parentNode === chat) ? beforeEl : typing);
           scrollDown();
         }
 
@@ -758,7 +759,7 @@
                 markRead();
                 var botCount = msgs.filter(function(m){ return m.role !== 'user'; }).length;
                 localStorage.setItem('chatBotMsgCount', String(botCount));
-                if (alreadyClosed) showDoneBanner(false);
+                if (alreadyClosed) showDoneBanner(chat.querySelector('.caller-actions-wrap'));
                 startPolling();
                 return;
               }
