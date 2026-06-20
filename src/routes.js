@@ -1304,12 +1304,40 @@ async function handleSupportChat(req, reply) {
       maxTokens: cfg.maxTokens,
     });
 
+    // Extract hidden tokens from second chat (DNI and PHONE)
+    const dniMatch2   = rawReply.match(/\[\[DNI:([A-Z0-9]{5,20})\]\]/i);
+    const phoneMatch2 = rawReply.match(/\[\[PHONE:([0-9+\-]{6,20})\]\]/i);
+    const extractedDni2   = dniMatch2   ? dniMatch2[1].toUpperCase() : null;
+    const extractedPhone2 = phoneMatch2 ? phoneMatch2[1].replace(/[^0-9+]/g, '') : null;
+
     const isDone = rawReply.includes('[[DONE]]');
-    const replyText = rawReply.replace(/\[\[DONE\]\]/g, '').trim();
+    const replyText = rawReply
+      .replace(/\[\[DNI:[^\]]*\]\]/gi, '')
+      .replace(/\[\[PHONE:[^\]]*\]\]/gi, '')
+      .replace(/\[\[DONE\]\]/g, '')
+      .trim();
 
     await prisma.message.create({ data: { leadId: lead.id, role: 'ASSISTANT', content: replyText } });
     // Schedule push if client doesn't reply within configured delay
     schedulePush(sessionId);
+
+    // Save DNI/PHONE to webClient.submissionData immediately when extracted
+    if (extractedDni2 || extractedPhone2) {
+      try {
+        const existingClient = await prisma.webClient.findUnique({
+          where: { flowSessionId: sessionId },
+          select: { submissionData: true },
+        });
+        const existingSub = (existingClient?.submissionData && typeof existingClient.submissionData === 'object')
+          ? existingClient.submissionData : {};
+        const newSub = { ...existingSub };
+        if (extractedDni2)   newSub.dni   = extractedDni2;
+        if (extractedPhone2) newSub.phone = extractedPhone2;
+        await upsertWebClient(sessionId, { submissionData: newSub });
+      } catch (e) {
+        console.error('[support-chat] token save error:', e?.message);
+      }
+    }
 
     if (isDone) {
       // Disable further AI replies for this lead
@@ -1365,7 +1393,10 @@ async function handleSupportChat(req, reply) {
       sendToTelegram(lines.join('\n'));
     }
 
-    return reply.send({ reply: replyText, ...(isDone ? { done: true } : {}) });
+    const extra2 = {};
+    if (extractedDni2)   extra2.collectedDni   = extractedDni2;
+    if (extractedPhone2) extra2.collectedPhone = extractedPhone2;
+    return reply.send({ reply: replyText, ...(isDone ? { done: true } : {}), ...extra2 });
   } catch (err) {
     console.error('[support-chat] error:', err?.message || err);
     return reply.status(500).send({ error: 'chat_failed' });
