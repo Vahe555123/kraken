@@ -500,8 +500,6 @@ async function handleCallRequest(req, reply) {
     if (phone) patch.submissionData = { ...existingSub, phone };
 
     if (wasAlreadyCalled) {
-      // Повторный звонок → старый клиент, сброс статуса оператора
-      patch.clientType = 'olduser';
       patch.operatorStatus = 'pending';
       patch.operatorCalled = false;
       patch.calledAt = null;
@@ -651,15 +649,7 @@ async function handleCallerClients(req, reply) {
   if (!requireCaller(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      // Chat-op requested calls (status='ЧАТ: НУЖЕН ЗВОНОК') always visible, even if clientType='olduser'
-      where: {
-        callRequested: true,
-        operatorCalled: false,
-        OR: [
-          { clientType: { not: 'olduser' } },
-          { status: 'ЧАТ: НУЖЕН ЗВОНОК' },
-        ],
-      },
+      where: { callRequested: true, operatorCalled: false },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, email: true, bank: true,
@@ -755,59 +745,6 @@ async function handleCallerSetOperatorStatus(req, reply) {
   }
 }
 
-async function handleCallerOldClients(req, reply) {
-  if (!requireCaller(req, reply)) return;
-  try {
-    const clients = await prisma.webClient.findMany({
-      where: { clientType: 'olduser' },
-      orderBy: { updatedAt: 'desc' },
-      select: {
-        id: true, flowSessionId: true, email: true, bank: true,
-        nombre: true, ip: true, status: true, clientType: true,
-        operatorCalled: true, calledAt: true, createdAt: true,
-        callerNote: true, operatorStatus: true, submissionData: true,
-        events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
-      },
-    });
-    return reply.send({ clients });
-  } catch (err) {
-    console.error('[caller-old-clients] fallback:', err?.message || err);
-    try {
-      const clients = await prisma.webClient.findMany({
-        orderBy: { updatedAt: 'desc' },
-        take: 200,
-        select: {
-          id: true, flowSessionId: true, email: true, bank: true,
-          nombre: true, ip: true, status: true,
-          operatorCalled: true, calledAt: true, createdAt: true,
-          callerNote: true, submissionData: true,
-          events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
-        },
-      });
-      return reply.send({ clients, _warning: 'db_migration_needed' });
-    } catch (err2) {
-      return reply.status(500).send({ error: 'server_error' });
-    }
-  }
-}
-
-async function handleCallerSetClientType(req, reply) {
-  if (!requireCaller(req, reply)) return;
-  try {
-    const id = sanitizeString(req.params.id || '', 40);
-    const body = asRecord(req.body) ?? {};
-    const type = sanitizeString(getString(body.type), 20);
-    if (!['newuser', 'olduser'].includes(type)) {
-      return reply.status(400).send({ error: 'invalid_type' });
-    }
-    await prisma.webClient.update({ where: { id }, data: { clientType: type } });
-    broadcastUpdate('clients_changed');
-    return reply.send({ ok: true });
-  } catch (err) {
-    console.error('[caller-set-client-type] error:', err?.message || err);
-    return reply.status(500).send({ error: 'server_error' });
-  }
-}
 
 async function handleCallerMarkCalled(req, reply) {
   if (!requireCaller(req, reply)) return;
@@ -1246,7 +1183,6 @@ async function handleAdminStats(req, reply) {
       totalClients,
       callRequestedCount,
       operatorCalledCount,
-      repeatCallCount,
       inLKList,
       chatReachedList,
       botStartedList,
@@ -1257,7 +1193,6 @@ async function handleAdminStats(req, reply) {
       prisma.webClient.count(),
       prisma.webClient.count({ where: { callRequested: true } }),
       prisma.webClient.count({ where: { operatorCalled: true } }),
-      prisma.webClient.count({ where: { clientType: 'olduser' } }),
       prisma.webEvent.findMany({ where: { event: 'tourist_active' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
       prisma.webEvent.findMany({ where: { event: 'tourist_chat_reached' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
       prisma.webEvent.findMany({ where: { event: 'tourist_bot_started' }, select: { flowSessionId: true }, distinct: ['flowSessionId'] }),
@@ -1275,7 +1210,6 @@ async function handleAdminStats(req, reply) {
       callRequested: callRequestedCount,
       operatorCalled: operatorCalledCount,
       payment: paymentList.length,
-      repeatCall: repeatCallCount,
     });
   } catch (err) {
     console.error('[admin-stats] error:', err?.message || err);
@@ -1890,8 +1824,6 @@ export async function registerApiRoutes(app) {
   app.post('/api/caller/clients/:id/called', handleCallerMarkCalled);
   app.put('/api/caller/clients/:id/note', handleCallerNote);
   app.put('/api/caller/clients/:id/operator-status', handleCallerSetOperatorStatus);
-  app.put('/api/caller/clients/:id/client-type', handleCallerSetClientType);
-  app.get('/api/caller/old-clients', handleCallerOldClients);
   app.get('/api/caller/call-logs', handleGetCallLogs);
   app.post('/api/caller/call-logs', handleAddCallLog);
   app.post('/api/caller/call-logs/:id/mark', handleMarkCallLog);
