@@ -200,7 +200,16 @@
 
           <div class="list__element" role="listitem" data-bank-row data-bank-key="otrobanco">
             <div class="list__element-content">
-              <img class="bank-logo" src="../assets/logos/8.png" alt="" />
+              <svg class="bank-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect width="36" height="36" rx="8" fill="#F5F5F5"/>
+                <path d="M18 7L7 13h22L18 7Z" fill="#fa6c12"/>
+                <rect x="9" y="15" width="3" height="9" fill="#fa6c12"/>
+                <rect x="14.5" y="15" width="3" height="9" fill="#fa6c12"/>
+                <rect x="20" y="15" width="3" height="9" fill="#fa6c12"/>
+                <rect x="25.5" y="15" width="2" height="9" fill="#fa6c12"/>
+                <rect x="7" y="24" width="22" height="2" rx="1" fill="#fa6c12"/>
+                <rect x="7" y="27" width="22" height="2" rx="1" fill="#fa6c12"/>
+              </svg>
               <div class="list__text">
                 <p class="list__text-title">Otro Banco</p>
                 <p class="list__text-desc">Entidad colaboradora</p>
@@ -238,7 +247,7 @@
             try { localStorage.setItem("selectedBankKey", row.dataset.bankKey || ""); } catch (e) {}
             try {
               var bankLogo = row.querySelector(".bank-logo");
-              if (bankLogo) localStorage.setItem("selectedBankLogo", bankLogo.getAttribute("src"));
+              if (bankLogo) localStorage.setItem("selectedBankLogo", bankLogo.getAttribute("src") || "");
             } catch (e) {}
             if (window.ClientTracker) ClientTracker.track("tourist_bank_selected", { bank: bankName });
           }
