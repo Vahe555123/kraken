@@ -70,9 +70,11 @@
         var badge = bell.querySelector(".tourist-bell-badge");
         if (badge) badge.remove();
 
-        var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1";
+        var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
+        var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1"
+          && localStorage.getItem("hasBeenCalledSession") === sessionId;
 
-        // Только если оператор пометил «Прозвонил» — открываем notifications2
+        // Только если оператор пометил «Прозвонил» (для текущей сессии) — открываем notifications2
         if (hasEverBeenCalled) {
           window.location.replace("./notifications2.html");
         } else {
@@ -405,11 +407,19 @@
           var lastStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
           var currentStatus = (data && data.operatorStatus) || "pending";
 
-          // Оператор поставил «Прозвонил» → разблокировать notifications2
-          if (lastStatus !== currentStatus && currentStatus === "called") {
+          if (currentStatus === "called") {
+            // Оператор поставил «Прозвонил» → разблокировать notifications2
+            if (lastStatus !== currentStatus) {
+              localStorage.removeItem("notifCalledRead");
+              localStorage.removeItem("callRequested");
+            }
             localStorage.setItem("hasBeenCalled", "1");
-            localStorage.removeItem("notifCalledRead");
-            localStorage.removeItem("callRequested");
+            localStorage.setItem("hasBeenCalledSession", sessionId);
+          } else {
+            // Сервер говорит pending — оператор ещё НЕ прозвонил (или сбросил статус).
+            // Снимаем флаг, чтобы бейдж/notifications2 не появлялись раньше времени.
+            localStorage.removeItem("hasBeenCalled");
+            localStorage.removeItem("hasBeenCalledSession");
           }
           localStorage.setItem("lastKnownOperatorStatus", currentStatus);
 
@@ -426,11 +436,13 @@
         .catch(function () {});
     }
 
-    // Мгновенная проверка из localStorage до первого ответа API
+    // Мгновенная проверка из localStorage до первого ответа API.
+    // Показываем бейдж только если флаг относится к ТЕКУЩЕЙ сессии (а не остался от прошлых тестов).
     (function () {
       var hbc = localStorage.getItem("hasBeenCalled") === "1";
+      var hbcSession = localStorage.getItem("hasBeenCalledSession") || "";
       var cr = localStorage.getItem("notifCalledRead") === "1";
-      if (hbc && !cr) { showBadge(); } else { hideBadge(); }
+      if (hbc && hbcSession === sessionId && !cr) { showBadge(); } else { hideBadge(); }
     })();
 
     checkCalled();
