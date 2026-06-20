@@ -192,6 +192,15 @@ async function loadClients() {
     if (data.error === 'unauthorized') { showLogin(); return; }
     state.clients = data.clients || [];
     renderConversations();
+    // Обновляем активного клиента из свежего списка — чтобы кнопка звонка
+    // разблокировалась, как только прозвонщик поставит галочку (operatorCalled=true)
+    if (state.activeSessionId) {
+      const fresh = state.clients.find((x) => x.flowSessionId === state.activeSessionId);
+      if (fresh) {
+        state.activeClient = { ...state.activeClient, ...fresh };
+        renderCallControls();
+      }
+    }
   } catch {}
 }
 
@@ -372,12 +381,19 @@ function renderProfile(c) {
     <div><strong>${esc(name)}</strong><p>${esc(c.bank || c.ip || '—')}</p></div>`;
 }
 
+// Звонок «в работе»: заказан (callRequested), но прозвонщик ещё не поставил галочку (operatorCalled=false)
+function isCallOrdered(client) {
+  return !!(client && client.callRequested && !client.operatorCalled);
+}
+
 function renderCallControls() {
   const comment = els.callComment.value;
-  els.callComment.disabled = state.callPending;
-  els.callButton.disabled = state.callPending || !comment.trim();
-  els.callButton.classList.toggle('is-waiting', state.callPending);
-  els.callButton.textContent = state.callPending ? '⌛ Ждем звонка' : 'Заказать звонок';
+  // Кнопка заблокирована пока: идёт запрос (callPending) ИЛИ звонок уже заказан и прозвонщик не закрыл его
+  const waiting = state.callPending || isCallOrdered(state.activeClient);
+  els.callComment.disabled = waiting;
+  els.callButton.disabled = waiting || !comment.trim();
+  els.callButton.classList.toggle('is-waiting', waiting);
+  els.callButton.textContent = waiting ? '⌛ Ждем звонка' : 'Заказать звонок';
 }
 
 // ─── Render messages ──────────────────────────────────────────────────────────
@@ -557,7 +573,7 @@ els.pagination.addEventListener('click', (e) => {
 els.callComment.addEventListener('input', renderCallControls);
 
 els.callButton.addEventListener('click', async () => {
-  if (!state.activeSessionId || state.callPending) return;
+  if (!state.activeSessionId || state.callPending || isCallOrdered(state.activeClient)) return;
   const comment = els.callComment.value.trim();
   if (!comment) return;
   state.callPending = true;
@@ -565,12 +581,15 @@ els.callButton.addEventListener('click', async () => {
   try {
     await api('/api/chat-op/request-call', { method: 'POST', body: { sessionId: state.activeSessionId, comment } });
     els.callComment.value = '';
-    els.callButton.textContent = '✓ Заказан';
-    // callPending остаётся true — кнопка заблокирована до смены чата
-  } catch {
-    state.callPending = false;
-    renderCallControls();
-  }
+    // Оптимистично помечаем звонок как заказанный — блокировка сохранится при переключении чатов
+    // и снимется только когда прозвонщик поставит галочку (operatorCalled=true)
+    const sid = state.activeSessionId;
+    if (state.activeClient) { state.activeClient.callRequested = true; state.activeClient.operatorCalled = false; }
+    const c = state.clients.find((x) => x.flowSessionId === sid);
+    if (c) { c.callRequested = true; c.operatorCalled = false; }
+  } catch {}
+  state.callPending = false;
+  renderCallControls();
 });
 
 // Send message

