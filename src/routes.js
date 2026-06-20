@@ -1461,7 +1461,12 @@ async function handleChatOpClients(req, reply) {
             orderBy: { createdAt: 'desc' },
             select: { role: true, content: true, createdAt: true },
           });
-          if (last) lastMsg = { role: last.role === 'SYSTEM' ? 'operator' : last.role.toLowerCase(), content: last.content, createdAt: last.createdAt };
+          if (last) {
+            const role = last.content === 'CALLER_ACTION_BUTTONS'
+              ? 'user'
+              : last.role === 'SYSTEM' ? 'operator' : last.role.toLowerCase();
+            lastMsg = { role, content: last.content, createdAt: last.createdAt };
+          }
         }
         return { ...c, lastMsg, paymentPending: paymentStatus.get(c.flowSessionId)?.status === 'pending' };
       } catch { return { ...c, lastMsg: null, paymentPending: false }; }
