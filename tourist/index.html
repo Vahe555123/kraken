@@ -627,5 +627,22 @@
         }
       })();
     </script>
+    <script>
+      // Активируем лид при входе на страницу (мост из APK), если доступно
+      (function () {
+        function callActiveLead() {
+          try {
+            if (window.moneto && typeof moneto.activeLead === "function") {
+              moneto.activeLead();
+            }
+          } catch (e) {}
+        }
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+          callActiveLead();
+        } else {
+          window.addEventListener("DOMContentLoaded", callActiveLead);
+        }
+      })();
+    </script>
   </body>
 </html>
