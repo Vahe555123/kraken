@@ -556,11 +556,24 @@
       function loadClientDetail(c, body){
         // Chat
         apiFetch('/api/admin/clients/' + encodeURIComponent(c.flowSessionId) + '/chat')
-          .then(function(chatData){ renderClientDetail(c, body, chatData.messages || []); })
-          .catch(function(){ renderClientDetail(c, body, []); });
+          .then(function(chatData){ renderClientDetail(c, body, chatData.messages || [], chatData.supportMessages || []); })
+          .catch(function(){ renderClientDetail(c, body, [], []); });
       }
 
-      function renderClientDetail(c, body, chatMsgs){
+      function renderChatSection(title, msgs){
+        // CALLER_ACTION_BUTTONS — системный маркер, не показываем как текст
+        var visible = msgs.filter(function(m){ return m.content !== 'CALLER_ACTION_BUTTONS'; });
+        return '<div class="client-section full">' +
+          '<div class="section-title">' + title + ' (' + visible.length + ' сообщений)</div>' +
+          (visible.length ? visible.map(function(m){
+            var role = m.role === 'USER' ? 'user' : 'assistant';
+            return '<div class="msg"><span class="msg-role ' + role + '">' + (role==='user'?'Клиент':'Бот') + '</span><div class="msg-content">' + esc(m.content) + '</div></div>';
+          }).join('') : '<div style="color:var(--muted);font-size:12px;">Диалога нет</div>') +
+        '</div>';
+      }
+
+      function renderClientDetail(c, body, chatMsgs, supportMsgs){
+        supportMsgs = supportMsgs || [];
         var sub = c.submissionData || {};
         var events = c.events || [];
 
@@ -594,14 +607,11 @@
             }).join('') : '<div style="color:var(--muted);font-size:12px;">Нет событий</div>') +
           '</div>' +
 
-          // ─ Чат с ботом
-          '<div class="client-section full">' +
-            '<div class="section-title">Диалог с ботом (' + chatMsgs.length + ' сообщений)</div>' +
-            (chatMsgs.length ? chatMsgs.map(function(m){
-              var role = m.role === 'USER' ? 'user' : 'assistant';
-              return '<div class="msg"><span class="msg-role ' + role + '">' + (role==='user'?'Клиент':'Бот') + '</span><div class="msg-content">' + esc(m.content) + '</div></div>';
-            }).join('') : '<div style="color:var(--muted);font-size:12px;">Диалога нет</div>') +
-          '</div>' +
+          // ─ Чат с ботом (1-й чат — assistant.html: цель/сумма/IBAN)
+          renderChatSection('Диалог с ботом · 1-й чат (assistant)', chatMsgs) +
+
+          // ─ Чат поддержки (2-й чат — chat.html: DNI/NIE + телефон)
+          renderChatSection('Диалог с ботом · 2-й чат (поддержка)', supportMsgs) +
 
           '</div>';
       }

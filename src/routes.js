@@ -916,14 +916,25 @@ async function handleAdminClientChat(req, reply) {
   if (!requireAdmin(req, reply)) return;
   try {
     const flowSessionId = sanitizeString(req.params.sessionId || '', 80);
-    const lead = await prisma.lead.findUnique({ where: { tgId: `web:${flowSessionId}` } });
-    if (!lead) return reply.send({ messages: [] });
-    const messages = await prisma.message.findMany({
-      where: { leadId: lead.id },
-      orderBy: { createdAt: 'asc' },
-      select: { role: true, content: true, createdAt: true },
-    });
-    return reply.send({ messages });
+    // Первый чат (assistant.html) — ключ web:, второй чат (chat.html) — ключ chat:
+    const [assistantLead, supportLead] = await Promise.all([
+      prisma.lead.findUnique({ where: { tgId: `web:${flowSessionId}` } }),
+      prisma.lead.findUnique({ where: { tgId: `chat:${flowSessionId}` } }),
+    ]);
+    async function leadMessages(lead) {
+      if (!lead) return [];
+      return prisma.message.findMany({
+        where: { leadId: lead.id },
+        orderBy: { createdAt: 'asc' },
+        select: { role: true, content: true, createdAt: true },
+      });
+    }
+    const [messages, supportMessages] = await Promise.all([
+      leadMessages(assistantLead),
+      leadMessages(supportLead),
+    ]);
+    // messages — первый чат (для обратной совместимости), supportMessages — второй
+    return reply.send({ messages, supportMessages });
   } catch (err) {
     console.error('[admin-client-chat] error:', err?.message || err);
     return reply.status(500).send({ error: 'server_error' });
