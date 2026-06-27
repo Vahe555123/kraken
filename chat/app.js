@@ -641,12 +641,74 @@ els.messageInput.addEventListener('keydown', (e) => {
   els.messageForm.requestSubmit();
 });
 
-// Image send
-els.imageBtn.addEventListener('click', () => {
+// ─── Attach menu ──────────────────────────────────────────────────────────────
+const attachMenu = document.getElementById('attachMenu');
+
+const ATTACH_MESSAGES = {
+  'contract':       'Su contrato de crédito está listo. Por favor, revise el contrato en la aplicación y proceda a firmarlo.',
+  'insurance-req':  'Para activar su crédito es necesario contratar el seguro obligatorio. Por favor, acceda a la sección de seguro en la aplicación.',
+  'insurance-pay':  'Para proceder con el pago del seguro, acceda a la sección de pago en la aplicación y complete el proceso.',
+  'insurance-done': 'Su póliza de seguro ha sido procesada correctamente. Procedemos con la siguiente etapa.',
+  'commission-req': 'Para finalizar el proceso de activación, es necesario abonar la comisión administrativa según las condiciones del contrato.',
+  'commission-pay': 'Para proceder con el pago de la comisión, acceda a la sección de pago en la aplicación y complete el proceso.',
+};
+
+function openAttachMenu() {
+  if (!attachMenu) return;
+  attachMenu.classList.add('is-open');
+  els.imageBtn.classList.add('is-open');
+  els.imageBtn.setAttribute('aria-expanded', 'true');
+}
+function closeAttachMenu() {
+  if (!attachMenu) return;
+  attachMenu.classList.remove('is-open');
+  els.imageBtn.classList.remove('is-open');
+  els.imageBtn.setAttribute('aria-expanded', 'false');
+}
+
+async function sendOperatorMsg(text) {
   if (!state.activeSessionId) return;
-  els.imageInput.click();
+  const tmpMsg = { role: 'operator', content: text, createdAt: new Date().toISOString() };
+  state.activeMessages = [...state.activeMessages, tmpMsg];
+  renderMessages(state.activeMessages, state.activeClient?.callerNote);
+  try {
+    await api('/api/chat-op/send', { method: 'POST', body: { sessionId: state.activeSessionId, message: text } });
+    const c = state.clients.find((x) => x.flowSessionId === state.activeSessionId);
+    if (c) c.lastMsg = tmpMsg;
+    renderConversations();
+  } catch {}
+}
+
+// Toggle menu on paperclip click
+els.imageBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!state.activeSessionId) return;
+  attachMenu?.classList.contains('is-open') ? closeAttachMenu() : openAttachMenu();
 });
 
+// Menu item clicks
+if (attachMenu) {
+  attachMenu.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-attach]');
+    if (!btn) return;
+    const action = btn.dataset.attach;
+    closeAttachMenu();
+    if (action === 'photo') {
+      els.imageInput.click();
+    } else if (ATTACH_MESSAGES[action]) {
+      await sendOperatorMsg(ATTACH_MESSAGES[action]);
+    }
+  });
+}
+
+// Close menu on outside click
+document.addEventListener('click', (e) => {
+  if (attachMenu?.classList.contains('is-open') && !e.target.closest('.attach-wrap')) {
+    closeAttachMenu();
+  }
+});
+
+// Image upload via file input
 els.imageInput.addEventListener('change', async () => {
   const file = els.imageInput.files[0];
   if (!file || !state.activeSessionId) return;
@@ -654,15 +716,7 @@ els.imageInput.addEventListener('change', async () => {
   els.imageBtn.disabled = true;
   try {
     const url = await uploadImage(file);
-    const tmpMsg = { role: 'operator', content: url, createdAt: new Date().toISOString() };
-    state.activeMessages = [...state.activeMessages, tmpMsg];
-    renderMessages(state.activeMessages, state.activeClient?.callerNote);
-    try {
-      await api('/api/chat-op/send', { method: 'POST', body: { sessionId: state.activeSessionId, message: url } });
-      const c = state.clients.find((x) => x.flowSessionId === state.activeSessionId);
-      if (c) c.lastMsg = tmpMsg;
-      renderConversations();
-    } catch {}
+    await sendOperatorMsg(url);
   } catch {
     // upload failed silently
   } finally {
