@@ -770,6 +770,32 @@ h2 {
   color: #7ab4f5;
 }
 
+/* Override .composer button so menu items aren't 38×38 blue squares */
+.composer .attach-menu button,
+.attach-menu__item {
+  display: flex !important;
+  place-items: unset !important;
+  width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  border: none !important;
+  color: #c8d8ee !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 9px 14px !important;
+  gap: 10px !important;
+  align-items: center !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: background .12s !important;
+}
+.composer .attach-menu button:hover,
+.attach-menu__item:hover {
+  background: #162032 !important;
+  color: #e2eaf6 !important;
+}
+
 .bubble.bubble--image {
   padding: 5px 5px 26px;
   background: transparent;
