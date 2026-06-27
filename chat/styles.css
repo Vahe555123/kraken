@@ -701,6 +701,40 @@ h2 {
 .img-upload-btn:disabled { opacity: 0.4; cursor: default; }
 .img-upload-btn.is-open { background: #192d47; color: #c8d4e5; border-color: #3a5580; }
 
+/* Pending attachment pill */
+.pending-attach {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1e2e45;
+  border: 1px solid #2d4266;
+  border-radius: 8px;
+  padding: 3px 6px 3px 8px;
+  flex-shrink: 0;
+  max-width: 160px;
+}
+.pending-attach__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #7eb3ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pending-attach__remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #7a90aa;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.pending-attach__remove:hover { color: #e2eaf6; }
+
 /* Attach dropdown menu */
 .attach-wrap { position: relative; flex-shrink: 0; }
 

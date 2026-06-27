@@ -617,22 +617,44 @@ els.callButton.addEventListener('click', async () => {
   renderCallControls();
 });
 
+// ─── Pending attachment ───────────────────────────────────────────────────────
+let pendingAttachToken = null;
+const pendingAttachEl    = document.getElementById('pendingAttach');
+const pendingAttachLabel = document.getElementById('pendingAttachLabel');
+const pendingAttachRemove = document.getElementById('pendingAttachRemove');
+
+const ATTACH_LABELS = {
+  '[[CONTRATO]]':      '📄 Договор',
+  '[[NOTIF_PDF]]':     '📄 Письмо банка',
+  '[[INSURANCE_PAY]]': '💳 Оплата страховки',
+  '[[COMMISSION_PAY]]':'💳 Оплата комиссии',
+};
+
+function setPendingAttach(token) {
+  pendingAttachToken = token;
+  if (pendingAttachEl && pendingAttachLabel) {
+    pendingAttachLabel.textContent = ATTACH_LABELS[token] || token;
+    pendingAttachEl.style.display = 'flex';
+  }
+}
+function clearPendingAttach() {
+  pendingAttachToken = null;
+  if (pendingAttachEl) pendingAttachEl.style.display = 'none';
+}
+
+if (pendingAttachRemove) pendingAttachRemove.addEventListener('click', clearPendingAttach);
+
 // Send message
 els.messageForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = els.messageInput.value.trim();
-  if (!text || !state.activeSessionId) return;
+  const token = pendingAttachToken;
+  if (!text && !token) return;
+  if (!state.activeSessionId) return;
   els.messageInput.value = '';
-  const tmpMsg = { role: 'operator', content: text, createdAt: new Date().toISOString() };
-  state.activeMessages = [...state.activeMessages, tmpMsg];
-  renderMessages(state.activeMessages, state.activeClient?.callerNote);
-  try {
-    await api('/api/chat-op/send', { method: 'POST', body: { sessionId: state.activeSessionId, message: text } });
-    // Update client list indicator (last message is now 'operator' → yellow)
-    const c = state.clients.find((x) => x.flowSessionId === state.activeSessionId);
-    if (c) c.lastMsg = tmpMsg;
-    renderConversations();
-  } catch {}
+  clearPendingAttach();
+  if (text) await sendOperatorMsg(text);
+  if (token) await sendOperatorMsg(token);
 });
 
 els.messageInput.addEventListener('keydown', (e) => {
@@ -688,7 +710,7 @@ els.imageBtn.addEventListener('click', (e) => {
 
 // Menu item clicks
 if (attachMenu) {
-  attachMenu.addEventListener('click', async (e) => {
+  attachMenu.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-attach]');
     if (!btn) return;
     const action = btn.dataset.attach;
@@ -696,7 +718,8 @@ if (attachMenu) {
     if (action === 'photo') {
       els.imageInput.click();
     } else if (ATTACH_MESSAGES[action]) {
-      await sendOperatorMsg(ATTACH_MESSAGES[action]);
+      setPendingAttach(ATTACH_MESSAGES[action]);
+      els.messageInput.focus();
     }
   });
 }
