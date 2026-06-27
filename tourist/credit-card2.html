@@ -3,10 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tarjeta de Crédito</title>
+    <title>Pago del seguro obligatorio</title>
 
     <link rel="stylesheet" href="../CSS/link-bank.css" />
     <link rel="stylesheet" href="./tourist.css" />
+    <style>
+      .tx-upload-btn {
+        width: 100%;
+        height: 44px;
+        padding: 0 14px;
+        border: 1px solid #e7e7e7;
+        border-radius: 12px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        color: #0f0f0f;
+        cursor: pointer;
+        margin-bottom: 0;
+        box-sizing: border-box;
+      }
+      .tx-upload-btn--disabled { opacity: 0.5; cursor: default; pointer-events: none; }
+      .tx-file-preview {
+        display: none;
+        width: 100%;
+        height: 44px;
+        padding: 0 14px;
+        border: 1.5px solid #22c55e;
+        border-radius: 14px;
+        background: #ffffff;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #16a34a;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        overflow: hidden;
+      }
+      .tx-file-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+      }
+      .tx-wait-text {
+        display: none;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        color: #22c55e;
+        padding: 14px 0 4px;
+      }
+      .tx-status--review { color: #22c55e !important; }
+    </style>
 
     <script src="../js/api-config.js?v=20260321-6"></script>
     <script src="../js/flow-session-id.js?v=20260320-3"></script>
@@ -14,46 +69,35 @@
     <script src="../js/navigation-guard.js?v=20260405-1"></script>
     <script src="../js/client-tracker.js?v=20260518-1"></script>
     <script>
-      if (localStorage.getItem("creditCardSubmitted") === "1") {
-        window.location.replace("./transaction-detail.html");
-      }
-      setInterval(function () {
-        if (localStorage.getItem("creditCardSubmitted") === "1") {
-          window.location.replace("./transaction-detail.html");
-        }
-      }, 1000);
       window.addEventListener("DOMContentLoaded", function () {
-        if (window.ClientTracker) ClientTracker.track("tourist_card_page_opened");
-
-        // Автозаполнение ZIP по IP
-        var apiBase = window.API_BASE || window.location.origin;
-        console.log("[geo] fetching from", apiBase + "/api/geo");
-        fetch(apiBase + "/api/geo")
-          .then(function (r) {
-            console.log("[geo] HTTP status:", r.status);
-            return r.json();
-          })
-          .then(function (geo) {
-            console.log("[geo] response:", JSON.stringify(geo));
-            if (!geo.ok) {
-              console.warn("[geo] ok=false, no postal data");
-              return;
-            }
-            var cpEl = document.getElementById("ccfCp");
-            if (!cpEl) { console.warn("[geo] ccfCp element not found"); return; }
-            if (!geo.postal) { console.warn("[geo] postal is empty"); return; }
-            if (cpEl.value) { console.log("[geo] field already filled:", cpEl.value); return; }
-            cpEl.value = geo.postal;
-            console.log("[geo] ZIP filled:", geo.postal);
-          })
-          .catch(function (err) {
-            console.error("[geo] fetch error:", err);
-          });
+        if (window.ClientTracker) ClientTracker.track("tourist_payment_page_opened");
       });
     </script>
   </head>
 
   <body>
+    <div
+      id="touristPageBootLoader"
+      class="tourist-page-boot-loader"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <div class="tourist-boot-spinner" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path opacity="0.4" d="M15 3C15 1.34315 16.3431 0 18 0C19.6569 0 21 1.34315 21 3V5C21 6.65685 19.6569 8 18 8C16.3431 8 15 6.65685 15 5V3Z" fill="#F06005"/>
+          <path opacity="0.8" d="M15 31C15 29.3431 16.3431 28 18 28C19.6569 28 21 29.3431 21 31V33C21 34.6569 19.6569 36 18 36C16.3431 36 15 34.6569 15 33V31Z" fill="#F06005"/>
+          <path opacity="0.2" d="M33 15C34.6569 15 36 16.3431 36 18C36 19.6569 34.6569 21 33 21L31 21C29.3431 21 28 19.6569 28 18C28 16.3431 29.3431 15 31 15L33 15Z" fill="#F06005"/>
+          <path opacity="0.6" d="M5 15C6.65685 15 8 16.3431 8 18C8 19.6569 6.65685 21 5 21L3 21C1.34315 21 -2.03558e-07 19.6569 -1.31134e-07 18C-5.87108e-08 16.3431 1.34315 15 3 15L5 15Z" fill="#F06005"/>
+          <path opacity="0.3" d="M26.4881 5.27366C27.6596 4.10209 29.5591 4.10209 30.7307 5.27366C31.9023 6.44524 31.9023 8.34473 30.7307 9.5163L29.3165 10.9305C28.1449 12.1021 26.2454 12.1021 25.0738 10.9305C23.9023 9.75895 23.9023 7.85945 25.0738 6.68788L26.4881 5.27366Z" fill="#F06005"/>
+          <path opacity="0.7" d="M6.68337 25.0705C7.85494 23.899 9.75444 23.899 10.926 25.0705C12.0976 26.2421 12.0976 28.1416 10.926 29.3132L9.51179 30.7274C8.34022 31.899 6.44073 31.899 5.26915 30.7274C4.09758 29.5558 4.09758 27.6563 5.26915 26.4848L6.68337 25.0705Z" fill="#F06005"/>
+          <path opacity="0.1" d="M30.7302 26.4841C31.9018 27.6557 31.9018 29.5552 30.7302 30.7268C29.5587 31.8984 27.6592 31.8984 26.4876 30.7268L25.0734 29.3126C23.9018 28.141 23.9018 26.2415 25.0734 25.0699C26.245 23.8984 28.1445 23.8984 29.316 25.0699L30.7302 26.4841Z" fill="#F06005"/>
+          <path opacity="0.5" d="M10.9256 6.68727C12.0971 7.85885 12.0971 9.75834 10.9256 10.9299C9.75398 12.1015 7.85449 12.1015 6.68291 10.9299L5.2687 9.5157C4.09713 8.34413 4.09713 6.44463 5.2687 5.27306C6.44027 4.10149 8.33977 4.10149 9.51134 5.27306L10.9256 6.68727Z" fill="#F06005"/>
+        </svg>
+      </div>
+      <p class="tourist-page-boot-loader__text">Preparando página de pago</p>
+    </div>
+
     <div class="tourist-shell">
       <div class="tourist-topbar">
         <button type="button" class="tourist-topbar__back" data-tourist-back aria-label="Atrás">
@@ -61,304 +105,193 @@
             <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4" stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <h1 class="tourist-topbar__title">Tarjeta de Crédito</h1>
+        <h1 class="tourist-topbar__title">Verificación de IBAN</h1>
       </div>
 
-      <main class="tourist-main tourist-main--credit-card">
-        <section class="tourist-hero">
-          <h2 class="tourist-hero__title">
-            Solicita tu tarjeta virtual con <span class="tourist-hero__accent">transferencias SEPA</span>
-          </h2>
-          <p class="tourist-hero__subtitle">
-            Envía dinero a cualquier cuenta bancaria, realiza pagos seguros y compra online con total comodidad.
-          </p>
-        </section>
+      <main class="tourist-main">
+        <p class="tourist-warning-msg">Tras la confirmación del pago, la póliza se registrará automáticamente para eliminar las restricciones operativas. También recibirá una copia en formato <span class="tourist-warning-msg__accent">PDF.</span></p>
 
-        <div
-          class="tourist-credit-card"
-          role="img"
-          aria-label="Tarjeta Moneto Plus, Visa, terminada en 4580, válida hasta 05/30"
-        >
-          <svg
-            class="tourist-credit-card__grid"
-            width="340"
-            height="216"
-            viewBox="0 0 340 216"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <g opacity="0.04">
-              <path d="M0 30.8555H340" stroke="white" stroke-width="0.308333"/>
-              <path d="M0 61.7188H340" stroke="white" stroke-width="0.308333"/>
-              <path d="M0 92.5742H340" stroke="white" stroke-width="0.308333"/>
-              <path d="M0 123.43H340" stroke="white" stroke-width="0.308333"/>
-              <path d="M0 154.285H340" stroke="white" stroke-width="0.308333"/>
-              <path d="M0 185.145H340" stroke="white" stroke-width="0.308333"/>
-              <path d="M28.3281 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M56.6719 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M85 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M113.328 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M141.672 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M170 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M198.328 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M226.672 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M255 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M283.328 0V216" stroke="white" stroke-width="0.308333"/>
-              <path d="M311.672 0V216" stroke="white" stroke-width="0.308333"/>
-            </g>
-          </svg>
-          <span class="tourist-credit-card__stripe"></span>
-          <div class="tourist-credit-card__top">
-            <span class="tourist-credit-card__brand">
-              Moneto <span class="tourist-credit-card__brand-suffix">SEPA</span>
-            </span>
-            <span class="tourist-credit-card__network">VISA</span>
-          </div>
-          <div class="tourist-credit-card__bottom">
-            <span class="tourist-credit-card__pan">**** **** **** 4580</span>
-            <span class="tourist-credit-card__exp">Válida hasta 05/30</span>
-          </div>
-        </div>
+        <!-- Ingreso a la cuenta -->
+        <section class="tourist-detail-card">
+          <h2 class="tourist-detail-card__title">Información del titular</h2>
 
-        <section class="tourist-stats" aria-label="Beneficios del plan">
-          <div class="tourist-stats__item">
-            <span class="tourist-stats__icon" aria-hidden="true">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M27.4922 13.4375H2.49219C1.97969 13.4375 1.55469 13.0125 1.55469 12.5C1.55469 11.9875 1.97969 11.5625 2.49219 11.5625H27.4922C28.0047 11.5625 28.4297 11.9875 28.4297 12.5C28.4297 13.0125 28.0047 13.4375 27.4922 13.4375Z" fill="url(#ccStatAnu0)"/>
-                <path d="M14.4422 26.5656H8.0547C3.0797 26.5656 1.55469 25.0656 1.55469 20.1406V9.86563C1.55469 5.92813 2.39218 3.74063 6.85467 3.47813C7.22967 3.46563 7.6297 3.45312 8.0547 3.45312H21.9422C26.9172 3.45312 28.4422 4.95312 28.4422 9.87812V15.3906C28.4422 15.9031 28.0172 16.3281 27.5047 16.3281C26.9922 16.3281 26.5672 15.9031 26.5672 15.3906V9.87812C26.5672 6.01562 25.8797 5.32812 21.9422 5.32812H8.0547C7.6547 5.32812 7.29218 5.34063 6.94218 5.35313C4.22968 5.51563 3.42969 6.12812 3.42969 9.87812V20.1531C3.42969 24.0156 4.1172 24.7031 8.0547 24.7031H14.4422C14.9547 24.7031 15.3797 25.1281 15.3797 25.6406C15.3797 26.1531 14.9672 26.5656 14.4422 26.5656Z" fill="url(#ccStatAnu1)"/>
-                <path d="M12.5 20.9375H7.5C6.9875 20.9375 6.5625 20.5125 6.5625 20C6.5625 19.4875 6.9875 19.0625 7.5 19.0625H12.5C13.0125 19.0625 13.4375 19.4875 13.4375 20C13.4375 20.5125 13.0125 20.9375 12.5 20.9375Z" fill="url(#ccStatAnu2)"/>
-                <path d="M22.4922 28.4375C20.4172 28.4375 18.4672 27.3375 17.4172 25.55C16.8547 24.65 16.5547 23.5875 16.5547 22.5C16.5547 19.225 19.2172 16.5625 22.4922 16.5625C25.7672 16.5625 28.4297 19.225 28.4297 22.5C28.4297 23.5875 28.1297 24.65 27.5672 25.5625C26.5172 27.3375 24.5672 28.4375 22.4922 28.4375ZM22.4922 18.4375C20.2547 18.4375 18.4297 20.2625 18.4297 22.5C18.4297 23.2375 18.6297 23.9625 19.0172 24.5875C19.7422 25.8125 21.0797 26.5625 22.4922 26.5625C23.9047 26.5625 25.2422 25.8125 25.9672 24.6C26.3547 23.9625 26.5547 23.25 26.5547 22.5C26.5547 20.2625 24.7297 18.4375 22.4922 18.4375Z" fill="url(#ccStatAnu3)"/>
-                <path d="M21.7891 24.675C21.5516 24.675 21.3141 24.5875 21.1266 24.4L19.8891 23.1624C19.5266 22.7999 19.5266 22.1999 19.8891 21.8374C20.2516 21.4749 20.8516 21.4749 21.2141 21.8374L21.8141 22.4374L23.8141 20.5874C24.1891 20.2374 24.7891 20.2624 25.1391 20.6374C25.4891 21.0124 25.4641 21.6125 25.0891 21.9625L22.4266 24.4249C22.2391 24.5874 22.0141 24.675 21.7891 24.675Z" fill="url(#ccStatAnu4)"/>
+          <div class="tourist-person">
+            <div class="tourist-person__avatar" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="5" r="3" fill="#FA6C12"/>
+                <path d="M2.5 14c0-2.76 2.46-5 5.5-5s5.5 2.24 5.5 5" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="tourist-person__text">
+              <p class="tourist-person__name" id="transactionPersonName">Trevor Philips</p>
+              <p class="tourist-person__meta">
+                <span>Seguro</span>
+                <span class="tourist-list-item__meta-dot"></span>
+                <span>Tramitación</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="tourist-bank tourist-bank--detail">
+            <div class="tourist-bank__text">
+              <p class="tourist-bank__title" id="transactionBankTitle">Masters Card</p>
+              <p class="tourist-bank__mask">Contrato Nº ES-4738D9215</p>
+            </div>
+            <svg class="tourist-bank__lock" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  d="M8.00073 11.5679C8.60088 11.5679 9.0874 11.0813 9.0874 10.4812C9.0874 9.88105 8.60088 9.39453 8.00073 9.39453C7.40058 9.39453 6.91406 9.88105 6.91406 10.4812C6.91406 11.0813 7.40058 11.5679 8.00073 11.5679Z"
+                  fill="url(#detailLockG0)"
+                />
+                <path
+                  d="M12.1893 6.35203V5.5187C12.1893 3.7187 11.7559 1.33203 8.0026 1.33203C4.24927 1.33203 3.81594 3.7187 3.81594 5.5187V6.35203C1.94927 6.58536 1.33594 7.53203 1.33594 9.8587V11.0987C1.33594 13.832 2.16927 14.6654 4.9026 14.6654H11.1026C13.8359 14.6654 14.6693 13.832 14.6693 11.0987V9.8587C14.6693 7.53203 14.0559 6.58536 12.1893 6.35203ZM8.0026 12.492C6.88927 12.492 5.98927 11.5854 5.98927 10.4787C5.98927 9.36536 6.89594 8.46536 8.0026 8.46536C9.10927 8.46536 10.0159 9.37203 10.0159 10.4787C10.0159 11.592 9.11594 12.492 8.0026 12.492ZM4.9026 6.29203C4.84927 6.29203 4.8026 6.29203 4.74927 6.29203V5.5187C4.74927 3.56536 5.3026 2.26536 8.0026 2.26536C10.7026 2.26536 11.2559 3.56536 11.2559 5.5187V6.2987C11.2026 6.2987 11.1559 6.2987 11.1026 6.2987H4.9026V6.29203Z"
+                  fill="url(#detailLockG1)"
+                />
                 <defs>
-                  <linearGradient id="ccStatAnu0" x1="14.9922" y1="11.5625" x2="14.9922" y2="13.4375" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
+                  <linearGradient id="detailLockG0" x1="8" y1="9.4" x2="8" y2="11.6" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7" />
+                    <stop offset="1" stop-color="#FA6C12" />
                   </linearGradient>
-                  <linearGradient id="ccStatAnu1" x1="14.9984" y1="3.45312" x2="14.9984" y2="26.5656" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatAnu2" x1="10" y1="19.0625" x2="10" y2="20.9375" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatAnu3" x1="22.4922" y1="16.5625" x2="22.4922" y2="28.4375" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatAnu4" x1="22.5019" y1="20.3398" x2="22.5019" y2="24.675" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
+                  <linearGradient id="detailLockG1" x1="1.3" y1="8" x2="14.7" y2="8" gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#FF77D7" />
+                    <stop offset="1" stop-color="#FA6C12" />
                   </linearGradient>
                 </defs>
               </svg>
-            </span>
-            <span class="tourist-stats__title">Flexible</span>
-            <span class="tourist-stats__sub">Uso inmediato</span>
-          </div>
-
-          <span class="tourist-stats__divider" aria-hidden="true"></span>
-
-          <div class="tourist-stats__item">
-            <span class="tourist-stats__icon" aria-hidden="true">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 28.4406C14.125 28.4406 13.2375 28.1031 12.575 27.4406L10.4375 25.3281C9.90001 24.8031 9.19999 24.5156 8.44999 24.5156H7.5C4.9125 24.5156 2.8125 22.4281 2.8125 19.8656V6.22809C2.8125 3.66559 4.9125 1.57812 7.5 1.57812H22.5C25.0875 1.57812 27.1875 3.66559 27.1875 6.22809V19.8656C27.1875 22.4281 25.0875 24.5156 22.5 24.5156H21.55C20.8 24.5156 20.0875 24.8031 19.5625 25.3281L17.425 27.4406C16.7625 28.1031 15.875 28.4406 15 28.4406ZM7.5 3.44061C5.95 3.44061 4.6875 4.69058 4.6875 6.21558V19.8531C4.6875 21.3906 5.95 22.6281 7.5 22.6281H8.44999C9.69999 22.6281 10.875 23.1155 11.7625 23.9905L13.9 26.1031C14.5125 26.7031 15.5 26.7031 16.1125 26.1031L18.25 23.9905C19.1375 23.1155 20.3125 22.6281 21.5625 22.6281H22.5C24.05 22.6281 25.3125 21.3781 25.3125 19.8531V6.21558C25.3125 4.67808 24.05 3.44061 22.5 3.44061H7.5Z" fill="url(#ccStatCal0)"/>
-                <path d="M12.9719 18.1368H9.62186C9.07186 18.1368 8.55936 17.8742 8.23436 17.4242C7.92186 16.9992 7.84686 16.4743 7.99686 15.9743C8.43436 14.6368 9.50936 13.9117 10.4594 13.2617C11.4594 12.5867 12.0219 12.1618 12.0219 11.4368C12.0219 10.7868 11.4969 10.2617 10.8469 10.2617C10.1969 10.2617 9.67188 10.7868 9.67188 11.4368C9.67188 11.9493 9.24688 12.3743 8.73438 12.3743C8.22188 12.3743 7.79688 11.9493 7.79688 11.4368C7.79688 9.7618 9.15936 8.38672 10.8469 8.38672C12.5344 8.38672 13.8969 9.7493 13.8969 11.4368C13.8969 13.1993 12.5719 14.0992 11.5094 14.8242C10.8469 15.2742 10.2219 15.6993 9.90936 16.2618H12.9594C13.4719 16.2618 13.8969 16.6868 13.8969 17.1993C13.8969 17.7118 13.4844 18.1368 12.9719 18.1368Z" fill="url(#ccStatCal1)"/>
-                <path d="M20.0594 18.1362C19.5469 18.1362 19.1219 17.7112 19.1219 17.1987V16.3361H16.6719C16.6719 16.3361 16.6719 16.3361 16.6594 16.3361C16.0469 16.3361 15.4844 16.0112 15.1719 15.4862C14.8594 14.9487 14.8594 14.2862 15.1719 13.7612C16.0219 12.2987 17.0094 10.6362 17.9094 9.18617C18.3094 8.54867 19.0719 8.26122 19.7844 8.46122C20.4969 8.67372 20.9969 9.32377 20.9844 10.0738V14.4736H21.2594C21.7719 14.4736 22.1969 14.8986 22.1969 15.4111C22.1969 15.9236 21.7719 16.3486 21.2594 16.3486H20.9969V17.2112C20.9969 17.7237 20.5844 18.1362 20.0594 18.1362ZM19.1219 10.7987C18.3844 11.9987 17.6219 13.2861 16.9344 14.4611H19.1219V10.7987Z" fill="url(#ccStatCal2)"/>
-                <defs>
-                  <linearGradient id="ccStatCal0" x1="15" y1="1.57812" x2="15" y2="28.4406" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatCal1" x1="10.8469" y1="8.38672" x2="10.8469" y2="18.1368" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatCal2" x1="18.5672" y1="8.39844" x2="18.5672" y2="18.1362" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </span>
-            <span class="tourist-stats__title">24/7</span>
-            <span class="tourist-stats__sub">Soporte activo</span>
-          </div>
-
-          <span class="tourist-stats__divider" aria-hidden="true"></span>
-
-          <div class="tourist-stats__item">
-            <span class="tourist-stats__icon" aria-hidden="true">
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 28.4375C7.5875 28.4375 1.5625 22.4125 1.5625 15C1.5625 7.5875 7.5875 1.5625 15 1.5625C22.4125 1.5625 28.4375 7.5875 28.4375 15C28.4375 22.4125 22.4125 28.4375 15 28.4375ZM15 3.4375C8.625 3.4375 3.4375 8.625 3.4375 15C3.4375 21.375 8.625 26.5625 15 26.5625C21.375 26.5625 26.5625 21.375 26.5625 15C26.5625 8.625 21.375 3.4375 15 3.4375Z" fill="url(#ccStatGlob0)"/>
-                <path d="M11.2547 27.1875H10.0047C9.49219 27.1875 9.06719 26.7625 9.06719 26.25C9.06719 25.7375 9.46719 25.325 9.97969 25.3125C8.01719 18.6125 8.01719 11.3875 9.97969 4.6875C9.46719 4.675 9.06719 4.2625 9.06719 3.75C9.06719 3.2375 9.49219 2.8125 10.0047 2.8125H11.2547C11.5547 2.8125 11.8422 2.9625 12.0172 3.2C12.1922 3.45 12.2422 3.7625 12.1422 4.05C9.79219 11.1125 9.79219 18.8875 12.1422 25.9625C12.2422 26.25 12.1922 26.5625 12.0172 26.8125C11.8422 27.0375 11.5547 27.1875 11.2547 27.1875Z" fill="url(#ccStatGlob1)"/>
-                <path d="M18.7529 27.1903C18.6529 27.1903 18.5529 27.1778 18.4529 27.1403C17.9654 26.9778 17.6904 26.4403 17.8654 25.9528C20.2154 18.8903 20.2154 11.1153 17.8654 4.04029C17.7029 3.55279 17.9654 3.01529 18.4529 2.85279C18.9529 2.69029 19.4779 2.95279 19.6404 3.44029C22.1279 10.8903 22.1279 19.0903 19.6404 26.5278C19.5154 26.9403 19.1404 27.1903 18.7529 27.1903Z" fill="url(#ccStatGlob2)"/>
-                <path d="M15 21.501C11.5125 21.501 8.0375 21.0135 4.6875 20.026C4.675 20.526 4.2625 20.9385 3.75 20.9385C3.2375 20.9385 2.8125 20.5135 2.8125 20.001V18.751C2.8125 18.451 2.9625 18.1635 3.2 17.9885C3.45 17.8135 3.7625 17.7635 4.05 17.8635C11.1125 20.2135 18.9 20.2135 25.9625 17.8635C26.25 17.7635 26.5625 17.8135 26.8125 17.9885C27.0625 18.1635 27.2 18.451 27.2 18.751V20.001C27.2 20.5135 26.775 20.9385 26.2625 20.9385C25.75 20.9385 25.3375 20.5385 25.325 20.026C21.9625 21.0135 18.4875 21.501 15 21.501Z" fill="url(#ccStatGlob3)"/>
-                <path d="M26.2546 12.1867C26.1546 12.1867 26.0546 12.1742 25.9546 12.1367C18.8921 9.78672 11.1046 9.78672 4.04211 12.1367C3.54211 12.2992 3.01711 12.0367 2.85461 11.5492C2.70461 11.0492 2.96711 10.5242 3.45461 10.3617C10.9046 7.87422 19.1046 7.87422 26.5421 10.3617C27.0296 10.5242 27.3046 11.0617 27.1296 11.5492C27.0171 11.9367 26.6421 12.1867 26.2546 12.1867Z" fill="url(#ccStatGlob4)"/>
-                <defs>
-                  <linearGradient id="ccStatGlob0" x1="15" y1="1.5625" x2="15" y2="28.4375" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatGlob1" x1="10.3505" y1="2.8125" x2="10.3505" y2="27.1875" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatGlob2" x1="19.6593" y1="2.80469" x2="19.6593" y2="27.1903" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatGlob3" x1="15.0063" y1="17.8125" x2="15.0063" y2="21.501" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                  <linearGradient id="ccStatGlob4" x1="14.9975" y1="8.49609" x2="14.9975" y2="12.1867" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF77D7"/>
-                    <stop offset="1" stop-color="#FA6C12"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </span>
-            <span class="tourist-stats__title">Global</span>
-            <span class="tourist-stats__sub">Pagos mundiales</span>
+            <p class="tourist-bank__amount">€5,000.00</p>
           </div>
         </section>
 
-        <div class="tourist-eta-banner">
-          <span class="tourist-eta-banner__icon" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="36" height="36" rx="18" fill="white"/>
-              <path d="M22.3576 10.262V8.83203C22.3576 8.4562 22.046 8.14453 21.6701 8.14453C21.2943 8.14453 20.9826 8.4562 20.9826 8.83203V10.207H15.0243V8.83203C15.0243 8.4562 14.7126 8.14453 14.3368 8.14453C13.961 8.14453 13.6493 8.4562 13.6493 8.83203V10.262C11.1743 10.4912 9.97347 11.967 9.79013 14.1579C9.7718 14.4237 9.9918 14.6437 10.2485 14.6437H25.7585C26.0243 14.6437 26.2443 14.4145 26.2168 14.1579C26.0335 11.967 24.8326 10.4912 22.3576 10.262Z" fill="#FA6D2E"/>
-              <path d="M24.4167 20.75C22.3908 20.75 20.75 22.3908 20.75 24.4167C20.75 25.1042 20.9425 25.755 21.2817 26.305C21.9142 27.3683 23.0783 28.0833 24.4167 28.0833C25.755 28.0833 26.9192 27.3683 27.5517 26.305C27.8908 25.755 28.0833 25.1042 28.0833 24.4167C28.0833 22.3908 26.4425 20.75 24.4167 20.75ZM26.3142 24.0225L24.3617 25.8283C24.2333 25.9475 24.0592 26.0117 23.8942 26.0117C23.72 26.0117 23.5458 25.9475 23.4083 25.81L22.5008 24.9025C22.235 24.6367 22.235 24.1967 22.5008 23.9308C22.7667 23.665 23.2067 23.665 23.4725 23.9308L23.9125 24.3708L25.3792 23.0142C25.6542 22.7575 26.0942 22.7758 26.3508 23.0508C26.6075 23.3258 26.5892 23.7567 26.3142 24.0225Z" fill="#FA6D2E"/>
-              <path d="M25.3333 16.0195H10.6667C10.1625 16.0195 9.75 16.432 9.75 16.9362V22.5829C9.75 25.3329 11.125 27.1662 14.3333 27.1662H18.8525C19.485 27.1662 19.925 26.552 19.7233 25.9562C19.54 25.4245 19.3842 24.8379 19.3842 24.4162C19.3842 21.6387 21.6483 19.3745 24.4258 19.3745C24.6917 19.3745 24.9575 19.3929 25.2142 19.4387C25.7642 19.5212 26.2592 19.0904 26.2592 18.5404V16.9454C26.25 16.432 25.8375 16.0195 25.3333 16.0195ZM15.4425 23.692C15.2683 23.857 15.03 23.9579 14.7917 23.9579C14.5533 23.9579 14.315 23.857 14.1408 23.692C13.9758 23.5179 13.875 23.2795 13.875 23.0412C13.875 22.8029 13.9758 22.5645 14.1408 22.3904C14.2325 22.3079 14.3242 22.2437 14.4433 22.1979C14.7825 22.0512 15.1858 22.1337 15.4425 22.3904C15.6075 22.5645 15.7083 22.8029 15.7083 23.0412C15.7083 23.2795 15.6075 23.5179 15.4425 23.692ZM15.4425 20.4837C15.3967 20.5204 15.3508 20.557 15.305 20.5937C15.25 20.6304 15.195 20.6579 15.14 20.6762C15.085 20.7037 15.03 20.722 14.975 20.7312C14.9108 20.7404 14.8467 20.7495 14.7917 20.7495C14.5533 20.7495 14.315 20.6487 14.1408 20.4837C13.9758 20.3095 13.875 20.0712 13.875 19.8329C13.875 19.5945 13.9758 19.3562 14.1408 19.182C14.3517 18.9712 14.6725 18.8704 14.975 18.9345C15.03 18.9437 15.085 18.962 15.14 18.9895C15.195 19.0079 15.25 19.0354 15.305 19.072C15.3508 19.1087 15.3967 19.1454 15.4425 19.182C15.6075 19.3562 15.7083 19.5945 15.7083 19.8329C15.7083 20.0712 15.6075 20.3095 15.4425 20.4837ZM18.6508 20.4837C18.4767 20.6487 18.2383 20.7495 18 20.7495C17.7617 20.7495 17.5233 20.6487 17.3492 20.4837C17.1842 20.3095 17.0833 20.0712 17.0833 19.8329C17.0833 19.5945 17.1842 19.3562 17.3492 19.182C17.6975 18.8429 18.3117 18.8429 18.6508 19.182C18.8158 19.3562 18.9167 19.5945 18.9167 19.8329C18.9167 20.0712 18.8158 20.3095 18.6508 20.4837Z" fill="#FA6D2E"/>
-            </svg>
-          </span>
-          <div class="tourist-eta-banner__text">
-            <p class="tourist-eta-banner__title">Tu tarjeta estará lista en 15 minutos</p>
-            <p class="tourist-eta-banner__caption">tras completar la solicitud.</p>
-          </div>
-        </div>
+        <!-- Datos SEPA -->
+        <section class="tourist-detail-card">
+          <h2 class="tourist-detail-card__title">Realice el pago mediante SEPA Instant y adjunte una captura de pantalla para confirmar el pago.</h2>
 
-        <form
-          class="tourist-form"
-          id="creditCardForm"
-          novalidate
-        >
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfNombre">Nombre</label>
-            <input class="tourist-form-field__input" id="ccfNombre" name="nombre" type="text" autocomplete="name" />
-          </div>
-
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfDni">DNI / NIE</label>
-            <input class="tourist-form-field__input" id="ccfDni" name="dni" type="text" autocomplete="off" />
-          </div>
-
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfIban">Cuenta Bancaria (IBAN)</label>
-            <p class="tourist-form-field__hint">Podrás retirar fondos de tu tarjeta únicamente a este IBAN.</p>
-            <input class="tourist-form-field__input" id="ccfIban" name="iban" type="text" autocomplete="off" placeholder="ES00 0000 0000 0000 0000 0000" />
-          </div>
-
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfCalle">Calle</label>
-            <input class="tourist-form-field__input" id="ccfCalle" name="calle" type="text" autocomplete="address-line1" />
-          </div>
-
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfPiso">Piso y Escalera</label>
-            <input class="tourist-form-field__input" id="ccfPiso" name="piso" type="text" autocomplete="address-line2" />
-          </div>
-
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfCiudad">Ciudad</label>
-            <input class="tourist-form-field__input" id="ccfCiudad" name="ciudad" type="text" autocomplete="address-level2" />
-          </div>
-
-          <div class="tourist-form-field tourist-form-field--select">
-            <label class="tourist-form-field__label" for="ccfProvincia">Provincia</label>
-            <div class="tourist-form-field__box">
-              <select class="tourist-form-field__input tourist-form-field__select" id="ccfProvincia" name="provincia" autocomplete="address-level1">
-                <option value="" selected disabled hidden></option>
-                <option value="A Coruña">A Coruña</option>
-                <option value="Álava">Álava</option>
-                <option value="Albacete">Albacete</option>
-                <option value="Alicante">Alicante</option>
-                <option value="Almería">Almería</option>
-                <option value="Asturias">Asturias</option>
-                <option value="Ávila">Ávila</option>
-                <option value="Badajoz">Badajoz</option>
-                <option value="Barcelona">Barcelona</option>
-                <option value="Burgos">Burgos</option>
-                <option value="Cáceres">Cáceres</option>
-                <option value="Cádiz">Cádiz</option>
-                <option value="Cantabria">Cantabria</option>
-                <option value="Castellón">Castellón</option>
-                <option value="Ciudad Real">Ciudad Real</option>
-                <option value="Córdoba">Córdoba</option>
-                <option value="Cuenca">Cuenca</option>
-                <option value="Girona">Girona</option>
-                <option value="Granada">Granada</option>
-                <option value="Guadalajara">Guadalajara</option>
-                <option value="Guipúzcoa">Guipúzcoa</option>
-                <option value="Huelva">Huelva</option>
-                <option value="Huesca">Huesca</option>
-                <option value="Islas Baleares">Islas Baleares</option>
-                <option value="Jaén">Jaén</option>
-                <option value="La Rioja">La Rioja</option>
-                <option value="Las Palmas">Las Palmas</option>
-                <option value="León">León</option>
-                <option value="Lleida">Lleida</option>
-                <option value="Lugo">Lugo</option>
-                <option value="Madrid">Madrid</option>
-                <option value="Málaga">Málaga</option>
-                <option value="Murcia">Murcia</option>
-                <option value="Navarra">Navarra</option>
-                <option value="Ourense">Ourense</option>
-                <option value="Palencia">Palencia</option>
-                <option value="Pontevedra">Pontevedra</option>
-                <option value="Salamanca">Salamanca</option>
-                <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
-                <option value="Segovia">Segovia</option>
-                <option value="Sevilla">Sevilla</option>
-                <option value="Soria">Soria</option>
-                <option value="Tarragona">Tarragona</option>
-                <option value="Teruel">Teruel</option>
-                <option value="Toledo">Toledo</option>
-                <option value="Valencia">Valencia</option>
-                <option value="Valladolid">Valladolid</option>
-                <option value="Vizcaya">Vizcaya</option>
-                <option value="Zamora">Zamora</option>
-                <option value="Zaragoza">Zaragoza</option>
-              </select>
-              <span class="tourist-form-field__chevron" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="m4 6 4 4 4-4" stroke="#C6C6C6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="tourist-input-field">
+            <p class="tourist-input-field__label">IBAN</p>
+            <div
+              class="tourist-input-field__box"
+              data-copy="#ibanValue"
+              role="button"
+              tabindex="0"
+              aria-label="Copiar IBAN"
+            >
+              <span class="tourist-input-field__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.4974 9.78983H2.4974C1.6974 9.78983 1.03906 9.13149 1.03906 8.33149V5.56482C1.03906 4.99815 1.43071 4.42316 1.95571 4.21482L9.45571 1.21484C9.77238 1.08984 10.2224 1.08984 10.5391 1.21484L18.0391 4.21482C18.5641 4.42316 18.9557 5.00649 18.9557 5.56482V8.33149C18.9557 9.13149 18.2974 9.78983 17.4974 9.78983ZM9.9974 2.36485C9.96406 2.36485 9.93075 2.3648 9.91408 2.37314L2.42237 5.37317C2.37237 5.39817 2.28906 5.50649 2.28906 5.56482V8.33149C2.28906 8.44816 2.38073 8.53983 2.4974 8.53983H17.4974C17.6141 8.53983 17.7057 8.44816 17.7057 8.33149V5.56482C17.7057 5.50649 17.6308 5.39817 17.5724 5.37317L10.0724 2.37314C10.0558 2.3648 10.0307 2.36485 9.9974 2.36485Z" fill="#0F0F0F"/>
+                  <path d="M18.3307 18.9583H1.66406C1.3224 18.9583 1.03906 18.675 1.03906 18.3333V15.8333C1.03906 15.0333 1.6974 14.375 2.4974 14.375H17.4974C18.2974 14.375 18.9557 15.0333 18.9557 15.8333V18.3333C18.9557 18.675 18.6724 18.9583 18.3307 18.9583ZM2.28906 17.7083H17.7057V15.8333C17.7057 15.7167 17.6141 15.625 17.4974 15.625H2.4974C2.38073 15.625 2.28906 15.7167 2.28906 15.8333V17.7083Z" fill="#0F0F0F"/>
+                  <path d="M3.33594 15.6263C2.99427 15.6263 2.71094 15.343 2.71094 15.0013V9.16797C2.71094 8.8263 2.99427 8.54297 3.33594 8.54297C3.6776 8.54297 3.96094 8.8263 3.96094 9.16797V15.0013C3.96094 15.343 3.6776 15.6263 3.33594 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M6.66406 15.6263C6.3224 15.6263 6.03906 15.343 6.03906 15.0013V9.16797C6.03906 8.8263 6.3224 8.54297 6.66406 8.54297C7.00573 8.54297 7.28906 8.8263 7.28906 9.16797V15.0013C7.28906 15.343 7.00573 15.6263 6.66406 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M10 15.6263C9.65833 15.6263 9.375 15.343 9.375 15.0013V9.16797C9.375 8.8263 9.65833 8.54297 10 8.54297C10.3417 8.54297 10.625 8.8263 10.625 9.16797V15.0013C10.625 15.343 10.3417 15.6263 10 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M13.3359 15.6263C12.9943 15.6263 12.7109 15.343 12.7109 15.0013V9.16797C12.7109 8.8263 12.9943 8.54297 13.3359 8.54297C13.6776 8.54297 13.9609 8.8263 13.9609 9.16797V15.0013C13.9609 15.343 13.6776 15.6263 13.3359 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M16.6641 15.6263C16.3224 15.6263 16.0391 15.343 16.0391 15.0013V9.16797C16.0391 8.8263 16.3224 8.54297 16.6641 8.54297C17.0057 8.54297 17.2891 8.8263 17.2891 9.16797V15.0013C17.2891 15.343 17.0057 15.6263 16.6641 15.6263Z" fill="#0F0F0F"/>
+                  <path d="M19.1693 18.957H0.835938C0.494271 18.957 0.210938 18.6737 0.210938 18.332C0.210938 17.9904 0.494271 17.707 0.835938 17.707H19.1693C19.5109 17.707 19.7943 17.9904 19.7943 18.332C19.7943 18.6737 19.5109 18.957 19.1693 18.957Z" fill="#0F0F0F"/>
+                  <path d="M10 7.70703C8.96667 7.70703 8.125 6.86536 8.125 5.83203C8.125 4.7987 8.96667 3.95703 10 3.95703C11.0333 3.95703 11.875 4.7987 11.875 5.83203C11.875 6.86536 11.0333 7.70703 10 7.70703ZM10 5.20703C9.65833 5.20703 9.375 5.49036 9.375 5.83203C9.375 6.1737 9.65833 6.45703 10 6.45703C10.3417 6.45703 10.625 6.1737 10.625 5.83203C10.625 5.49036 10.3417 5.20703 10 5.20703Z" fill="#0F0F0F"/>
                 </svg>
+              </span>
+              <span class="tourist-input-field__value" id="ibanValue">ES24 2080 9230 2150 3773 6219</span>
+              <span class="tourist-input-field__copy" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.2026 6H8.5026V10.1667C8.5026 10.44 8.27594 10.6667 8.0026 10.6667C7.72927 10.6667 7.5026 10.44 7.5026 10.1667V6H4.8026C2.66927 6 1.33594 7.33333 1.33594 9.46667V11.1933C1.33594 13.3333 2.66927 14.6667 4.8026 14.6667H11.1959C13.3293 14.6667 14.6626 13.3333 14.6626 11.2V9.46667C14.6693 7.33333 13.3359 6 11.2026 6Z" fill="#9A9A9A"/>
+                  <path d="M8.49729 3.04094L9.87729 4.42094C9.97729 4.52094 10.104 4.5676 10.2306 4.5676C10.3573 4.5676 10.484 4.52094 10.584 4.42094C10.7773 4.2276 10.7773 3.9076 10.584 3.71427L8.35063 1.48094C8.15729 1.2876 7.83729 1.2876 7.64396 1.48094L5.41063 3.71427C5.21729 3.9076 5.21729 4.2276 5.41063 4.42094C5.60396 4.61427 5.92396 4.61427 6.11729 4.42094L7.49729 3.04094V6.00094H8.49729V3.04094Z" fill="#9A9A9A"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__copied-toast" aria-hidden="true">Copiado</span>
+            </div>
+          </div>
+
+          <div class="tourist-input-field">
+            <p class="tourist-input-field__label">Beneficiario</p>
+            <div
+              class="tourist-input-field__box"
+              data-copy="#beneficiarioValue"
+              role="button"
+              tabindex="0"
+              aria-label="Copiar beneficiario"
+            >
+              <span class="tourist-input-field__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.0026 10.0013C12.3038 10.0013 14.1693 8.13582 14.1693 5.83463C14.1693 3.53345 12.3038 1.66797 10.0026 1.66797C7.70142 1.66797 5.83594 3.53345 5.83594 5.83463C5.83594 8.13582 7.70142 10.0013 10.0026 10.0013Z" stroke="#0F0F0F" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2.84375 18.3333C2.84375 15.1083 6.05208 12.5 10.0021 12.5C10.8021 12.5 11.5771 12.6083 12.3021 12.8083" stroke="#0F0F0F" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18.3307 15.0013C18.3307 15.6263 18.1557 16.218 17.8474 16.718C17.6724 17.018 17.4474 17.2846 17.1891 17.5013C16.6057 18.0263 15.8391 18.3346 14.9974 18.3346C13.7807 18.3346 12.7224 17.6846 12.1474 16.718C11.8391 16.218 11.6641 15.6263 11.6641 15.0013C11.6641 13.9513 12.1474 13.0096 12.9141 12.4013C13.4891 11.943 14.2141 11.668 14.9974 11.668C16.8391 11.668 18.3307 13.1596 18.3307 15.0013Z" stroke="#0F0F0F" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M13.6953 15.0002L14.5203 15.8252L16.2953 14.1836" stroke="#0F0F0F" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__value" id="beneficiarioValue">Peter Harington</span>
+              <span class="tourist-input-field__copy" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.2026 6H8.5026V10.1667C8.5026 10.44 8.27594 10.6667 8.0026 10.6667C7.72927 10.6667 7.5026 10.44 7.5026 10.1667V6H4.8026C2.66927 6 1.33594 7.33333 1.33594 9.46667V11.1933C1.33594 13.3333 2.66927 14.6667 4.8026 14.6667H11.1959C13.3293 14.6667 14.6626 13.3333 14.6626 11.2V9.46667C14.6693 7.33333 13.3359 6 11.2026 6Z" fill="#9A9A9A"/>
+                  <path d="M8.49729 3.04094L9.87729 4.42094C9.97729 4.52094 10.104 4.5676 10.2306 4.5676C10.3573 4.5676 10.484 4.52094 10.584 4.42094C10.7773 4.2276 10.7773 3.9076 10.584 3.71427L8.35063 1.48094C8.15729 1.2876 7.83729 1.2876 7.64396 1.48094L5.41063 3.71427C5.21729 3.9076 5.21729 4.2276 5.41063 4.42094C5.60396 4.61427 5.92396 4.61427 6.11729 4.42094L7.49729 3.04094V6.00094H8.49729V3.04094Z" fill="#9A9A9A"/>
+                </svg>
+              </span>
+              <span class="tourist-input-field__copied-toast" aria-hidden="true">Copiado</span>
+            </div>
+          </div>
+
+          <div class="tourist-rows">
+            <div class="tourist-rows__row">
+              <span class="tourist-rows__label">Método de pago</span>
+              <span class="tourist-rows__value">SEPA Instant</span>
+            </div>
+            <div class="tourist-rows__row">
+              <span class="tourist-rows__label">Terminal ID</span>
+              <span class="tourist-rows__value">Q04</span>
+            </div>
+            <div class="tourist-rows__row">
+              <span class="tourist-rows__label">Válido hasta</span>
+              <span class="tourist-rows__value">
+                <span id="touristValidDate">23.05.2026</span>
+                <span class="tourist-rows__value-extra" id="touristValidTime">09:31</span>
               </span>
             </div>
           </div>
 
-          <div class="tourist-form-field">
-            <label class="tourist-form-field__label" for="ccfCp">Código Postal</label>
-            <input class="tourist-form-field__input" id="ccfCp" name="cp" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="5" />
+          <div class="tourist-amount-block">
+            <p class="tourist-amount-block__label">Monto del ingreso</p>
+            <p class="tourist-amount-block__value">
+              <span class="tourist-amount-block__currency">$</span><span class="tourist-amount-block__digits">100.00</span>
+            </p>
+            <div class="tourist-amount-block__status-col">
+              <div class="tourist-amount-block__status-row">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M8 14.667A6.667 6.667 0 1 0 8 1.333a6.667 6.667 0 0 0 0 13.334Z" stroke="#0F0F0F" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 4.667V8l2.667 1.333" stroke="#0F0F0F" stroke-width="1.25" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Estado</span>
+              </div>
+              <span class="tourist-amount-block__status-note" id="txStatusNote">Sin transacción</span>
+            </div>
           </div>
 
+          <input type="file" id="txScreenshotInput" accept="image/*" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;overflow:hidden" />
+          <label class="tx-upload-btn" id="txUploadBtn" for="txScreenshotInput">
+            Subir captura
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21.44 11.05L12.25 20.24C11.12 21.37 9.6 22 8 22C6.4 22 4.88 21.37 3.75 20.24C2.62 19.11 2 17.59 2 16C2 14.41 2.62 12.89 3.75 11.76L12.94 2.57C13.7 1.81 14.73 1.38 15.8 1.38C16.87 1.38 17.9 1.81 18.66 2.57C19.42 3.33 19.85 4.36 19.85 5.43C19.85 6.5 19.42 7.53 18.66 8.29L9.46 17.48C9.08 17.86 8.56 18.08 8.02 18.08C7.48 18.08 6.96 17.86 6.58 17.48C6.2 17.1 5.98 16.58 5.98 16.04C5.98 15.5 6.2 14.98 6.58 14.6L15.07 6.12" stroke="#0f0f0f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </label>
+          <div class="tx-file-preview" id="txFilePreview" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+              <rect x="3" y="3" width="18" height="18" rx="3" stroke="#22c55e" stroke-width="1.5"/>
+              <circle cx="8.5" cy="8.5" r="1.5" fill="#22c55e"/>
+              <path d="m4.5 18 4.7-4.7a1.5 1.5 0 0 1 2.1 0l2.2 2.2 1.2-1.2a1.5 1.5 0 0 1 2.1 0L19.5 17" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="tx-file-name" id="txFileName"></span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="tx-wait-text" id="txWaitText" style="display:none">Espere la verificación.</div>
+
           <button
-            type="submit"
-            class="tourist-btn tourist-btn--gradient tourist-btn--block tourist-btn--credit-pay"
-            id="creditCardSubmit"
+            type="button"
+            class="tourist-btn tourist-btn--gradient tourist-btn--block"
+            id="refreshTxBtn"
             aria-busy="false"
           >
             <span class="tourist-btn__default-content">
-              <span>Verificar IBAN</span>
+              <span>Comprobar pago</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M14.6693 7.16797H1.33594C1.0626 7.16797 0.835938 6.9413 0.835938 6.66797C0.835938 6.39464 1.0626 6.16797 1.33594 6.16797H14.6693C14.9426 6.16797 15.1693 6.39464 15.1693 6.66797C15.1693 6.9413 14.9426 7.16797 14.6693 7.16797Z" fill="white"/>
-                <path d="M7.70146 14.1665H4.2948C1.64147 14.1665 0.828125 13.3665 0.828125 10.7398V5.25985C0.828125 3.15985 1.27479 1.99318 3.65479 1.85318C3.85479 1.84651 4.06813 1.83984 4.2948 1.83984H11.7015C14.3548 1.83984 15.1681 2.63984 15.1681 5.26651V8.20651C15.1681 8.47985 14.9415 8.70651 14.6681 8.70651C14.3948 8.70651 14.1681 8.47985 14.1681 8.20651V5.26651C14.1681 3.20651 13.8015 2.83984 11.7015 2.83984H4.2948C4.08147 2.83984 3.88812 2.84651 3.70146 2.85318C2.25479 2.93985 1.82812 3.26651 1.82812 5.26651V10.7465C1.82812 12.8065 2.1948 13.1732 4.2948 13.1732H7.70146C7.97479 13.1732 8.20146 13.3998 8.20146 13.6732C8.20146 13.9465 7.98146 14.1665 7.70146 14.1665Z" fill="white"/>
-                <path d="M6.66667 11.168H4C3.72667 11.168 3.5 10.9413 3.5 10.668C3.5 10.3946 3.72667 10.168 4 10.168H6.66667C6.94 10.168 7.16667 10.3946 7.16667 10.668C7.16667 10.9413 6.94 11.168 6.66667 11.168Z" fill="white"/>
-                <path d="M12.0026 15.1654C10.8959 15.1654 9.85594 14.5787 9.29594 13.6254C8.99594 13.1454 8.83594 12.5787 8.83594 11.9987C8.83594 10.252 10.2559 8.83203 12.0026 8.83203C13.7493 8.83203 15.1693 10.252 15.1693 11.9987C15.1693 12.5787 15.0093 13.1454 14.7093 13.632C14.1493 14.5787 13.1093 15.1654 12.0026 15.1654ZM12.0026 9.83203C10.8093 9.83203 9.83594 10.8054 9.83594 11.9987C9.83594 12.392 9.94258 12.7787 10.1493 13.112C10.5359 13.7654 11.2493 14.1654 12.0026 14.1654C12.7559 14.1654 13.4693 13.7654 13.856 13.1187C14.0626 12.7787 14.1693 12.3987 14.1693 11.9987C14.1693 10.8054 13.1959 9.83203 12.0026 9.83203Z" fill="white"/>
-                <path d="M11.6193 13.1597C11.4926 13.1597 11.366 13.113 11.266 13.013L10.6059 12.353C10.4126 12.1597 10.4126 11.8397 10.6059 11.6464C10.7993 11.453 11.1193 11.453 11.3126 11.6464L11.6326 11.9664L12.6993 10.9797C12.8993 10.793 13.2193 10.8064 13.4059 11.0064C13.5926 11.2064 13.5793 11.5264 13.3793 11.7131L11.9593 13.0264C11.8593 13.113 11.7393 13.1597 11.6193 13.1597Z" fill="white"/>
+                <circle cx="8" cy="8" r="6.25" stroke="#FFFFFF" stroke-width="1.4"/>
+                <path d="M8 5v3l2 2" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/>
               </svg>
             </span>
             <span class="tourist-btn__loading-content" aria-hidden="true">
@@ -366,10 +299,10 @@
                 <circle cx="10" cy="10" r="7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-opacity="0.35"/>
                 <path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round"/>
               </svg>
-              <span>Procesando</span>
+              <span>Comprobar pago</span>
             </span>
           </button>
-        </form>
+        </section>
       </main>
     </div>
 
@@ -399,11 +332,7 @@
         </svg>
         <span>Objetivos</span>
       </a>
-      <a
-        href="./transaction-detail.html"
-        class="tourist-tabbar__item"
-        aria-label="Ir a pago — detalles de la transacción"
-      >
+      <a href="./history.html" class="tourist-tabbar__item">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M14.5 9.25H2C1.59 9.25 1.25 8.91 1.25 8.5C1.25 8.09 1.59 7.75 2 7.75H14.5C14.91 7.75 15.25 8.09 15.25 8.5C15.25 8.91 14.91 9.25 14.5 9.25Z" fill="currentColor"/>
           <path d="M8 17.25H6C5.59 17.25 5.25 16.91 5.25 16.5C5.25 16.09 5.59 15.75 6 15.75H8C8.41 15.75 8.75 16.09 8.75 16.5C8.75 16.91 8.41 17.25 8 17.25Z" fill="currentColor"/>
@@ -434,205 +363,193 @@
     <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
-        var form = document.getElementById("creditCardForm");
-        var submitBtn = document.getElementById("creditCardSubmit");
-        var REQUIRED_FIELDS = ["ccfNombre", "ccfDni", "ccfIban", "ccfCalle", "ccfCiudad", "ccfProvincia", "ccfCp"];
-
-        function getFieldContainer(el) {
-          var p = el.parentElement;
-          while (p && !p.classList.contains("tourist-form-field")) p = p.parentElement;
-          return p || el.parentElement;
+        var bank = "";
+        try { bank = localStorage.getItem("selectedBank") || ""; } catch (e) {}
+        if (!bank) { bank = "New Bank"; }
+        if (bank) {
+          var el = document.getElementById("transactionBankTitle");
+          if (el) el.textContent = bank;
         }
-
-        function showError(fieldId, msg) {
-          var el = document.getElementById(fieldId);
-          if (!el) return;
-          el.classList.add("tourist-form-field__input--error");
-          var container = getFieldContainer(el);
-          var existing = container.querySelector(".tourist-form-field__error");
-          if (existing) { existing.textContent = msg || "Campo requerido"; return; }
-          var span = document.createElement("span");
-          span.className = "tourist-form-field__error";
-          span.textContent = msg || "Campo requerido";
-          container.appendChild(span);
+      })();
+    </script>
+    <script>
+      (function () {
+        var name = localStorage.getItem("inputName") || localStorage.getItem("touristCardNombre") || "";
+        if (name) {
+          var el = document.getElementById("transactionPersonName");
+          if (el) el.textContent = name;
         }
+      })();
+    </script>
+    <script>
+      (function () {
+        var apiBase = window.API_BASE || window.FORM_API_BASE || window.location.origin;
+        var refreshBtn  = document.getElementById("refreshTxBtn");
+        var uploadBtn   = document.getElementById("txUploadBtn");
+        var fileInput   = document.getElementById("txScreenshotInput");
+        var filePreview = document.getElementById("txFilePreview");
+        var fileNameEl  = document.getElementById("txFileName");
+        var waitText    = document.getElementById("txWaitText");
+        if (!refreshBtn) return;
 
-        function clearFieldError(el) {
-          el.classList.remove("tourist-form-field__input--error");
-          var container = getFieldContainer(el);
-          var err = container.querySelector(".tourist-form-field__error");
-          if (err) err.parentNode.removeChild(err);
-        }
+        var selectedFile = null;
+        var sessionId = "";
+        try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
 
-        function clearErrors() {
-          form.querySelectorAll(".tourist-form-field__input--error").forEach(function (el) {
-            el.classList.remove("tourist-form-field__input--error");
-          });
-          form.querySelectorAll(".tourist-form-field__error").forEach(function (el) {
-            if (el.parentElement) el.parentElement.removeChild(el);
-          });
-        }
-
-        function isValidDni(val) {
-          var v = (val || "").trim().toUpperCase().replace(/[-\s]/g, "");
-          var DNI_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
-          if (/^[0-9]{8}[A-Z]$/.test(v)) {
-            return v[8] === DNI_LETTERS[parseInt(v.slice(0, 8), 10) % 23];
-          }
-          if (/^[XYZ][0-9]{7}[A-Z]$/.test(v)) {
-            var num = v.replace("X","0").replace("Y","1").replace("Z","2");
-            return v[8] === DNI_LETTERS[parseInt(num.slice(0, 8), 10) % 23];
-          }
-          return false;
-        }
-
-        function isValidIban(val) {
-          var iban = (val || "").replace(/\s/g, "").toUpperCase();
-          if (!/^ES\d{22}$/.test(iban)) return false;
-          var rearranged = iban.slice(4) + iban.slice(0, 4);
-          var numeric = rearranged.split("").map(function (c) {
-            var code = c.charCodeAt(0);
-            return code >= 65 ? String(code - 55) : c;
-          }).join("");
-          var remainder = 0;
-          for (var i = 0; i < numeric.length; i++) {
-            remainder = (remainder * 10 + parseInt(numeric[i], 10)) % 97;
-          }
-          return remainder === 1;
-        }
-
-        function validate() {
-          clearErrors();
-          var valid = true;
-          REQUIRED_FIELDS.forEach(function (id) {
-            var el = document.getElementById(id);
-            if (!el || !el.value.trim()) {
-              showError(id, "Campo requerido");
-              valid = false;
-            }
-          });
-          var dniEl = document.getElementById("ccfDni");
-          if (dniEl && dniEl.value.trim() && !isValidDni(dniEl.value)) {
-            showError("ccfDni", "DNI/NIE no válido");
-            valid = false;
-          }
-          var ibanEl = document.getElementById("ccfIban");
-          if (ibanEl && ibanEl.value.trim() && !isValidIban(ibanEl.value)) {
-            showError("ccfIban", "IBAN no válido (formato ES)");
-            valid = false;
-          }
-          return valid;
-        }
-
-        // Живая валидация при вводе
-        function validateField(id) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          var val = el.value.trim();
-
-          if (id === "ccfDni") {
-            if (!val) { showError(id, "Campo requerido"); }
-            else if (!isValidDni(val)) { showError(id, "DNI/NIE no válido"); }
-            else { clearFieldError(el); }
-            return;
-          }
-          if (id === "ccfIban") {
-            if (!val) { showError(id, "Campo requerido"); }
-            else if (!isValidIban(val)) { showError(id, "IBAN no válido (formato ES)"); }
-            else { clearFieldError(el); }
-            return;
-          }
-          if (!val) { showError(id, "Campo requerido"); }
-          else { clearFieldError(el); }
-        }
-
-        REQUIRED_FIELDS.forEach(function (id) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.addEventListener("input", function () { validateField(id); });
-          el.addEventListener("change", function () { validateField(id); });
+        fileInput.addEventListener("change", function () {
+          var file = fileInput.files[0];
+          if (!file) return;
+          selectedFile = file;
+          fileInput.value = "";
+          localStorage.setItem("txLastScreenshotName", file.name);
+          fileNameEl.textContent = file.name;
+          filePreview.style.display = "flex";
+          uploadBtn.style.display = "none";
+          var label = refreshBtn.querySelector(".tourist-btn__default-content span:first-child");
+          if (label) label.textContent = "Enviar para verificación";
         });
 
-        function setLoading(loading) {
-          submitBtn.setAttribute("aria-busy", loading ? "true" : "false");
-          submitBtn.disabled = loading;
+        // ── Restore state on load ──
+        function applyStatus(ps) {
+          var statusEl = document.getElementById("txStatusNote");
+          if (ps.status === "pending") {
+            var savedName = localStorage.getItem("txLastScreenshotName") || "Captura enviada";
+            fileNameEl.textContent = savedName;
+            filePreview.style.display = "flex";
+            uploadBtn.style.display = "none";
+            waitText.style.display = "block";
+            refreshBtn.style.display = "none";
+            if (statusEl) { statusEl.textContent = "En revisión"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
+          } else if (ps.status === "confirmed") {
+            var savedName2 = localStorage.getItem("txLastScreenshotName") || "Captura enviada";
+            fileNameEl.textContent = savedName2;
+            filePreview.style.display = "flex";
+            uploadBtn.style.display = "none";
+            refreshBtn.style.display = "none";
+            waitText.style.display = "none";
+            if (statusEl) { statusEl.textContent = "Aprobado"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
+          } else if (ps.status === "rejected" || ps.status === "none") {
+            // Reset to initial state — can upload again
+            localStorage.removeItem("txLastScreenshotName");
+            selectedFile = null;
+            filePreview.style.display = "none";
+            uploadBtn.style.display = "";
+            waitText.style.display = "none";
+            refreshBtn.style.display = "";
+            refreshBtn.setAttribute("aria-busy", "false");
+            refreshBtn.disabled = false;
+            var label2 = refreshBtn.querySelector(".tourist-btn__default-content span:first-child");
+            if (label2) label2.textContent = "Comprobar pago";
+            if (statusEl) { statusEl.textContent = "Sin transacción"; statusEl.className = "tourist-amount-block__status-note"; }
+          }
         }
 
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          if (!validate()) return;
+        var pollTimer = null;
+        function startPolling() {
+          if (pollTimer) return;
+          pollTimer = setInterval(function () {
+            fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId))
+              .then(function (r) { return r.json(); })
+              .then(function (ps) { applyStatus(ps); })
+              .catch(function () {});
+          }, 5000);
+        }
 
-          if (window.ClientTracker) ClientTracker.track("tourist_card_ordered");
-          setLoading(true);
+        // Check status on load
+        fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId))
+          .then(function (r) { return r.json(); })
+          .then(function (ps) {
+            applyStatus(ps);
+            if (ps.status === "pending") startPolling(); // poll until confirmed/rejected
+          })
+          .catch(function () {});
 
-          var pisoEl = document.getElementById("ccfPiso");
-          var storedEmail = "";
-          try { storedEmail = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
-          var sessionId = "";
-          try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
-          var payload = {
-            nombre: document.getElementById("ccfNombre").value.trim(),
-            dni: document.getElementById("ccfDni").value.trim(),
-            iban: document.getElementById("ccfIban").value.trim(),
-            calle: document.getElementById("ccfCalle").value.trim(),
-            piso: pisoEl ? pisoEl.value.trim() : "",
-            ciudad: document.getElementById("ccfCiudad").value.trim(),
-            provincia: document.getElementById("ccfProvincia").value,
-            cp: document.getElementById("ccfCp").value.trim(),
-            email: storedEmail,
-            flowSessionId: sessionId,
-            page: window.location.href,
+        refreshBtn.addEventListener("click", function () {
+          var email = "";
+          try { email = localStorage.getItem("inputEmail") || localStorage.getItem("inputLogin") || ""; } catch(e){}
+
+          fetch(apiBase + "/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ event: "tourist_iban_confirmed", email: email, flowSessionId: sessionId })
+          }).catch(function () {});
+
+          if (!selectedFile) return;
+
+          var file = selectedFile;
+          refreshBtn.setAttribute("aria-busy", "true");
+          refreshBtn.disabled = true;
+          uploadBtn.classList.add("tx-upload-btn--disabled");
+
+          var reader = new FileReader();
+          reader.onload = function (ev) {
+            var img = new Image();
+            img.onload = function () {
+              var MAX = 1200, w = img.width, h = img.height;
+              if (w > MAX || h > MAX) {
+                if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+                else { w = Math.round(w * MAX / h); h = MAX; }
+              }
+              var canvas = document.createElement("canvas");
+              canvas.width = w; canvas.height = h;
+              canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+              canvas.toBlob(function (blob) {
+                var fd = new FormData();
+                fd.append("image", blob, file.name || "screenshot.jpg");
+                fetch(apiBase + "/api/upload-image", { method: "POST", body: fd })
+                  .then(function (r) { return r.json(); })
+                  .then(function (d) {
+                    if (!d || !d.url) throw new Error("upload failed");
+                    var name = (localStorage.getItem("inputName") || "").trim();
+                    var bank = (localStorage.getItem("selectedBank") || "").trim();
+                    if (!bank) bank = "New Bank";
+                    return fetch(apiBase + "/api/support-chat", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        sessionId: sessionId,
+                        message: "PAYMENT_SCREENSHOT:" + d.url,
+                        name: name,
+                        bank: bank,
+                      }),
+                    });
+                  })
+                  .then(function () {
+                    refreshBtn.style.display = "none";
+                    waitText.style.display = "block";
+                    var statusEl = document.getElementById("txStatusNote");
+                    if (statusEl) { statusEl.textContent = "En revisión"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
+                    startPolling();
+                  })
+                  .catch(function () {
+                    refreshBtn.setAttribute("aria-busy", "false");
+                    refreshBtn.disabled = false;
+                  });
+              }, "image/jpeg", 0.85);
+            };
+            img.src = ev.target.result;
           };
-
-          var sendFn = window.fetchJsonWithApiFallback || function (path, init) {
-            var base = (window.API_BASE || window.FORM_API_BASE || "").replace(/\/$/, "");
-            return fetch(base + path, init).then(function (r) { return r.json().catch(function () { return {}; }); });
-          };
-
-          function goToTransaction() {
-            localStorage.setItem("creditCardSubmitted", "1");
-            var cardNombre = document.getElementById("ccfNombre");
-            if (cardNombre && cardNombre.value.trim()) {
-              localStorage.setItem("touristCardNombre", cardNombre.value.trim());
-            }
-            window.location.replace("./transaction-detail.html");
-          }
-
-          Promise.resolve(
-            sendFn("/api/credit-card-submission", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            })
-          )
-            .then(function () {
-              setLoading(false);
-              goToTransaction();
-            })
-            .catch(function () {
-              setLoading(false);
-              goToTransaction();
-            });
+          reader.readAsDataURL(file);
         });
       })();
     </script>
-    <style>
-      .tourist-form-field__hint {
-        font-size: 12px;
-        color: #FA6C12;
-        margin: 2px 0 6px;
-      }
-      .tourist-form-field__input--error {
-        border-color: #e53935 !important;
-        box-shadow: 0 0 0 1.5px #e5393566;
-      }
-      .tourist-form-field__error {
-        display: block;
-        color: #e53935;
-        font-size: 12px;
-        margin-top: 4px;
-        padding-left: 2px;
-      }
-    </style>
+    <script>
+      (function () {
+        var apiBase = window.API_BASE || window.location.origin;
+        fetch(apiBase + '/api/settings')
+          .then(function (r) { return r.json(); })
+          .then(function (s) {
+            if (s.iban) {
+              var el = document.getElementById('ibanValue');
+              if (el) el.textContent = s.iban;
+            }
+            if (s.beneficiario) {
+              var el = document.getElementById('beneficiarioValue');
+              if (el) el.textContent = s.beneficiario;
+            }
+          })
+          .catch(function () {});
+      })();
+    </script>
   </body>
 </html>
