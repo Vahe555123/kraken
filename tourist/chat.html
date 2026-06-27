@@ -568,6 +568,107 @@
       </a>
     </nav>
 
+    <!-- ── Notif PDF modal (bank approval letter) ── -->
+    <div class="tourist-contract-modal" id="notifPdfModal" aria-hidden="true">
+      <div class="tourist-contract-modal__backdrop" data-notif-pdf-close tabindex="-1"></div>
+      <section class="tourist-contract-modal__panel" role="dialog" aria-modal="true" aria-labelledby="notifPdfModalTitle">
+        <header class="tourist-contract-modal__header">
+          <div class="tourist-contract-modal__heading">
+            <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
+            <h2 class="tourist-contract-modal__title" id="notifPdfModalTitle">Tarjeta de Crédito</h2>
+          </div>
+        </header>
+        <div class="tourist-contract-modal__body" id="notifPdfBody" tabindex="0">
+          <article class="credit-letter" aria-label="Carta de aprobación de préstamo">
+            <section class="credit-letter__page">
+              <header class="credit-letter__masthead">
+                <div class="credit-letter__caixa-brand" id="npm_logoWrap">
+                  <img src="../banks/newBank/logo.svg" alt="New Bank" class="credit-letter__caixa-logo" id="npm_logo">
+                </div>
+                <div class="credit-letter__goval">
+                  <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
+                </div>
+              </header>
+              <div class="credit-letter__body">
+                <p class="credit-letter__line"><strong>De:</strong></p>
+                <p class="credit-letter__line"><strong id="npm_bankName">New Bank S.A.</strong></p>
+                <p class="credit-letter__line"><strong>A:</strong></p>
+                <p class="credit-letter__line"><strong>Moneto Plus S.L.</strong></p>
+                <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
+                <p class="credit-letter__line"><strong>Estimados colegas,</strong></p>
+                <p class="credit-letter__para">Les informamos de que la solicitud de financiación presentada ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
+                <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 5 000.00</p>
+                <p class="credit-letter__line"><strong>TIN:</strong> 7.86%</p>
+                <p class="credit-letter__line"><strong>Modalidad de desembolso:</strong> transferencia bancaria</p>
+                <p class="credit-letter__line"><strong>Seguro de crédito:</strong> 100.00</p>
+                <p class="credit-letter__para">Para la liberación de los fondos y el levantamiento de las restricciones operativas, es necesaria la contratación del seguro obligatorio establecido en las condiciones del contrato de crédito.</p>
+                <p class="credit-letter__para">Les rogamos informen al cliente al respecto y, si fuera necesario, presten la asistencia adicional en la fase de finalización.</p>
+                <p class="credit-letter__para">Gracias por su colaboración.</p>
+                <p class="credit-letter__line">Atentamente,</p>
+                <p class="credit-letter__line">Departamento de Préstamos</p>
+                <p class="credit-letter__line" id="npm_bankFooter">New Bank S.A.</p>
+              </div>
+              <div class="credit-letter__stamp-area" aria-hidden="true">
+                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp" id="npm_stamp">
+                <img src="../assets/left-hand.png" alt="" class="credit-letter__signature">
+              </div>
+            </section>
+          </article>
+        </div>
+        <footer class="tourist-contract-modal__footer">
+          <button type="button" class="tourist-contract-modal__action" data-notif-pdf-close>
+            <span class="tourist-contract-modal__action-content">
+              <span class="tourist-contract-modal__action-text">Cerrar</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 14.6641H2C1.72667 14.6641 1.5 14.4374 1.5 14.1641C1.5 13.8907 1.72667 13.6641 2 13.6641H14C14.2733 13.6641 14.5 13.8907 14.5 14.1641C14.5 14.4374 14.2733 14.6641 14 14.6641Z" fill="white"/><path d="M12.6843 2.31848C11.3909 1.02514 10.1243 0.991811 8.79761 2.31848L7.99095 3.12514C7.92428 3.19181 7.89761 3.29848 7.92428 3.39181C8.43095 5.15848 9.84428 6.57181 11.6109 7.07848C11.6376 7.08514 11.6643 7.09181 11.6909 7.09181C11.7643 7.09181 11.8309 7.06514 11.8843 7.01181L12.6843 6.20514C13.3443 5.55181 13.6643 4.91848 13.6643 4.27848C13.6709 3.61848 13.3509 2.97848 12.6843 2.31848Z" fill="white"/><path d="M10.4056 7.68849C10.2122 7.59516 10.0256 7.50182 9.84558 7.39516C9.69891 7.30849 9.55891 7.21516 9.41891 7.11516C9.30558 7.04182 9.17224 6.93516 9.04558 6.82849C9.03224 6.82182 8.98558 6.78182 8.93224 6.72849C8.71224 6.54182 8.46558 6.30182 8.24558 6.03516C8.22558 6.02182 8.19224 5.97516 8.14558 5.91516C8.07891 5.83516 7.96558 5.70182 7.86558 5.54849C7.78558 5.44849 7.69224 5.30182 7.60558 5.15516C7.49891 4.97516 7.40558 4.79516 7.31224 4.60849C7.16859 4.28365 6.89224 4.22182 6.72846 4.38561L2.89224 8.22182C2.80558 8.30849 2.72558 8.47516 2.70558 8.58849L2.34558 11.1418C2.27891 11.5952 2.40558 12.0218 2.68558 12.3085C2.92558 12.5418 3.25891 12.6685 3.61891 12.6685C3.69891 12.6685 3.77891 12.6618 3.85891 12.6485L6.41891 12.2885C6.53891 12.2685 6.70558 12.1885 6.78558 12.1018L10.6172 8.27015C10.7822 8.10523 10.7199 7.82237 10.5052 7.73124C10.4725 7.71734 10.4393 7.70311 10.4056 7.68849Z" fill="white"/></svg>
+            </span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <script>
+      function openNotifPdfModal() {
+        var modal = document.getElementById('notifPdfModal');
+        if (!modal) return;
+        var bankName = '';
+        var bankKey  = '';
+        try {
+          bankName = localStorage.getItem('selectedBank')    || 'New Bank';
+          bankKey  = localStorage.getItem('selectedBankKey') || 'newBank';
+        } catch(e) {}
+        var el1 = document.getElementById('npm_bankName');
+        var el2 = document.getElementById('npm_bankFooter');
+        if (el1) el1.textContent = bankName + ' S.A.';
+        if (el2) el2.textContent = bankName + ' S.A.';
+        var logoEl = document.getElementById('npm_logo');
+        if (logoEl) { logoEl.src = '../banks/' + bankKey + '/logo.svg'; logoEl.alt = bankName; }
+        var stampEl = document.getElementById('npm_stamp');
+        if (stampEl) stampEl.src = '../banks/' + bankKey + '/stamp.svg';
+        modal.classList.add('tourist-contract-modal--open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('contract-modal-open');
+        var body = document.getElementById('notifPdfBody');
+        if (body) { body.scrollTop = 0; setTimeout(function(){ body.focus({ preventScroll: true }); }, 0); }
+      }
+      function closeNotifPdfModal() {
+        var modal = document.getElementById('notifPdfModal');
+        if (!modal) return;
+        modal.classList.remove('tourist-contract-modal--open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('contract-modal-open');
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('notifPdfModal');
+        if (!modal) return;
+        modal.querySelectorAll('[data-notif-pdf-close]').forEach(function(el) {
+          el.addEventListener('click', closeNotifPdfModal);
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal.classList.contains('tourist-contract-modal--open')) closeNotifPdfModal();
+        });
+      });
+    </script>
+
     <!-- ── Contrato modal (view-only, opened from chat card) ── -->
     <div class="tourist-contract-modal" id="contratoViewModal" aria-hidden="true">
       <div class="tourist-contract-modal__backdrop" data-contrato-close tabindex="-1"></div>
@@ -896,6 +997,27 @@
 
         function buildMsgEl(role, content) {
           var el = document.createElement('div');
+
+          if (content === '[[NOTIF_PDF]]') {
+            var bankN = '';
+            try { bankN = localStorage.getItem('selectedBank') || 'New Bank'; } catch(e) {}
+            el.className = 'contrato-card';
+            el.innerHTML =
+              '<div class="contrato-card__left">'
+              + '<div class="contrato-card__icon" aria-hidden="true">'
+              + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
+              + '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+              + '<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
+              + '</svg>'
+              + '</div>'
+              + '<div class="contrato-card__text">'
+              + '<p class="contrato-card__title">' + bankN + ' – Anexo crédito</p>'
+              + '<p class="contrato-card__sub">Contrato Nº ES-4738D9215</p>'
+              + '</div>'
+              + '</div>'
+              + '<button type="button" class="contrato-card__btn" onclick="openNotifPdfModal()">Abrir PDF</button>';
+            return el;
+          }
 
           if (content === '[[CONTRATO]]') {
             var bank = '';

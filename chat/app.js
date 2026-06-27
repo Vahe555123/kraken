@@ -646,10 +646,10 @@ const attachMenu = document.getElementById('attachMenu');
 
 const ATTACH_MESSAGES = {
   'contract':       '[[CONTRATO]]',
-  'insurance-req':  'Para activar su crédito es necesario contratar el seguro obligatorio. Por favor, acceda a la sección de seguro en la aplicación.',
+  'insurance-req':  '[[NOTIF_PDF]]',
   'insurance-pay':  'Para proceder con el pago del seguro, acceda a la sección de pago en la aplicación y complete el proceso.',
-  'insurance-done': 'Su póliza de seguro ha sido procesada correctamente. Procedemos con la siguiente etapa.',
-  'commission-req': 'Para finalizar el proceso de activación, es necesario abonar la comisión administrativa según las condiciones del contrato.',
+  'insurance-done': '[[NOTIF_PDF]]',
+  'commission-req': '[[NOTIF_PDF]]',
   'commission-pay': 'Para proceder con el pago de la comisión, acceda a la sección de pago en la aplicación y complete el proceso.',
 };
 
