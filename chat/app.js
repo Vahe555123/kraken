@@ -647,7 +647,7 @@ const attachMenu = document.getElementById('attachMenu');
 const ATTACH_MESSAGES = {
   'contract':       '[[CONTRATO]]',
   'insurance-req':  '[[NOTIF_PDF]]',
-  'insurance-pay':  'Para proceder con el pago del seguro, acceda a la sección de pago en la aplicación y complete el proceso.',
+  'insurance-pay':  '[[INSURANCE_PAY]]',
   'insurance-done': '[[NOTIF_PDF]]',
   'commission-req': '[[NOTIF_PDF]]',
   'commission-pay': 'Para proceder con el pago de la comisión, acceda a la sección de pago en la aplicación y complete el proceso.',
