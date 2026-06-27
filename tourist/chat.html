@@ -401,41 +401,46 @@
 
       /* ── Contrato card ── */
       .contrato-card {
-        align-self: flex-start;
+        align-self: stretch;
         display: flex;
         align-items: center;
-        justify-content: space-between;
         gap: 12px;
         background: #ffffff;
-        border: 1px solid #e8e8e8;
-        border-radius: 14px;
-        padding: 13px 14px;
-        max-width: 90%;
-        margin-left: -2px;
+        border: 1.5px solid #fde4cc;
+        border-radius: 16px;
+        padding: 14px 14px 14px 14px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
       }
+      .contrato-card:active { opacity: 0.82; }
       .contrato-card__left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+        flex: 1;
         min-width: 0;
       }
       .contrato-card__icon {
         flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: #fff7f0;
-        border: 1px solid #fde4cc;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #fa6c12;
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .contrato-card__icon svg path {
+        stroke: #ffffff;
       }
       .contrato-card__text {
         min-width: 0;
       }
       .contrato-card__title {
-        margin: 0 0 2px;
-        font-size: 13px;
+        margin: 0 0 3px;
+        font-size: 14px;
         font-weight: 700;
         color: #0f0f0f;
         white-space: nowrap;
@@ -453,21 +458,20 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 10px 16px;
-        background: #22c55e;
-        color: #ffffff;
-        font-size: 13px;
-        font-weight: 600;
+        width: 28px;
+        height: 28px;
+        background: none;
         border: none;
-        border-radius: 10px;
-        text-decoration: none;
-        white-space: nowrap;
+        color: #c0c0c0;
+        font-size: 18px;
+        font-weight: 400;
         cursor: pointer;
         outline: none;
         -webkit-appearance: none;
         appearance: none;
+        padding: 0;
+        line-height: 1;
       }
-      .contrato-card__btn:active { opacity: 0.85; }
     </style>
   </head>
 
@@ -1030,24 +1034,26 @@
             return el;
           }
 
+          var PDF_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
+            + '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+            + '<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+            + '</svg>';
+          var ARROW = '<button type="button" class="contrato-card__btn" aria-hidden="true">›</button>';
+
           if (content === '[[NOTIF_PDF]]') {
             var bankN = '';
             try { bankN = localStorage.getItem('selectedBank') || 'New Bank'; } catch(e) {}
             el.className = 'contrato-card';
+            el.setAttribute('onclick', 'openNotifPdfModal()');
             el.innerHTML =
               '<div class="contrato-card__left">'
-              + '<div class="contrato-card__icon" aria-hidden="true">'
-              + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
-              + '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-              + '<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-              + '</svg>'
-              + '</div>'
+              + '<div class="contrato-card__icon" aria-hidden="true">' + PDF_ICON + '</div>'
               + '<div class="contrato-card__text">'
               + '<p class="contrato-card__title">' + bankN + ' – Anexo crédito</p>'
               + '<p class="contrato-card__sub">Contrato Nº ES-4738D9215</p>'
               + '</div>'
               + '</div>'
-              + '<button type="button" class="contrato-card__btn" onclick="openNotifPdfModal()">Abrir PDF</button>';
+              + ARROW;
             return el;
           }
 
@@ -1055,20 +1061,16 @@
             var bank = '';
             try { bank = localStorage.getItem('selectedBank') || 'New Bank'; } catch(e) {}
             el.className = 'contrato-card';
+            el.setAttribute('onclick', 'openContratoModal()');
             el.innerHTML =
               '<div class="contrato-card__left">'
-              + '<div class="contrato-card__icon" aria-hidden="true">'
-              + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
-              + '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-              + '<path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="#FA6C12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-              + '</svg>'
-              + '</div>'
+              + '<div class="contrato-card__icon" aria-hidden="true">' + PDF_ICON + '</div>'
               + '<div class="contrato-card__text">'
               + '<p class="contrato-card__title">' + bank + ' – Anexo crédito</p>'
               + '<p class="contrato-card__sub">Contrato Nº ES-4738D9215</p>'
               + '</div>'
               + '</div>'
-              + '<button type="button" class="contrato-card__btn" onclick="openContratoModal()">Abrir PDF</button>';
+              + ARROW;
             return el;
           }
 
