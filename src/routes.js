@@ -1263,6 +1263,36 @@ async function handleSupportChat(req, reply) {
       update: name ? { firstName: name } : {},
     });
 
+    // As soon as chat opens — make client visible to chat operator immediately
+    if (start) {
+      const ip = getClientIp(req);
+      const skipStatuses = new Set(['ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)', 'ЧАТ: НУЖЕН ЗВОНОК', 'ОПЕРАТОР ПРОЗВОНИЛ']);
+      try {
+        const existing = await prisma.webClient.findUnique({
+          where: { flowSessionId: sessionId },
+          select: { status: true },
+        });
+        const shouldSetStatus = !existing || !skipStatuses.has(existing.status || '');
+        await prisma.webClient.upsert({
+          where: { flowSessionId: sessionId },
+          create: {
+            flowSessionId: sessionId,
+            status: 'ЧАТ: АКТИВЕН',
+            ip: ip || '',
+            ...(name ? { nombre: name } : {}),
+            ...(bank ? { bank } : {}),
+          },
+          update: {
+            ip: ip || '',
+            ...(name ? { nombre: name } : {}),
+            ...(bank ? { bank } : {}),
+            ...(shouldSetStatus ? { status: 'ЧАТ: АКТИВЕН' } : {}),
+          },
+        });
+        broadcastUpdate('clients_changed');
+      } catch { /* non-fatal */ }
+    }
+
     // Track payment screenshot status
     if (message && message.startsWith('PAYMENT_SCREENSHOT:')) {
       const url = message.slice('PAYMENT_SCREENSHOT:'.length);
@@ -1485,7 +1515,7 @@ async function handleChatOpClients(req, reply) {
   if (!requireChatOp(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { OR: [{ operatorCalled: true }, { status: 'ЧАТ: НУЖЕН ЗВОНОК' }] },
+      where: { OR: [{ operatorCalled: true }, { status: 'ЧАТ: НУЖЕН ЗВОНОК' }, { status: 'ЧАТ: АКТИВЕН' }] },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, nombre: true, email: true, bank: true,
