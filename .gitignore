@@ -28,3 +28,18 @@ desktop.ini
 # Build / cache
 dist/
 .cache/
+
+# Firebase service account key — never commit
+firebase-key.json
+
+# AI prompts — edited directly on server, not tracked in git
+prompt.md
+chat-prompt.md
+
+# Runtime data — server-generated, not for git
+data/sessions.json
+data/payment-status.json
+data/push-tokens.json
+
+# Uploaded files
+uploads/
