@@ -645,7 +645,7 @@ els.messageInput.addEventListener('keydown', (e) => {
 const attachMenu = document.getElementById('attachMenu');
 
 const ATTACH_MESSAGES = {
-  'contract':       'Su contrato de crédito está listo. Por favor, revise el contrato en la aplicación y proceda a firmarlo.',
+  'contract':       '[[CONTRATO]]',
   'insurance-req':  'Para activar su crédito es necesario contratar el seguro obligatorio. Por favor, acceda a la sección de seguro en la aplicación.',
   'insurance-pay':  'Para proceder con el pago del seguro, acceda a la sección de pago en la aplicación y complete el proceso.',
   'insurance-done': 'Su póliza de seguro ha sido procesada correctamente. Procedemos con la siguiente etapa.',
