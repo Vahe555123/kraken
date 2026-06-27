@@ -69,6 +69,7 @@
                 <button type="button">Оплата-2</button>
                 <button type="button">Оплата-3</button>
                 <button type="button" id="sendPushBtn" data-send-push title="Отправить push-уведомление клиенту">🔔 Пуш</button>
+                <button type="button" id="debitoBtn" title="Saldo y débito">💶 Débito</button>
               </div>
             </div>
             <div class="messages" data-messages></div>
@@ -117,21 +118,6 @@
             </form>
           </section>
 
-          <section class="panel">
-            <h2>Баланс / Списание</h2>
-            <p style="margin:10px 0 14px;font-size:13px;color:var(--muted)">Баланс: <strong id="clientBalanceDisp" style="color:var(--text);font-size:15px">—</strong></p>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <input id="chargeAmountInp" type="number" min="0.01" step="0.01" placeholder="Сумма (€)"
-                style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:8px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;" />
-              <input id="chargeDescInp" type="text" maxlength="200" placeholder="Описание (необязательно)"
-                style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:8px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;" />
-              <button id="chargeBtnEl" type="button" disabled
-                style="background:#1166ff;border:none;border-radius:8px;padding:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">
-                Списать
-              </button>
-              <span id="chargeResultMsg" style="font-size:12px;min-height:16px;text-align:center;display:block"></span>
-            </div>
-          </section>
         </aside>
       </section>
 
@@ -144,6 +130,24 @@
         <div data-notes></div>
       </section>
     </main>
+
+    <!-- Débito modal -->
+    <div id="debitoModal" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+      <div id="debitoModalBox" style="background:#131d2e;border:1px solid #1e2e45;border-radius:14px;padding:28px 24px;width:320px;display:flex;flex-direction:column;gap:14px;position:relative">
+        <button id="debitoModalClose" type="button" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:#1d2b44;border:1px solid #263654;color:#edf4ff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1">✕</button>
+        <h3 style="margin:0;color:#e2eaf6;font-size:16px;font-weight:700">💶 Débito</h3>
+        <p style="margin:0;font-size:13px;color:#7a90aa">Saldo: <strong id="clientBalanceDisp" style="color:#e2eaf6;font-size:15px">...</strong></p>
+        <input id="chargeAmountInp" type="number" min="0.01" step="0.01" placeholder="Importe (€)"
+          style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:9px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;box-sizing:border-box" />
+        <input id="chargeDescInp" type="text" maxlength="200" placeholder="Descripción (opcional)"
+          style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:9px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;box-sizing:border-box" />
+        <button id="chargeBtnEl" type="button" disabled
+          style="background:#1166ff;border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">
+          Débito
+        </button>
+        <span id="chargeResultMsg" style="font-size:12px;min-height:16px;text-align:center;display:block"></span>
+      </div>
+    </div>
 
     <!-- Image viewer modal -->
     <div id="imgModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;box-sizing:border-box">

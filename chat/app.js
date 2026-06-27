@@ -70,6 +70,9 @@ const els = {
   chargeDesc:   $('#chargeDescInp'),
   chargeBtn:    $('#chargeBtnEl'),
   chargeResult: $('#chargeResultMsg'),
+  debitoBtn:    $('#debitoBtn'),
+  debitoModal:  $('#debitoModal'),
+  debitoClose:  $('#debitoModalClose'),
 };
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
@@ -496,13 +499,13 @@ function renderDetails(c) {
 
 // ─── Balance display ─────────────────────────────────────────────────────────
 function fmtEur(v) {
-  return '€' + Number(v ?? 5000).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '€' + Number(v).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function renderBalance(c) {
   if (!els.balanceDisp) return;
   if (!c) { els.balanceDisp.textContent = '—'; return; }
-  els.balanceDisp.textContent = fmtEur(c.balance ?? 5000);
+  els.balanceDisp.textContent = c.balance != null ? fmtEur(c.balance) : '...';
 }
 
 // ─── Comment editor ───────────────────────────────────────────────────────────
@@ -750,7 +753,7 @@ if (els.chargeBtn) {
     if (!state.activeSessionId) return;
     const amount = parseFloat(els.chargeAmount.value);
     if (!isFinite(amount) || amount <= 0) return;
-    const desc = els.chargeDesc.value.trim() || 'Списание';
+    const desc = els.chargeDesc.value.trim() || 'Débito';
     els.chargeBtn.disabled = true;
     els.chargeResult.textContent = '';
     try {
@@ -767,7 +770,8 @@ if (els.chargeBtn) {
         els.chargeAmount.value = '';
         els.chargeDesc.value = '';
         els.chargeResult.style.color = '#22c45e';
-        els.chargeResult.textContent = `✓ Списано ${fmtEur(amount)}`;
+        els.chargeResult.textContent = `✓ Débito ${fmtEur(amount)}`;
+        setTimeout(closeDebitoModal, 1500);
       } else {
         els.chargeResult.style.color = '#f20b5d';
         els.chargeResult.textContent = '✗ Ошибка';
@@ -778,6 +782,28 @@ if (els.chargeBtn) {
     }
     updateChargeBtn();
     setTimeout(() => { if (els.chargeResult) els.chargeResult.textContent = ''; }, 3000);
+  });
+}
+
+// ─── Débito modal ─────────────────────────────────────────────────────────────
+function openDebitoModal() {
+  if (!els.debitoModal) return;
+  els.debitoModal.style.display = 'flex';
+  renderBalance(state.activeClient);
+}
+function closeDebitoModal() {
+  if (!els.debitoModal) return;
+  els.debitoModal.style.display = 'none';
+}
+if (els.debitoBtn) {
+  els.debitoBtn.addEventListener('click', openDebitoModal);
+}
+if (els.debitoClose) {
+  els.debitoClose.addEventListener('click', closeDebitoModal);
+}
+if (els.debitoModal) {
+  els.debitoModal.addEventListener('click', (e) => {
+    if (e.target === els.debitoModal) closeDebitoModal();
   });
 }
 
