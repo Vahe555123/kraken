@@ -25,9 +25,9 @@
     var timeStr = pad(d.getHours()) + ":" + pad(d.getMinutes());
 
     var el = document.getElementById("touristLoanDate");
-    if (el) el.textContent = dateStr;
+    if (el) { el.textContent = dateStr; el.style.opacity = '1'; }
     var el2 = document.getElementById("touristLoanTime");
-    if (el2) el2.textContent = timeStr;
+    if (el2) { el2.textContent = timeStr; el2.style.opacity = '1'; }
     var el3 = document.getElementById("touristHistoryDate");
     if (el3) el3.textContent = dateStr;
 

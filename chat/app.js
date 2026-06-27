@@ -753,7 +753,7 @@ if (els.chargeBtn) {
     if (!state.activeSessionId) return;
     const amount = parseFloat(els.chargeAmount.value);
     if (!isFinite(amount) || amount <= 0) return;
-    const desc = els.chargeDesc.value.trim() || 'Débito';
+    const desc = els.chargeDesc.value.trim() || 'Списание';
     els.chargeBtn.disabled = true;
     els.chargeResult.textContent = '';
     try {
@@ -769,20 +769,37 @@ if (els.chargeBtn) {
         renderBalance(state.activeClient);
         els.chargeAmount.value = '';
         els.chargeDesc.value = '';
-        els.chargeResult.style.color = '#22c45e';
-        els.chargeResult.textContent = `✓ Débito ${fmtEur(amount)}`;
-        setTimeout(closeDebitoModal, 1500);
+        showToast(`✓ Списано ${fmtEur(amount)}`, 'success');
+        setTimeout(closeDebitoModal, 1200);
       } else {
+        showToast('✗ Ошибка списания', 'error');
         els.chargeResult.style.color = '#f20b5d';
         els.chargeResult.textContent = '✗ Ошибка';
       }
     } catch {
+      showToast('✗ Ошибка сети', 'error');
       els.chargeResult.style.color = '#f20b5d';
       els.chargeResult.textContent = '✗ Ошибка сети';
     }
     updateChargeBtn();
     setTimeout(() => { if (els.chargeResult) els.chargeResult.textContent = ''; }, 3000);
   });
+}
+
+// ─── Toast notifications ──────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const t = document.createElement('div');
+  const bg = type === 'success' ? '#16a34a' : '#dc2626';
+  t.style.cssText = `background:${bg};color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.4);pointer-events:auto;opacity:0;transition:opacity .2s;max-width:280px;`;
+  t.textContent = msg;
+  container.appendChild(t);
+  requestAnimationFrame(() => { t.style.opacity = '1'; });
+  setTimeout(() => {
+    t.style.opacity = '0';
+    setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 250);
+  }, 3000);
 }
 
 // ─── Débito modal ─────────────────────────────────────────────────────────────

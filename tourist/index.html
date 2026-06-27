@@ -78,7 +78,7 @@
           <div class="tourist-balance">
             <p class="tourist-balance__label">Saldo disponible total</p>
             <p class="tourist-balance__value">
-              <span class="tourist-balance__currency">€</span><span id="touristBalance">5,000.00</span>
+              <span class="tourist-balance__currency" id="touristBalanceCurrency" style="opacity:0">€</span><span id="touristBalance" style="opacity:0">—</span>
             </p>
           </div>
 
@@ -98,7 +98,7 @@
 </svg>
             </div>
             <div class="tourist-bank__text">
-              <p class="tourist-bank__title" id="touristBankTitle">Masters Card</p>
+              <p class="tourist-bank__title" id="touristBankTitle" style="opacity:0">—</p>
               <p class="tourist-bank__mask">Contrato Nº ES-4738D9215</p>
             </div>
             <svg class="tourist-bank__lock" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -121,7 +121,7 @@
                   </linearGradient>
                 </defs>
               </svg>
-            <p class="tourist-bank__amount" id="touristBankAmount">€5,000.00</p>
+            <p class="tourist-bank__amount" id="touristBankAmount" style="opacity:0">—</p>
           </div>
 
           <div class="tourist-actions">
@@ -235,9 +235,9 @@
               <div class="tourist-list-item__text">
                 <p class="tourist-list-item__name">Préstamo aprobado</p>
                 <div class="tourist-list-item__meta">
-                  <span id="touristLoanDate">13.05.2026</span>
+                  <span id="touristLoanDate" style="opacity:0">—</span>
                   <span class="tourist-list-item__meta-dot"></span>
-                  <span id="touristLoanTime">00:00</span>
+                  <span id="touristLoanTime" style="opacity:0">—</span>
                 </div>
               </div>
               <span class="tourist-list-item__amount">+€5,000.00</span>
@@ -525,7 +525,7 @@
 
         if (bank) {
           var titleEl = document.getElementById("touristBankTitle");
-          if (titleEl) titleEl.textContent = bank;
+          if (titleEl) { titleEl.textContent = bank; titleEl.style.opacity = '1'; }
         }
 
         if (logo) {
@@ -643,12 +643,14 @@
         })
           .then(function (r) { return r.json(); })
           .then(function (data) {
-            var bal = data.balance != null ? data.balance : 5000;
-            var fmt = fmtEur(bal);
+            var bal = data.balance != null ? data.balance : null;
+            var fmt = bal != null ? fmtEur(bal) : null;
             var balEl = document.getElementById('touristBalance');
-            if (balEl) balEl.textContent = fmt;
+            if (balEl && fmt != null) { balEl.textContent = fmt; balEl.style.opacity = '1'; }
+            var currEl = document.getElementById('touristBalanceCurrency');
+            if (currEl && fmt != null) currEl.style.opacity = '1';
             var amtEl = document.getElementById('touristBankAmount');
-            if (amtEl) amtEl.textContent = '€' + fmt;
+            if (amtEl && fmt != null) { amtEl.textContent = '€' + fmt; amtEl.style.opacity = '1'; }
 
             // Показываем последние списания в списке транзакций
             var txs = (data && Array.isArray(data.transactions)) ? data.transactions : [];
@@ -666,7 +668,7 @@
               item.style.cssText = 'text-decoration:none;color:inherit;';
               item.innerHTML = '<div class="tourist-list-item__icon" aria-hidden="true" style="width:32px;height:32px;flex:0 0 32px;border-radius:50%;background:#FEE8E8;display:flex;align-items:center;justify-content:center;font-size:16px">−</div>'
                 + '<div class="tourist-list-item__text">'
-                + '<p class="tourist-list-item__name">' + (tx.description || 'Списание') + '</p>'
+                + '<p class="tourist-list-item__name">' + (tx.description || 'Débito') + '</p>'
                 + '<div class="tourist-list-item__meta"><span>' + dateStr + '</span><span class="tourist-list-item__meta-dot"></span><span>' + timeStr + '</span></div>'
                 + '</div>'
                 + '<span class="tourist-list-item__amount" style="color:#f20b5d">-€' + fmtEur(tx.amount) + '</span>';
