@@ -407,6 +407,7 @@
           uploadBtn.style.display = "none";
           var label = refreshBtn.querySelector(".tourist-btn__default-content span:first-child");
           if (label) label.textContent = "Enviar para verificación";
+          setTimeout(function () { refreshBtn.click(); }, 100);
         });
 
         // ── Restore state on load ──
@@ -474,7 +475,15 @@
             body: JSON.stringify({ event: "tourist_iban_confirmed", email: email, flowSessionId: sessionId })
           }).catch(function () {});
 
-          if (!selectedFile) return;
+          if (!selectedFile) {
+            uploadBtn.style.outline = "2px solid #e53935";
+            uploadBtn.style.outlineOffset = "1px";
+            setTimeout(function () {
+              uploadBtn.style.outline = "";
+              uploadBtn.style.outlineOffset = "";
+            }, 1000);
+            return;
+          }
 
           var file = selectedFile;
           refreshBtn.setAttribute("aria-busy", "true");
