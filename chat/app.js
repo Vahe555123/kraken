@@ -650,7 +650,7 @@ const ATTACH_MESSAGES = {
   'insurance-pay':  '[[INSURANCE_PAY]]',
   'insurance-done': '[[NOTIF_PDF]]',
   'commission-req': '[[NOTIF_PDF]]',
-  'commission-pay': 'Para proceder con el pago de la comisión, acceda a la sección de pago en la aplicación y complete el proceso.',
+  'commission-pay': '[[COMMISSION_PAY]]',
 };
 
 function openAttachMenu() {
