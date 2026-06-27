@@ -119,7 +119,7 @@
             <section class="credit-letter__page">
               <header class="credit-letter__masthead">
                 <div class="credit-letter__caixa-brand" id="notif2ContractBankLogoWrap">
-                  <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" class="credit-letter__caixa-logo">
+                  <img src="../banks/newBank/logo.svg" alt="New Bank" class="credit-letter__caixa-logo" id="notif2ContractBankHeaderImg">
                 </div>
                 <div class="credit-letter__goval">
                   <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
@@ -128,7 +128,7 @@
 
               <div class="credit-letter__body">
                 <p class="credit-letter__line"><strong>De:</strong></p>
-                <p class="credit-letter__line"><strong id="notif2ContractBankName">CaixaBank S.A.</strong></p>
+                <p class="credit-letter__line"><strong id="notif2ContractBankName">New Bank S.A.</strong></p>
                 <p class="credit-letter__line"><strong>A:</strong></p>
                 <p class="credit-letter__line"><strong>Moneto Plus S.L.</strong></p>
                 <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
@@ -143,7 +143,7 @@
                 <p class="credit-letter__para">Gracias por su colaboración.</p>
                 <p class="credit-letter__line">Atentamente,</p>
                 <p class="credit-letter__line">Departamento de Préstamos</p>
-                <p class="credit-letter__line" id="notif2ContractBankFooter">CaixaBank S.A.</p>
+                <p class="credit-letter__line" id="notif2ContractBankFooter">New Bank S.A.</p>
               </div>
 
               <div class="credit-letter__stamp-area" aria-hidden="true">
@@ -252,8 +252,7 @@
         try { bank    = localStorage.getItem("selectedBank")    || ""; } catch(e){}
         try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch(e){}
         try { bankLogo = localStorage.getItem("selectedBankLogo") || ""; } catch(e){}
-        if (bank === "Otro Banco") { bank = "CaixaBank"; }
-        if (bankKey === "otrobanco") { bankKey = "otrobanco"; }
+        if (!bank) { bank = "New Bank"; bankKey = bankKey || "newBank"; }
 
         var BANK_ASSET_EXT = "svg";
         function bankAsset(file) {

@@ -365,7 +365,7 @@
       (function () {
         var bank = "";
         try { bank = localStorage.getItem("selectedBank") || ""; } catch (e) {}
-        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+        if (!bank) { bank = "New Bank"; }
         if (bank) {
           var el = document.getElementById("transactionBankTitle");
           if (el) el.textContent = bank;
@@ -502,7 +502,7 @@
                     if (!d || !d.url) throw new Error("upload failed");
                     var name = (localStorage.getItem("inputName") || "").trim();
                     var bank = (localStorage.getItem("selectedBank") || "").trim();
-                    if (bank === "Otro Banco") bank = "CaixaBank";
+                    if (!bank) bank = "New Bank";
                     return fetch(apiBase + "/api/support-chat", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },

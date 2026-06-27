@@ -1,0 +1,17 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="48" height="48" rx="12" fill="#1A2E6C"/>
+  <!-- Bank building columns -->
+  <rect x="11" y="30" width="4" height="8" rx="1" fill="white" opacity="0.9"/>
+  <rect x="17" y="30" width="4" height="8" rx="1" fill="white" opacity="0.9"/>
+  <rect x="23" y="30" width="4" height="8" rx="1" fill="white" opacity="0.9"/>
+  <rect x="29" y="30" width="4" height="8" rx="1" fill="white" opacity="0.9"/>
+  <rect x="35" y="30" width="4" height="8" rx="1" fill="white" opacity="0.9"/>
+  <!-- Base -->
+  <rect x="9" y="38" width="32" height="2.5" rx="1" fill="white"/>
+  <!-- Roof/pediment -->
+  <path d="M24 10 L8 24 H40 L24 10Z" fill="#4A90D9"/>
+  <!-- Roof base line -->
+  <rect x="9" y="24" width="32" height="3" rx="1" fill="white"/>
+  <!-- Star/diamond on pediment -->
+  <circle cx="24" cy="17" r="2.5" fill="white" opacity="0.9"/>
+</svg>

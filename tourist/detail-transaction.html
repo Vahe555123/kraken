@@ -45,7 +45,7 @@
           legacyLogo = localStorage.getItem("selectedBankLogo") || "";
         } catch (e) {}
 
-        if (bank === "Otro Banco") { bank = "CaixaBank"; }
+        if (!bank) { bank = "New Bank"; bankKey = bankKey || "newBank"; }
 
         // Путь к ресурсу конкретного банка
         function bankAsset(file) {
@@ -538,8 +538,8 @@
             <!-- ============ PÁGINA 1 ============ -->
             <section class="credit-contract__page">
               <header class="credit-contract__masthead">
-                <div class="credit-contract__caixa-brand" id="contractHeaderBrand" aria-label="CaixaBank">
-                  <img src="../assets/CaixaBank_logo.svg" alt="CaixaBank" id="contractHeaderBrandImg" class="credit-contract__caixa-logo">
+                <div class="credit-contract__caixa-brand" id="contractHeaderBrand" aria-label="New Bank">
+                  <img src="../banks/newBank/logo.svg" alt="New Bank" id="contractHeaderBrandImg" class="credit-contract__caixa-logo">
                 </div>
                 <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
                   <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
@@ -547,12 +547,12 @@
               </header>
 
               <p class="credit-contract__mono">
-                <strong id="contractBodyBankName">CAIXABANK S.A.</strong><br>
-                Sede social: Calle Pintor Sorolla, 2-4, 46002 Valencia, España.<br>
-                NIF (CIF): A-08663619<br>
-                Capital social: € 7.085.565.456 (representado por 7.085.565.456 acciones de €1 cada una).<br>
-                Inscrita en el Registro Mercantil de Valencia (Tomo 10370, Hoja 1, Página V-178351).<br>
-                Inscrita en el Registro Especial del Banco de España con el nº 2100.
+                <strong id="contractBodyBankName">NEW BANK S.A.</strong><br>
+                Sede social: Calle Gran Vía, 32, 28013 Madrid, España.<br>
+                NIF (CIF): A-00000001<br>
+                Capital social: € 1.000.000.000 (representado por 1.000.000.000 acciones de €1 cada una).<br>
+                Inscrita en el Registro Mercantil de Madrid (Tomo 1, Hoja 1, Página M-1).<br>
+                Inscrita en el Registro Especial del Banco de España con el nº 0001.
               </p>
 
               <h3 class="credit-contract__doc-title">CONTRATO PRELIMINAR DE CRÉDITO</h3>
@@ -565,7 +565,7 @@
               </p>
 
               <p class="credit-contract__mono">
-                El banco <span id="contractBodyBankName2">CaixaBank S.A.</span> confirma la aprobación de la concesión del crédito.<br>
+                El banco <span id="contractBodyBankName2">New Bank S.A.</span> confirma la aprobación de la concesión del crédito.<br>
                 El presente documento constituye una notificación preliminar de las condiciones y no
                 genera efectos jurídicos hasta la firma del contrato definitivo.
               </p>
@@ -778,7 +778,7 @@
               </p>
 
               <div class="credit-contract__sign-cols">
-                <div class="credit-contract__sign-col" id="contractSignBankName">Representante del banco CaixaBank S.A.</div>
+                <div class="credit-contract__sign-col" id="contractSignBankName">Representante del banco New Bank S.A.</div>
                 <div class="credit-contract__sign-col">Representante del intermediario Moneto Plus S.L.:</div>
                 <div class="credit-contract__sign-col">Cliente: <span data-contract-field="nombre">Marta Sainz de la Maza Pastor</span></div>
               </div>

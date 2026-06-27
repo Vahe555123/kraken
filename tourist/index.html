@@ -521,7 +521,7 @@
         var bankKey = "";
         try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch (e) {}
 
-        if (bankKey === "otrobanco") { logo = "../banks/caixabank/icon.svg"; bank = "CaixaBank"; }
+        if (!bank) { logo = "../banks/newBank/icon.svg"; bank = "New Bank"; }
 
         if (bank) {
           var titleEl = document.getElementById("touristBankTitle");
