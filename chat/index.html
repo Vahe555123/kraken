@@ -116,6 +116,22 @@
               <textarea data-comment-input maxlength="95"></textarea>
             </form>
           </section>
+
+          <section class="panel">
+            <h2>Баланс / Списание</h2>
+            <p style="margin:10px 0 14px;font-size:13px;color:var(--muted)">Баланс: <strong id="clientBalanceDisp" style="color:var(--text);font-size:15px">—</strong></p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <input id="chargeAmountInp" type="number" min="0.01" step="0.01" placeholder="Сумма (€)"
+                style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:8px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;" />
+              <input id="chargeDescInp" type="text" maxlength="200" placeholder="Описание (необязательно)"
+                style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:8px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;" />
+              <button id="chargeBtnEl" type="button" disabled
+                style="background:#1166ff;border:none;border-radius:8px;padding:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">
+                Списать
+              </button>
+              <span id="chargeResultMsg" style="font-size:12px;min-height:16px;text-align:center;display:block"></span>
+            </div>
+          </section>
         </aside>
       </section>
 

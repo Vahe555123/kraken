@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "WebClient" ADD COLUMN "balance" DOUBLE PRECISION NOT NULL DEFAULT 5000;
+ALTER TABLE "WebClient" ADD COLUMN "transactions" JSONB;

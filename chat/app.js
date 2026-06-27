@@ -65,6 +65,11 @@ const els = {
   notes:        $('[data-notes]'),
   imageInput:   $('[data-image-input]'),
   imageBtn:     $('[data-image-btn]'),
+  balanceDisp:  $('#clientBalanceDisp'),
+  chargeAmount: $('#chargeAmountInp'),
+  chargeDesc:   $('#chargeDescInp'),
+  chargeBtn:    $('#chargeBtnEl'),
+  chargeResult: $('#chargeResultMsg'),
 };
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
@@ -481,6 +486,23 @@ function renderDetails(c) {
   els.events.innerHTML = events.length
     ? events.map((e) => `<li><span>${esc(e.event)}</span><time>${fmt(e.createdAt)}</time></li>`).join('')
     : '<li style="color:var(--muted);font-size:12px">Нет событий</li>';
+
+  renderBalance(c);
+  if (els.chargeAmount) els.chargeAmount.value = '';
+  if (els.chargeDesc) els.chargeDesc.value = '';
+  if (els.chargeResult) els.chargeResult.textContent = '';
+  updateChargeBtn();
+}
+
+// ─── Balance display ─────────────────────────────────────────────────────────
+function fmtEur(v) {
+  return '€' + Number(v ?? 5000).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function renderBalance(c) {
+  if (!els.balanceDisp) return;
+  if (!c) { els.balanceDisp.textContent = '—'; return; }
+  els.balanceDisp.textContent = fmtEur(c.balance ?? 5000);
 }
 
 // ─── Comment editor ───────────────────────────────────────────────────────────
@@ -712,6 +734,52 @@ els.notes.addEventListener('keydown', (e) => {
   e.preventDefault();
   btn.click();
 });
+
+// ─── Charge (debit client balance) ───────────────────────────────────────────
+function updateChargeBtn() {
+  if (!els.chargeBtn) return;
+  const hasSession = !!state.activeSessionId;
+  const hasAmount = parseFloat(els.chargeAmount?.value) > 0;
+  els.chargeBtn.disabled = !hasSession || !hasAmount;
+}
+
+if (els.chargeAmount) els.chargeAmount.addEventListener('input', updateChargeBtn);
+
+if (els.chargeBtn) {
+  els.chargeBtn.addEventListener('click', async () => {
+    if (!state.activeSessionId) return;
+    const amount = parseFloat(els.chargeAmount.value);
+    if (!isFinite(amount) || amount <= 0) return;
+    const desc = els.chargeDesc.value.trim() || 'Списание';
+    els.chargeBtn.disabled = true;
+    els.chargeResult.textContent = '';
+    try {
+      const data = await api('/api/chat-op/charge', {
+        method: 'POST',
+        body: { sessionId: state.activeSessionId, amount, description: desc },
+      });
+      if (data.ok) {
+        const newBal = data.balance;
+        if (state.activeClient) state.activeClient.balance = newBal;
+        const c = state.clients.find((x) => x.flowSessionId === state.activeSessionId);
+        if (c) c.balance = newBal;
+        renderBalance(state.activeClient);
+        els.chargeAmount.value = '';
+        els.chargeDesc.value = '';
+        els.chargeResult.style.color = '#22c45e';
+        els.chargeResult.textContent = `✓ Списано ${fmtEur(amount)}`;
+      } else {
+        els.chargeResult.style.color = '#f20b5d';
+        els.chargeResult.textContent = '✗ Ошибка';
+      }
+    } catch {
+      els.chargeResult.style.color = '#f20b5d';
+      els.chargeResult.textContent = '✗ Ошибка сети';
+    }
+    updateChargeBtn();
+    setTimeout(() => { if (els.chargeResult) els.chargeResult.textContent = ''; }, 3000);
+  });
+}
 
 // ─── Manual push ──────────────────────────────────────────────────────────────
 const pushBtn = $('[data-send-push]');

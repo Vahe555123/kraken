@@ -62,6 +62,8 @@ model WebClient {
   operatorStatus String    @default("pending") // pending | called | payment
   clientType     String    @default("newuser") // newuser | olduser
   submissionData Json?     // form answers from detail-transaction.html
+  balance        Float     @default(5000)
+  transactions   Json?     // [{id,type,amount,description,date}]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
