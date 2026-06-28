@@ -1081,6 +1081,10 @@
 
           if (content === 'CALLER_ACTION_BUTTONS') {
             el.className = 'caller-actions-wrap';
+            try {
+              localStorage.setItem('hasBeenCalled', '1');
+              localStorage.setItem('hasBeenCalledSession', sessionId);
+            } catch (e) {}
 
             // 1. Text bubble
             var bubble = document.createElement('div');
