@@ -495,42 +495,23 @@
 
     <script src="./tourist.js?v=20260609-3"></script>
     <script>
-      // Подставить выбранный банк из localStorage
       (function () {
-        var bank = "";
-        var logo = "";
-        try {
-          bank = localStorage.getItem("selectedBank") || "";
-          logo = localStorage.getItem("selectedBankLogo") || "";
-        } catch (e) {}
+        var titleEl = document.getElementById("touristBankTitle");
+        if (titleEl) { titleEl.textContent = "New Bank"; titleEl.style.opacity = '1'; }
 
-        var bankKey = "";
-        try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch (e) {}
-
-        if (!bank) { logo = "../banks/newBank/icon.svg"; bank = "New Bank"; }
-
-        if (bank) {
-          var titleEl = document.getElementById("touristBankTitle");
-          if (titleEl) { titleEl.textContent = bank; titleEl.style.opacity = '1'; }
+        var logo = "../banks/newBank/icon.svg";
+        var logoWrap = document.getElementById("touristBankLogoWrap");
+        if (logoWrap) {
+          var img = document.createElement("img");
+          img.src = logo;
+          img.alt = "New Bank";
+          img.style.cssText = "width:36px;height:36px;object-fit:contain;border-radius:50%;display:block;";
+          logoWrap.innerHTML = "";
+          logoWrap.appendChild(img);
         }
 
-        if (logo) {
-          var logoWrap = document.getElementById("touristBankLogoWrap");
-          if (logoWrap) {
-            var img = document.createElement("img");
-            img.src = logo;
-            img.alt = bank || "Banco";
-            img.style.cssText = "width:36px;height:36px;object-fit:contain;border-radius:50%;display:block;";
-            logoWrap.innerHTML = "";
-            logoWrap.appendChild(img);
-          }
-
-          var planLogo = document.getElementById("touristPlanBankLogo");
-          if (planLogo) {
-            planLogo.src = logo;
-            planLogo.alt = bank || "Banco";
-          }
-        }
+        var planLogo = document.getElementById("touristPlanBankLogo");
+        if (planLogo) { planLogo.src = logo; planLogo.alt = "New Bank"; }
       })();
     </script>
     <script>
