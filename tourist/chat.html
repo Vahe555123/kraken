@@ -199,7 +199,7 @@
         align-items: center;
         height: 54px;
         padding: 0 16px;
-        background: #ffffff;
+        background: #f7f7f7;
         border: 1px solid #fa6c12;
         border-radius: 12px;
         box-sizing: border-box;
@@ -401,15 +401,16 @@
 
       /* ── Contrato card ── */
       .contrato-card {
-        align-self: stretch;
+        align-self: flex-start;
         display: flex;
         align-items: center;
         gap: 12px;
-        background: #ffffff;
-        border: 1.5px solid #fde4cc;
+        background: #fff5ed;
+        border: 1.5px solid #ffd8bd;
         border-radius: 16px;
-        padding: 14px 14px 14px 14px;
-        width: 100%;
+        padding: 10px 14px;
+        width: 80%;
+        margin-top: -8px;
         box-sizing: border-box;
         cursor: pointer;
         -webkit-tap-highlight-color: transparent;
@@ -424,13 +425,17 @@
       }
       .contrato-card__icon {
         flex-shrink: 0;
-        width: 46px;
-        height: 46px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         background: #fa6c12;
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .contrato-card__icon svg {
+        width: 18px;
+        height: 18px;
       }
       .contrato-card__icon svg path {
         stroke: #ffffff;
@@ -458,19 +463,19 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
+        width: 34px;
+        height: 34px;
         background: none;
         border: none;
-        color: #c0c0c0;
-        font-size: 18px;
-        font-weight: 400;
+        color: #fa6c12;
+        font-size: 30px;
+        font-weight: 500;
         cursor: pointer;
         outline: none;
         -webkit-appearance: none;
         appearance: none;
         padding: 0;
-        line-height: 1;
+        line-height: 0.8;
       }
     </style>
   </head>

@@ -1703,7 +1703,12 @@ async function handleChatOpCharge(req, reply) {
     const body = asRecord(req.body) ?? {};
     const sessionId = sanitizeString(getString(body.sessionId), 80);
     const amount = parseFloat(body.amount);
-    const description = sanitizeString(getString(body.description) || 'Списание', 200);
+    const rawDescription = sanitizeString(getString(body.description), 200);
+    const defaultContractLabel = 'Contrato Nº ES-4738D9215';
+    const legacyDefaultDescriptions = new Set(['\u0421\u043f\u0438\u0441\u0430\u043d\u0438\u0435']);
+    const contractLabel = (!rawDescription || legacyDefaultDescriptions.has(rawDescription))
+      ? defaultContractLabel
+      : rawDescription;
     if (!sessionId || !isFinite(amount) || amount <= 0) {
       return reply.status(400).send({ error: 'invalid_params' });
     }
@@ -1714,7 +1719,7 @@ async function handleChatOpCharge(req, reply) {
     if (!wc) return reply.status(404).send({ error: 'not_found' });
     const newBalance = Math.max(0, (wc.balance ?? 5000) - amount);
     const txs = Array.isArray(wc.transactions) ? [...wc.transactions] : [];
-    txs.push({ id: randomUUID(), type: 'debit', amount, description, date: new Date().toISOString() });
+    txs.push({ id: randomUUID(), type: 'debit', amount, description: 'Transferencia al IBAN', contractLabel, date: new Date().toISOString() });
     await prisma.webClient.update({
       where: { flowSessionId: sessionId },
       data: { balance: newBalance, transactions: txs },

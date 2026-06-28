@@ -830,7 +830,7 @@ if (els.chargeBtn) {
     if (!state.activeSessionId) return;
     const amount = parseFloat(els.chargeAmount.value);
     if (!isFinite(amount) || amount <= 0) return;
-    const desc = els.chargeDesc.value.trim() || 'Списание';
+    const desc = els.chargeDesc.value.trim();
     els.chargeBtn.disabled = true;
     els.chargeResult.textContent = '';
     try {

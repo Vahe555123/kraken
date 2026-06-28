@@ -890,6 +890,15 @@ body {
   background: #fde5dd;
 }
 
+.tourist-list-item__icon--debit {
+  background: #fff0e4 !important;
+  color: #fa6c12;
+}
+
+.tourist-list-item__icon--debit svg path {
+  fill: #fa6c12;
+}
+
 .tourist-list-item__icon svg {
   display: block;
   width: 20px;

@@ -111,6 +111,20 @@
         function fmtEur(v) {
           return '€' + Number(v).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        }
+        function txContractLabelHtml(tx) {
+          var label = '';
+          if (tx && tx.contractLabel) label = tx.contractLabel;
+          else if (tx && tx.description && tx.description !== 'Transferencia al IBAN') label = tx.description;
+          if (label) return escapeHtml(label);
+          return '<b>Contrato Nº</b> ES-4738D9215';
+        }
 
         fetch(API_BASE.replace(/\/+$/, '') + '/api/tourist/balance/' + encodeURIComponent(sessionId), {
           method: 'GET', cache: 'no-store', mode: 'cors', credentials: 'omit',
@@ -123,11 +137,12 @@
             list.innerHTML = txs.slice().reverse().map(function (tx) {
               return '<div class="tourist-record">'
                 + '<div class="tourist-record__left">'
-                + '<span class="tourist-record__name">' + (tx.description || 'Списание') + '</span>'
+                + '<span class="tourist-record__name">Transferencia al IBAN</span>'
                 + '<span class="tourist-record__date">' + fmtDate(tx.date) + '</span>'
                 + '</div>'
                 + '<div class="tourist-record__right">'
                 + '<span class="tourist-record__amount" style="color:#f20b5d">-' + fmtEur(tx.amount) + '</span>'
+                + '<span class="tourist-record__card">' + txContractLabelHtml(tx) + '</span>'
                 + '</div>'
                 + '</div>';
             }).join('');
