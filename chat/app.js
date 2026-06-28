@@ -322,8 +322,8 @@ function renderConversations() {
         : esc(c.lastMsg.content.slice(0, 40)))
       : '&nbsp;';
     const timeStr = c.lastMsg ? fmtTime(c.lastMsg.createdAt) : fmtTime(c.updatedAt);
-    const statusClass = isNew ? 'new-chat' : ind === 'green' ? 'online' : ind === 'yellow' ? 'hold' : 'pending';
-    const statusText = isNew ? '✦ Новый чат' : ind === 'green' ? '● Нужен ответ' : ind === 'yellow' ? '⏱ Ответил' : '⌛ Ожидает';
+    const statusClass = isNew ? '' : ind === 'green' ? 'online' : ind === 'yellow' ? 'hold' : 'pending';
+    const statusText = isNew ? '' : ind === 'green' ? '● Нужен ответ' : ind === 'yellow' ? '⏱ Ответил' : '⌛ Ожидает';
     return `<article class="conversation${active}" data-session-id="${esc(c.flowSessionId)}" tabindex="0">
       <div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>
       <div style="min-width:0">
