@@ -1515,7 +1515,7 @@ async function handleChatOpClients(req, reply) {
   if (!requireChatOp(req, reply)) return;
   try {
     const clients = await prisma.webClient.findMany({
-      where: { OR: [{ operatorCalled: true }, { status: 'ЧАТ: НУЖЕН ЗВОНОК' }, { status: 'ЧАТ: АКТИВЕН' }] },
+      where: { OR: [{ operatorCalled: true }, { status: 'ЧАТ: НУЖЕН ЗВОНОК' }, { status: 'ЧАТ: АКТИВЕН' }, { status: 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)' }] },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true, flowSessionId: true, nombre: true, email: true, bank: true,
