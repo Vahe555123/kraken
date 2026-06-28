@@ -74,9 +74,9 @@
         var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1"
           && localStorage.getItem("hasBeenCalledSession") === sessionId;
 
-        // Только если оператор пометил «Прозвонил» (для текущей сессии) — открываем notifications2
+        // Только если оператор пометил «Прозвонил» (для текущей сессии) — открываем notifications3
         if (hasEverBeenCalled) {
-          window.location.replace("./notifications2.html");
+          window.location.replace("./notifications3.html");
         } else {
           localStorage.setItem("notifInitialRead", "1");
           window.location.replace("./notifications.html");
