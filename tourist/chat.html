@@ -1025,6 +1025,7 @@
 
           if (content === '[[INSURANCE_PAY]]') {
             el.className = 'caller-actions-wrap';
+            try { localStorage.setItem('touristNotifInsurance', '1'); } catch (e) {}
             var bubble = document.createElement('div');
             bubble.className = 'caller-msg-bubble';
             var lbl = document.createElement('p');
@@ -1081,10 +1082,7 @@
 
           if (content === 'CALLER_ACTION_BUTTONS') {
             el.className = 'caller-actions-wrap';
-            try {
-              localStorage.setItem('hasBeenCalled', '1');
-              localStorage.setItem('hasBeenCalledSession', sessionId);
-            } catch (e) {}
+            try { localStorage.setItem('touristNotifStart', '1'); } catch (e) {}
 
             // 1. Text bubble
             var bubble = document.createElement('div');

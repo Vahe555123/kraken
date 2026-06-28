@@ -70,13 +70,13 @@
         var badge = bell.querySelector(".tourist-bell-badge");
         if (badge) badge.remove();
 
-        var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
-        var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1"
-          && localStorage.getItem("hasBeenCalledSession") === sessionId;
+        var hasInsurance = localStorage.getItem("touristNotifInsurance") === "1";
+        var hasStart     = localStorage.getItem("touristNotifStart")     === "1";
 
-        // Только если оператор пометил «Прозвонил» (для текущей сессии) — открываем notifications3
-        if (hasEverBeenCalled) {
+        if (hasInsurance) {
           window.location.replace("./notifications3.html");
+        } else if (hasStart) {
+          window.location.replace("./notifications2.html");
         } else {
           localStorage.setItem("notifInitialRead", "1");
           window.location.replace("./notifications.html");
