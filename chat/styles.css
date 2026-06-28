@@ -418,6 +418,52 @@ h2 {
   color: var(--yellow);
 }
 
+.new-chat {
+  color: #3b9eff;
+  font-weight: 600;
+}
+
+.new-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1166ff;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  border-radius: 5px;
+  padding: 2px 6px;
+  line-height: 1.4;
+}
+
+#startChatBar {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  align-items: center;
+  justify-content: center;
+}
+
+#startChatBtn {
+  width: 100%;
+  padding: 12px;
+  background: #22c45e;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .03em;
+  transition: background .15s;
+}
+
+#startChatBtn:hover {
+  background: #1aaa4e;
+}
+
 .conversation-meta {
   display: flex;
   flex-direction: column;

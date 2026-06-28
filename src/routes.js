@@ -1598,6 +1598,10 @@ async function handleChatOpSend(req, reply) {
       update: {},
     });
     await prisma.message.create({ data: { leadId: lead.id, role: 'SYSTEM', content: message } });
+    await prisma.webClient.updateMany({
+      where: { flowSessionId: sessionId, status: 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)' },
+      data: { status: 'ЧАТ: АКТИВЕН' },
+    });
     // Schedule push notification if client doesn't respond within configured delay
     schedulePush(sessionId);
     return reply.send({ ok: true });

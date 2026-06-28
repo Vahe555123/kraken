@@ -73,7 +73,11 @@ const els = {
   debitoBtn:    $('#debitoBtn'),
   debitoModal:  $('#debitoModal'),
   debitoClose:  $('#debitoModalClose'),
+  startChatBar: $('#startChatBar'),
+  startChatBtn: $('#startChatBtn'),
 };
+
+const STATUS_NEW = 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)';
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 function isImg(s) { return typeof s === 'string' && s.startsWith('/uploads/'); }
@@ -301,13 +305,16 @@ function renderConversations() {
   els.conversations.innerHTML = page.map((c) => {
     const name = c.nombre || c.email || 'Cliente';
     const ind = getIndicator(c.lastMsg);
+    const isNew = c.status === STATUS_NEW;
     const dot = c.paymentPending
       ? '<span class="coin-indicator" aria-label="Ожидает оплаты">💰</span>'
-      : ind === 'green'
-        ? '<span class="reply-needed" style="background:var(--green)" aria-label="Нужен ответ"></span>'
-        : ind === 'yellow'
-          ? '<span class="reply-needed" style="background:var(--yellow);animation:none" aria-label="Ответил"></span>'
-          : '';
+      : isNew
+        ? '<span class="new-badge">NEW</span>'
+        : ind === 'green'
+          ? '<span class="reply-needed" style="background:var(--green)" aria-label="Нужен ответ"></span>'
+          : ind === 'yellow'
+            ? '<span class="reply-needed" style="background:var(--yellow);animation:none" aria-label="Ответил"></span>'
+            : '';
     const active = c.flowSessionId === state.activeSessionId ? ' active' : '';
     const preview = c.lastMsg
       ? (isPaymentScreenshot(c.lastMsg.content) ? '📎 Скриншот оплаты'
@@ -315,14 +322,14 @@ function renderConversations() {
         : esc(c.lastMsg.content.slice(0, 40)))
       : '&nbsp;';
     const timeStr = c.lastMsg ? fmtTime(c.lastMsg.createdAt) : fmtTime(c.updatedAt);
+    const statusClass = isNew ? 'new-chat' : ind === 'green' ? 'online' : ind === 'yellow' ? 'hold' : 'pending';
+    const statusText = isNew ? '✦ Новый чат' : ind === 'green' ? '● Нужен ответ' : ind === 'yellow' ? '⏱ Ответил' : '⌛ Ожидает';
     return `<article class="conversation${active}" data-session-id="${esc(c.flowSessionId)}" tabindex="0">
       <div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>
       <div style="min-width:0">
         <strong>${esc(name)}</strong>
         <p style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${preview}</p>
-        <small class="${ind === 'green' ? 'online' : ind === 'yellow' ? 'hold' : 'pending'}">
-          ${ind === 'green' ? '● Нужен ответ' : ind === 'yellow' ? '⏱ Ответил' : '⌛ Ожидает'}
-        </small>
+        <small class="${statusClass}">${statusText}</small>
       </div>
       <div class="conversation-meta"><time>${timeStr}</time>${dot}</div>
     </article>`;
@@ -350,6 +357,16 @@ function renderPagination(totalPages) {
     `<button type="button" class="page-arrow"${nextDis} data-page-shift="1" aria-label="Вперёд">›</button>`;
 }
 
+// ─── Start bar (NEW chats) ────────────────────────────────────────────────────
+function renderStartBar() {
+  const c = state.activeClient;
+  const isNew = c && c.status === STATUS_NEW;
+  const hasOperatorMsg = state.activeMessages.some((m) => m.role === 'operator' || m.role === 'system');
+  const show = isNew && !hasOperatorMsg;
+  if (els.startChatBar) els.startChatBar.style.display = show ? 'flex' : 'none';
+  if (els.messageForm) els.messageForm.style.display = show ? 'none' : '';
+}
+
 // ─── Select client ────────────────────────────────────────────────────────────
 async function selectClient(sessionId) {
   state.activeSessionId = sessionId;
@@ -366,6 +383,7 @@ async function selectClient(sessionId) {
   renderCallControls();
   renderDetails(c);
 
+  renderStartBar();
   try {
     const data = await api('/api/chat-op/messages/' + encodeURIComponent(sessionId));
     state.activeMessages = data.messages || [];
@@ -375,6 +393,7 @@ async function selectClient(sessionId) {
     renderMessages(state.activeMessages, data.callerNote);
     renderDetails(state.activeClient);
     renderCommentEditor(data.callerNote || '');
+    renderStartBar();
   } catch {}
 
   startMsgPoll();
@@ -699,6 +718,19 @@ async function sendOperatorMsg(text) {
     if (c) c.lastMsg = tmpMsg;
     renderConversations();
   } catch {}
+}
+
+// Start button for new chats
+if (els.startChatBtn) {
+  els.startChatBtn.addEventListener('click', async () => {
+    if (!state.activeSessionId) return;
+    await sendOperatorMsg('CALLER_ACTION_BUTTONS');
+    const c = state.clients.find((x) => x.flowSessionId === state.activeSessionId);
+    if (c) c.status = 'ЧАТ: АКТИВЕН';
+    if (state.activeClient) state.activeClient.status = 'ЧАТ: АКТИВЕН';
+    renderStartBar();
+    renderConversations();
+  });
 }
 
 // Toggle menu on paperclip click
