@@ -513,16 +513,12 @@
           if (!list) return;
           var start = (currentPage - 1) * pageSize;
           var pageItems = reviews.slice(start, start + pageSize);
-          var savedReview = getPublishedReview();
-          list.innerHTML = pageItems.map(function (review, idx) {
-            var isMine = savedReview && start === 0 && idx === 0
-              && review.name === savedReview.name && review.text === savedReview.text;
+          list.innerHTML = pageItems.map(function (review) {
             var photo = review.image
               ? '<button type="button" class="tourist-review-card__media" data-review-image="' + escapeHtml(review.image) + '" aria-label="Ver imagen de la opinion"><img class="tourist-review-card__photo" src="' + escapeHtml(review.image) + '" alt=""><span class="tourist-review-card__zoom" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25 13.5C11.1495 13.5 13.5 11.1495 13.5 8.25C13.5 5.35051 11.1495 3 8.25 3C5.35051 3 3 5.35051 3 8.25C3 11.1495 5.35051 13.5 8.25 13.5Z" stroke="currentColor" stroke-width="1.4"/><path d="M12.2 12.2L15 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span></button>'
               : "";
             return [
-              '<article class="tourist-review-card' + (isMine ? ' tourist-review-card--mine' : '') + '">',
-                isMine ? '<span class="tourist-review-card__mine-badge">Tu opinión</span>' : '',
+              '<article class="tourist-review-card">',
                 '<div class="tourist-review-card__top">',
                   '<div class="tourist-review-card__avatar" aria-hidden="true">' + escapeHtml(review.name.charAt(0)) + '</div>',
                   '<div class="tourist-review-card__person">',
@@ -590,25 +586,17 @@
           }
         });
 
-        function lockReviewForm(message, savedReview) {
+        function lockReviewForm(message) {
           if (!form) return;
           form.classList.add("is-locked");
           form.hidden = true;
-          if (publishedBox) {
-            publishedBox.hidden = false;
-            if (savedReview && savedReview.name && savedReview.text) {
-              var nameEl = publishedBox.querySelector(".tourist-review-published__name");
-              var previewEl = publishedBox.querySelector(".tourist-review-published__preview");
-              if (nameEl) nameEl.textContent = savedReview.name;
-              if (previewEl) previewEl.textContent = savedReview.text.length > 120 ? savedReview.text.substring(0, 120) + "\u2026" : savedReview.text;
-            }
-          }
+          if (publishedBox) publishedBox.hidden = false;
           if (note) note.textContent = message || "Ya has publicado tu opini\u00f3n.";
         }
 
         if (form) {
           if (hasPublishedReview()) {
-            lockReviewForm("Ya has publicado tu opini\u00f3n.", getPublishedReview());
+            lockReviewForm("Ya has publicado tu opini\u00f3n.");
           }
 
           form.addEventListener("submit", function (event) {
@@ -630,7 +618,7 @@
             savePublishedReview(review);
             currentPage = 1;
             form.reset();
-            lockReviewForm("Gracias. Tu opini\u00f3n se ha publicado.", review);
+            lockReviewForm("Gracias. Tu opini\u00f3n se ha publicado.");
             renderReviews();
           });
         }
