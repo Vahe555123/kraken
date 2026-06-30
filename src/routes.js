@@ -20,6 +20,10 @@ import { buildSystemPrompt } from './ai/promptBuilder.js';
 import { randomUUID } from 'node:crypto';
 import { sendPush } from './firebase.js';
 
+// ── Captcha-passed sessions (in-memory; reset on restart) ────────────────────
+const captchaPassedSessions = new Set();
+const tokenToSession = new Map(); // accessToken → flowSessionId
+
 // ── Sessions with 72-hour TTL, persisted to disk ─────────────────────────────
 const SESSION_TTL = 72 * 60 * 60 * 1000;
 const SESSIONS_FILE = join(process.cwd(), 'data', 'sessions.json');
@@ -254,6 +258,7 @@ async function resolveGeo(req, ip) {
 
 function buildBotResponse(flowSessionId, extra = {}) {
   const { token, shortId } = createAccessToken();
+  if (flowSessionId) tokenToSession.set(token, flowSessionId);
   const json = {
     status: true,
     url: config.redirects.botRedirectUrl || '',
@@ -280,6 +285,8 @@ async function handleScratchAccess(req, reply) {
   reply.header('Pragma', 'no-cache');
   reply.header('Expires', '0');
   if (!isGranted(token)) return reply.send({ allowed: false });
+  const grantedSession = tokenToSession.get(token);
+  if (grantedSession) captchaPassedSessions.add(grantedSession);
   return reply.send({
     allowed: true,
     status: false,
@@ -412,6 +419,8 @@ async function handleScratchVerify(req, reply) {
       sendGrantButton(lines.join('\n'), shortId);
       return reply.send(json);
     }
+
+    if (flowSessionId) captchaPassedSessions.add(flowSessionId);
 
     return reply.send({
       status: false,
@@ -1331,6 +1340,14 @@ async function handleSupportChat(req, reply) {
 
     // If AI is disabled — save the message for audit but don't call AI
     if (!lead.aiEnabled) {
+      if (message) {
+        await prisma.message.create({ data: { leadId: lead.id, role: 'USER', content: message } });
+      }
+      return reply.send({ reply: '' });
+    }
+
+    // Block AI for sessions that haven't passed captcha
+    if (!captchaPassedSessions.has(sessionId)) {
       if (message) {
         await prisma.message.create({ data: { leadId: lead.id, role: 'USER', content: message } });
       }
