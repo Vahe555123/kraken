@@ -887,6 +887,7 @@ h2 {
   max-height: 220px;
   border-radius: 8px;
   object-fit: cover;
+  cursor: zoom-in;
 }
 .bubble.bubble--image.incoming { background: #111e31; }
 .bubble.bubble--image.outgoing { background: var(--blue-2); }

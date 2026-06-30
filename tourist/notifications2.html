@@ -7,6 +7,76 @@
 
     <link rel="stylesheet" href="../CSS/link-bank.css" />
     <link rel="stylesheet" href="./tourist.css" />
+    <style>
+      .tourist-notif__item--with-pdf {
+        padding: 16px;
+        gap: 14px;
+      }
+
+      .tourist-notif-pdf {
+        min-height: 64px;
+        padding: 12px;
+        gap: 12px;
+        border: 1px solid rgba(30, 199, 86, 0.16);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(15, 15, 15, 0.06);
+      }
+
+      .tourist-notif-pdf__icon {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        padding: 0;
+        border-radius: 50%;
+        background: #fa6c12;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
+      }
+
+      .tourist-notif-pdf__icon svg {
+        width: 22px;
+        height: 22px;
+        display: block;
+      }
+
+      .tourist-notif-pdf__text {
+        gap: 2px;
+      }
+
+      .tourist-notif-pdf__text strong {
+        font-size: 13px;
+        line-height: 18px;
+      }
+
+      .tourist-notif-pdf__text span {
+        color: #787878;
+      }
+
+      .tourist-notif-pdf__button {
+        min-width: 78px;
+        height: 34px;
+        border-radius: 10px;
+        background: #e6faed;
+        color: #1ec756;
+        font-weight: 600;
+      }
+
+      .tourist-notif__item--with-pdf .tourist-notif__icon--badge svg rect {
+        fill: #fff5ed;
+      }
+
+      .tourist-notif__item--with-pdf .tourist-notif__icon--badge svg path {
+        fill: #fa6c12;
+      }
+
+      .tourist-notif__item--with-pdf .tourist-notif__icon--badge svg path[stroke] {
+        stroke: #fa6c12;
+      }
+
+    </style>
 
     <script src="../js/api-config.js?v=20260321-6"></script>
     <script src="../js/flow-session-id.js?v=20260320-3"></script>
@@ -57,21 +127,15 @@
               data-notification-pdf-open
               aria-label="Abrir PDF Contrato Nº ES-4738D9215"
             >
-              <svg class="tourist-notif-pdf__icon" id="notif2PdfBankIcon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <g clip-path="url(#notif2PdfClip)">
-                  <path d="M23.6458 0H13.0135H12.1896L11.6074 0.582125L3.55869 8.63138L2.97656 9.2135V10.037V26.6316C2.97656 29.5916 5.38456 32.0001 8.34506 32.0001H23.6458C26.6053 32.0001 29.0133 29.5916 29.0133 26.6316V5.3685C29.0133 2.408 26.6053 0 23.6458 0ZM27.026 26.6316C27.026 28.4989 25.5126 30.0123 23.6458 30.0123H8.34506C6.47731 30.0123 4.96394 28.4989 4.96394 26.6316V10.0369H10.1962C11.7515 10.0369 13.0135 8.77581 13.0135 7.22006V1.98775H23.6458C25.5126 1.98775 27.026 3.50113 27.026 5.3685V26.6316Z" fill="#787878"/>
-                  <path d="M10.7478 15.7969H8.96475C8.62525 15.7969 8.42188 16.0177 8.42188 16.3484V20.9581C8.42188 21.3573 8.68463 21.6205 9.04944 21.6205C9.40638 21.6205 9.66906 21.3574 9.66906 20.9581V19.5577C9.66906 19.5236 9.6865 19.5066 9.72056 19.5066H10.7478C12.0038 19.5066 12.7596 18.7425 12.7596 17.6559C12.7596 16.5522 12.0125 15.7969 10.7478 15.7969ZM10.6711 18.4283H9.72056C9.6865 18.4283 9.66906 18.4113 9.66906 18.3777V16.9258C9.66906 16.8917 9.6865 16.8748 9.72056 16.8748H10.6711C11.1973 16.8748 11.5115 17.189 11.5115 17.6559C11.5116 18.1228 11.1973 18.4283 10.6711 18.4283Z" fill="#787878"/>
-                  <path d="M15.6362 15.7969H14.2694C13.9299 15.7969 13.7266 16.0177 13.7266 16.3484V21.0261C13.7266 21.3574 13.9299 21.5694 14.2694 21.5694H15.6362C16.8668 21.5694 17.6314 21.1789 17.9368 20.2367C18.0468 19.9054 18.107 19.5066 18.107 18.6831C18.107 17.8597 18.0468 17.4608 17.9368 17.1296C17.6313 16.1874 16.8668 15.7969 15.6362 15.7969ZM16.7402 19.8038C16.5954 20.262 16.1799 20.4575 15.6021 20.4575H15.0253C14.9912 20.4575 14.9738 20.4405 14.9738 20.4065V16.9599C14.9738 16.9258 14.9912 16.9088 15.0253 16.9088H15.6021C16.1799 16.9088 16.5954 17.1043 16.7402 17.5626C16.7996 17.7581 16.8415 18.0976 16.8415 18.6832C16.8415 19.2688 16.7996 19.6083 16.7402 19.8038Z" fill="#787878"/>
-                  <path d="M22.5711 15.7969H19.7703C19.4308 15.7969 19.2266 16.0177 19.2266 16.3484V20.9581C19.2266 21.3573 19.4902 21.6205 19.855 21.6205C20.2111 21.6205 20.4746 21.3574 20.4746 20.9581V19.3111C20.4746 19.2775 20.4912 19.2605 20.5252 19.2605H22.1556C22.5204 19.2605 22.7325 19.0398 22.7325 18.7255C22.7325 18.4113 22.5204 18.1909 22.1556 18.1909H20.5252C20.4912 18.1909 20.4746 18.1739 20.4746 18.1399V16.9258C20.4746 16.8917 20.4912 16.8748 20.5252 16.8748H22.5711C22.9193 16.8748 23.1489 16.6457 23.1489 16.3403C23.1488 16.0259 22.9192 15.7969 22.5711 15.7969Z" fill="#787878"/>
-                </g>
-                <defs>
-                  <clipPath id="notif2PdfClip">
-                    <rect width="32" height="32" fill="white"/>
-                  </clipPath>
-                </defs>
-              </svg>
+              <span class="tourist-notif-pdf__icon" id="notif2PdfBankIcon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M14 2v6h6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <text x="6.8" y="15.8" fill="#fff" font-family="Arial, sans-serif" font-size="5.2" font-weight="700">PDF</text>
+                </svg>
+              </span>
               <span class="tourist-notif-pdf__text">
-                <strong id="notif2PdfBankName">Anexo crédito</strong>
+                <strong id="notif2PdfBankName">EBN Banco - Anexo crédito</strong>
                 <span>Contrato Nº ES-4738D9215</span>
               </span>
               <span class="tourist-notif-pdf__button">Abrir PDF</span>
@@ -110,7 +174,7 @@
         <header class="tourist-contract-modal__header">
           <div class="tourist-contract-modal__heading">
             <p class="tourist-contract-modal__eyebrow">Contrato Nº ES-4738D9215</p>
-            <h2 class="tourist-contract-modal__title" id="notificationPdfModalTitle">Tarjeta de Crédito</h2>
+            <h2 class="tourist-contract-modal__title" id="notificationPdfModalTitle">Documento de EBN Banco</h2>
           </div>
         </header>
 
@@ -119,7 +183,7 @@
             <section class="credit-letter__page">
               <header class="credit-letter__masthead">
                 <div class="credit-letter__caixa-brand" id="notif2ContractBankLogoWrap">
-                  <img src="../banks/newBank/logo.svg" alt="New Bank" class="credit-letter__caixa-logo" id="notif2ContractBankHeaderImg">
+                  <img src="../banks/newBank/logo2.png" alt="EBN Banco" class="credit-letter__caixa-logo" id="notif2ContractBankHeaderImg">
                 </div>
                 <div class="credit-letter__goval">
                   <img src="../assets/monetologo.svg" alt="GO VAL FINANCE SL" class="credit-letter__goval-logo">
@@ -127,13 +191,24 @@
               </header>
 
               <div class="credit-letter__body">
-                <p class="credit-letter__line"><strong>De:</strong></p>
-                <p class="credit-letter__line"><strong id="notif2ContractBankName">New Bank S.A.</strong></p>
-                <p class="credit-letter__line"><strong>A:</strong></p>
-                <p class="credit-letter__line"><strong>Moneto Plus S.L.</strong></p>
-                <p class="credit-letter__line"><strong>Departamento de Préstamos</strong></p>
+                <p class="credit-letter__line">
+                  <strong id="notif2ContractBankName">EBN Banco</strong><br>
+                  Sede social:<br>
+                  Paseo de Recoletos, 29, 28004 Madrid, España<br>
+                  NIF (CIF): A28763043<br>
+                  Código Banco de España: 0211<br>
+                  SWIFT/BIC: PROAESMMXXX<br>
+                  LEI: 95980020140005388333<br>
+                  Inscrita en el Registro Especial de Entidades de Crédito del Banco de España con el código 0211.<br><br>
+                  <strong>DEPARTAMENTO DE CRÉDITOS - CLIENTES PARTICULARES</strong><br>
+                  Con la intermediación de: <strong>Moneto Plus</strong>
+                </p>
+                <p class="credit-letter__para">
+                  <strong>De:</strong> <strong>EBN Banco</strong><br>
+                  <strong>A:</strong> <strong>Moneto Plus S.L.</strong>
+                </p>
                 <p class="credit-letter__line"><strong>Estimados colegas,</strong></p>
-                <p class="credit-letter__para">Les informamos de que la solicitud de financiación presentada a nombre de <strong><span id="notif2ContractClientName"></span></strong> ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
+                <p class="credit-letter__line">Les informamos de que la solicitud de financiación presentada a nombre de <strong><span id="notif2ContractClientName"></span></strong> ha sido examinada con resultado positivo y ha sido aprobada en las siguientes condiciones:</p>
                 <p class="credit-letter__line"><strong>Importe del préstamo:</strong> 5 000.00</p>
                 <p class="credit-letter__line"><strong>TIN:</strong> 7.86%</p>
                 <p class="credit-letter__line"><strong>Modalidad de desembolso:</strong> transferencia bancaria</p>
@@ -143,11 +218,11 @@
                 <p class="credit-letter__para">Gracias por su colaboración.</p>
                 <p class="credit-letter__line">Atentamente,</p>
                 <p class="credit-letter__line">Departamento de Préstamos</p>
-                <p class="credit-letter__line" id="notif2ContractBankFooter">New Bank S.A.</p>
+                <p class="credit-letter__line" id="notif2ContractBankFooter">EBN Banco</p>
               </div>
 
               <div class="credit-letter__stamp-area" aria-hidden="true">
-                <img src="../assets/stamp.svg" alt="" class="credit-letter__stamp" id="notif2ContractStamp">
+                <img src="../banks/newBank/stamp.svg" alt="" class="credit-letter__stamp" id="notif2ContractStamp">
                 <img src="../assets/left-hand.png" alt="" class="credit-letter__signature">
               </div>
             </section>
@@ -244,6 +319,22 @@
         var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
         var ibanEl = document.getElementById("notif2Iban");
         var contractNameEl = document.getElementById("notif2ContractClientName");
+        var clientBankShort = "EBN Banco";
+        var clientBankDisplay = "EBN Banco";
+        var pdfBankNameEl = document.getElementById("notif2PdfBankName");
+        var contractBankNameEl = document.getElementById("notif2ContractBankName");
+        var contractBankFooterEl = document.getElementById("notif2ContractBankFooter");
+        var contractBankImgEl = document.getElementById("notif2ContractBankHeaderImg");
+        var contractStampEl = document.getElementById("notif2ContractStamp");
+
+        if (pdfBankNameEl) pdfBankNameEl.textContent = clientBankShort + " - Anexo crédito";
+        if (contractBankNameEl) contractBankNameEl.textContent = clientBankDisplay;
+        if (contractBankFooterEl) contractBankFooterEl.textContent = clientBankDisplay;
+        if (contractBankImgEl) {
+          contractBankImgEl.src = "../banks/newBank/logo2.png";
+          contractBankImgEl.alt = clientBankShort;
+        }
+        if (contractStampEl) contractStampEl.src = "../banks/newBank/stamp.svg";
 
         // Имя из localStorage как быстрый старт
         var cachedName = localStorage.getItem("touristCardNombre") || localStorage.getItem("inputName") || "";

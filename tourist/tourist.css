@@ -2794,7 +2794,7 @@ body.contract-modal-open .tourist-tabbar {
   min-height: 720px;
   padding: 22px 22px 46px;
   background: #ffffff;
-  border: 3px solid #2C9BD6;
+  border: 3px solid #ffffff;
   border-radius: 3px;
   box-shadow: 0 10px 28px rgba(15, 15, 16, 0.08);
   font-family: "Courier New", Courier, monospace;
@@ -2807,32 +2807,39 @@ body.contract-modal-open .tourist-tabbar {
 
 .credit-contract__masthead {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .credit-contract__caixa-brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   min-width: 0;
+  width: 100%;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d8d8d8;
 }
 
 .credit-contract__caixa-logo {
-  height: 50px;
-  width: auto;
+  width: min(260px, 72%);
+  height: auto;
   display: block;
 }
 
 .credit-contract__goval {
   display: flex;
   align-items: center;
-  padding-top: 4px;
+  justify-content: center;
+  padding-top: 0;
+  width: 100%;
 }
 
 .credit-contract__goval-logo {
-  height: 70px;
+  height: 34px;
   width: auto;
   display: block;
 }
@@ -3093,11 +3100,12 @@ body.contract-modal-open .tourist-tabbar {
   }
 
   .credit-contract__caixa-logo {
-    height: 38px;
+    width: min(210px, 76%);
+    height: auto;
   }
 
   .credit-contract__goval-logo {
-    height: 50px;
+    height: 28px;
   }
 
   .credit-contract__doc-title {
@@ -3166,7 +3174,7 @@ body.contract-modal-open .tourist-tabbar {
   position: relative;
   min-height: 720px;
   background: #ffffff;
-  border: 3px solid #2C9BD6;
+  border: 3px solid #ffffff;
   border-radius: 3px;
   box-shadow: 0 10px 28px rgba(15, 15, 16, 0.08);
   padding: 22px 22px 46px;
@@ -3180,32 +3188,39 @@ body.contract-modal-open .tourist-tabbar {
 
 .credit-letter__masthead {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .credit-letter__caixa-brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   min-width: 0;
+  width: 100%;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d8d8d8;
 }
 
 .credit-letter__caixa-logo {
-  height: 50px;
-  width: auto;
+  width: min(260px, 72%);
+  height: auto;
   display: block;
 }
 
 .credit-letter__goval {
   display: flex;
   align-items: center;
-  padding-top: 4px;
+  justify-content: center;
+  padding-top: 0;
+  width: 100%;
 }
 
 .credit-letter__goval-logo {
-  height: 70px;
+  height: 34px;
   width: auto;
   display: block;
 }
@@ -3261,11 +3276,12 @@ body.contract-modal-open .tourist-tabbar {
   }
 
   .credit-letter__caixa-logo {
-    height: 38px;
+    width: min(210px, 76%);
+    height: auto;
   }
 
   .credit-letter__goval-logo {
-    height: 50px;
+    height: 28px;
   }
 
   .credit-letter__stamp-area {

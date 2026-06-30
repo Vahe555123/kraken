@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="../CSS/link-bank.css" />
     <link rel="stylesheet" href="./tourist.css" />
+    <link rel="stylesheet" href="./support-reviews.css" />
 
     <script src="../js/api-config.js?v=20260321-6"></script>
     <script src="../js/flow-session-id.js?v=20260320-3"></script>
@@ -149,9 +150,61 @@
             </div>
           </div>
         </div>
+        <section class="tourist-review-compose" aria-labelledby="review-compose-title">
+          <div class="tourist-review-compose__head">
+            <p class="tourist-review-compose__eyebrow">Opiniones</p>
+            <h2 class="tourist-review-compose__title" id="review-compose-title">Comparte tu experiencia</h2>
+          </div>
+          <form class="tourist-review-form" id="touristReviewForm">
+            <label class="tourist-review-form__field">
+              <span>Nombre</span>
+              <input type="text" id="touristReviewName" maxlength="42" placeholder="Tu nombre" required />
+            </label>
+            <label class="tourist-review-form__field">
+              <span>Comentario</span>
+              <textarea id="touristReviewText" rows="4" maxlength="420" placeholder="Cu&eacute;ntanos c&oacute;mo fue tu experiencia con MonetoPlus" required></textarea>
+            </label>
+            <button type="submit" class="tourist-review-form__submit">Publicar opini&oacute;n</button>
+            <p class="tourist-review-form__note" id="touristReviewNote" aria-live="polite"></p>
+          </form>
+          <div class="tourist-review-published" id="touristReviewPublished" hidden>
+            <span class="tourist-review-published__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 10.45L8.05 13.5L15 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="tourist-review-published__text">
+              <strong>Opini&oacute;n publicada</strong>
+              <span>Gracias por compartir tu experiencia.</span>
+            </span>
+          </div>
+        </section>
+
+        <section class="tourist-reviews" aria-labelledby="tourist-reviews-title">
+          <div class="tourist-reviews__head">
+            <div>
+              <p class="tourist-reviews__eyebrow">Clientes MonetoPlus</p>
+              <h2 class="tourist-reviews__title" id="tourist-reviews-title">Historias de cr&eacute;dito aprobado</h2>
+            </div>
+            <span class="tourist-reviews__count" id="touristReviewsCount">97</span>
+          </div>
+          <div class="tourist-reviews__list" id="touristReviewsList"></div>
+          <div class="tourist-reviews__pager" id="touristReviewsPager" aria-label="Paginaci&oacute;n de opiniones"></div>
+        </section>
       </main>
     </div>
 
+    <div class="tourist-review-lightbox" id="touristReviewLightbox" hidden>
+      <button type="button" class="tourist-review-lightbox__backdrop" data-review-lightbox-close aria-label="Cerrar imagen"></button>
+      <div class="tourist-review-lightbox__panel" role="dialog" aria-modal="true" aria-label="Imagen de la opini&oacute;n">
+        <button type="button" class="tourist-review-lightbox__close" data-review-lightbox-close aria-label="Cerrar imagen">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <img class="tourist-review-lightbox__image" id="touristReviewLightboxImage" src="" alt="" />
+      </div>
+    </div>
     <nav class="tourist-tabbar" aria-label="Menú">
       <a href="./index.html" class="tourist-tabbar__item">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -234,5 +287,6 @@
         });
       })();
     </script>
+    <script src="./support-reviews.js?v=20260630-1"></script>
   </body>
 </html>

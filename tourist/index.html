@@ -497,21 +497,21 @@
     <script>
       (function () {
         var titleEl = document.getElementById("touristBankTitle");
-        if (titleEl) { titleEl.textContent = "New Bank"; titleEl.style.opacity = '1'; }
+        if (titleEl) { titleEl.textContent = "EBN Banco"; titleEl.style.opacity = '1'; }
 
         var logo = "../banks/newBank/icon.svg";
         var logoWrap = document.getElementById("touristBankLogoWrap");
         if (logoWrap) {
           var img = document.createElement("img");
           img.src = logo;
-          img.alt = "New Bank";
+          img.alt = "EBN Banco";
           img.style.cssText = "width:36px;height:36px;object-fit:contain;border-radius:50%;display:block;";
           logoWrap.innerHTML = "";
           logoWrap.appendChild(img);
         }
 
         var planLogo = document.getElementById("touristPlanBankLogo");
-        if (planLogo) { planLogo.src = logo; planLogo.alt = "New Bank"; }
+        if (planLogo) { planLogo.src = logo; planLogo.alt = "EBN Banco"; }
       })();
     </script>
     <script>

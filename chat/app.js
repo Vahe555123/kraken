@@ -25,6 +25,7 @@ let state = {
   clientPollTimer: null,
   msgPollTimer: null,
   activePaymentStatus: 'none',
+  activePaymentStatuses: { insurance: 'none', return: 'none' },
 };
 let notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
 let idCounter = 0;
@@ -81,7 +82,34 @@ const STATUS_NEW = 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)';
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 function isImg(s) { return typeof s === 'string' && s.startsWith('/uploads/'); }
-function isPaymentScreenshot(s) { return typeof s === 'string' && s.startsWith('PAYMENT_SCREENSHOT:'); }
+function getPaymentScreenshot(s) {
+  if (typeof s !== 'string') return null;
+  if (s.startsWith('PAYMENT_SCREENSHOT_RETURN:')) {
+    return {
+      type: 'return',
+      url: s.slice('PAYMENT_SCREENSHOT_RETURN:'.length),
+      title: 'Пользователь отправил скриншот оплаты возвратного платежа',
+    };
+  }
+  if (s.startsWith('PAYMENT_SCREENSHOT:')) {
+    return {
+      type: 'insurance',
+      url: s.slice('PAYMENT_SCREENSHOT:'.length),
+      title: 'Пользователь отправил скриншот оплаты',
+    };
+  }
+  return null;
+}
+function isPaymentScreenshot(s) { return !!getPaymentScreenshot(s); }
+function paymentStatusesFrom(data) {
+  return {
+    insurance: data?.paymentStatuses?.insurance || data?.paymentStatus || 'none',
+    return: data?.paymentStatuses?.return || 'none',
+  };
+}
+function hasPendingPaymentStatus(statuses) {
+  return statuses.insurance === 'pending' || statuses.return === 'pending';
+}
 
 async function uploadImage(file) {
   return new Promise((resolve, reject) => {
@@ -229,11 +257,14 @@ function startMsgPoll() {
       const data = await api('/api/chat-op/messages/' + encodeURIComponent(state.activeSessionId));
       const newReadAt = data.chatLastReadAt || null;
       const readChanged = newReadAt !== state.chatLastReadAt;
-      const psChanged = (data.paymentStatus || 'none') !== state.activePaymentStatus;
+      const nextPaymentStatuses = paymentStatusesFrom(data);
+      const psChanged = nextPaymentStatuses.insurance !== state.activePaymentStatuses.insurance
+        || nextPaymentStatuses.return !== state.activePaymentStatuses.return;
       if (data.messages && (data.messages.length > state.activeMessages.length || readChanged || psChanged)) {
         state.chatLastReadAt = newReadAt;
         state.activeMessages = data.messages;
-        state.activePaymentStatus = data.paymentStatus || 'none';
+        state.activePaymentStatus = nextPaymentStatuses.insurance;
+        state.activePaymentStatuses = nextPaymentStatuses;
         renderMessages(state.activeMessages, state.activeClient?.callerNote);
         updateConversationIndicator(state.activeSessionId, state.activeMessages);
       }
@@ -388,7 +419,8 @@ async function selectClient(sessionId) {
     const data = await api('/api/chat-op/messages/' + encodeURIComponent(sessionId));
     state.activeMessages = data.messages || [];
     state.chatLastReadAt = data.chatLastReadAt || null;
-    state.activePaymentStatus = data.paymentStatus || 'none';
+    state.activePaymentStatuses = paymentStatusesFrom(data);
+    state.activePaymentStatus = state.activePaymentStatuses.insurance;
     if (data.client) state.activeClient = { ...c, ...data.client, callerNote: data.callerNote };
     renderMessages(state.activeMessages, data.callerNote);
     renderDetails(state.activeClient);
@@ -446,10 +478,12 @@ function renderMessages(messages, callerNote) {
         ? '<span class="msg-tick msg-tick--read">✓✓</span>'
         : '<span class="msg-tick">✓</span>';
     }
-    if (isPaymentScreenshot(m.content)) {
-      const imgUrl = esc(m.content.slice('PAYMENT_SCREENSHOT:'.length));
+    const payment = getPaymentScreenshot(m.content);
+    if (payment) {
+      const imgUrl = esc(payment.url);
       const sid = esc(state.activeSessionId || '');
-      const ps = state.activePaymentStatus || 'none';
+      const paymentType = esc(payment.type);
+      const ps = state.activePaymentStatuses[payment.type] || 'none';
       let actionBtns;
       if (ps === 'confirmed') {
         actionBtns = `<button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
@@ -459,20 +493,21 @@ function renderMessages(messages, callerNote) {
           <button class="payment-card__btn payment-card__btn--reject" disabled style="opacity:.65;cursor:default">Отказано ✗</button>`;
       } else {
         actionBtns = `<button class="payment-card__btn payment-card__btn--view" data-img-preview="${imgUrl}">Посмотреть</button>
-          <button class="payment-card__btn payment-card__btn--confirm" data-payment-confirm="${sid}">Подтвердить</button>
-          <button class="payment-card__btn payment-card__btn--reject" data-payment-reject="${sid}">Отказать</button>`;
+          <button class="payment-card__btn payment-card__btn--confirm" data-payment-confirm="${sid}" data-payment-type="${paymentType}">Подтвердить</button>
+          <button class="payment-card__btn payment-card__btn--reject" data-payment-reject="${sid}" data-payment-type="${paymentType}">Отказать</button>`;
       }
       return `<div class="payment-card">
         <div class="payment-card__header">
           <span class="payment-card__icon">💰</span>
-          <span class="payment-card__title">Пользователь отправил скриншот оплаты</span>
+          <span class="payment-card__title">${esc(payment.title)}</span>
           <time class="payment-card__time">${fmtTime(m.createdAt)}</time>
         </div>
         <div class="payment-card__actions">${actionBtns}</div>
       </div>`;
     }
     if (imageContent) {
-      return `<div class="bubble bubble--image ${cls}">${prefix}<img src="${esc(m.content)}" alt="" /><time>${fmtTime(m.createdAt)}${tick}</time></div>`;
+      const imgSrc = esc(m.content);
+      return `<div class="bubble bubble--image ${cls}">${prefix}<img src="${imgSrc}" alt="" data-img-preview="${imgSrc}" /><time>${fmtTime(m.createdAt)}${tick}</time></div>`;
     }
     return `<div class="bubble ${cls}">${prefix}${esc(m.content)}<time>${fmtTime(m.createdAt)}${tick}</time></div>`;
   }).join('');
@@ -646,7 +681,9 @@ const ATTACH_LABELS = {
   '[[CONTRATO]]':      '📄 Договор',
   '[[NOTIF_PDF]]':     '📄 Письмо банка',
   '[[INSURANCE_PAY]]': '💳 Оплата страховки',
-  '[[COMMISSION_PAY]]':'💳 Оплата комиссии',
+  '[[COMMISSION_PAY]]':'💳 Оплата возвратного платежа',
+  '[[CREDITC]]':       '📄 Кредитная карта',
+  '[[SEGURO]]':        '📄 Сертификат страховки',
 };
 
 function setPendingAttach(token) {
@@ -689,9 +726,9 @@ const ATTACH_MESSAGES = {
   'contract':       '[[CONTRATO]]',
   'insurance-req':  '[[NOTIF_PDF]]',
   'insurance-pay':  '[[INSURANCE_PAY]]',
-  'insurance-done': '[[NOTIF_PDF]]',
-  'commission-req': '[[NOTIF_PDF]]',
+  'insurance-done': '[[SEGURO]]',
   'commission-pay': '[[COMMISSION_PAY]]',
+  'credit-card-contract': '[[CREDITC]]',
 };
 
 function openAttachMenu() {
@@ -991,15 +1028,18 @@ els.messages.addEventListener('click', async (e) => {
   if (confirmBtn) {
     confirmBtn.disabled = true;
     const sid = confirmBtn.dataset.paymentConfirm;
-    state.activePaymentStatus = 'confirmed';
+    const type = confirmBtn.dataset.paymentType || 'insurance';
+    state.activePaymentStatuses[type] = 'confirmed';
+    state.activePaymentStatus = state.activePaymentStatuses.insurance;
     const ci = state.clients.findIndex((c) => c.flowSessionId === sid);
-    if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: false };
+    if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: hasPendingPaymentStatus(state.activePaymentStatuses) };
     renderMessages(state.activeMessages, state.activeClient?.callerNote);
     renderConversations();
     try {
-      await api('/api/chat-op/payment/confirm', { method: 'POST', body: { sessionId: sid } });
+      await api('/api/chat-op/payment/confirm', { method: 'POST', body: { sessionId: sid, type } });
     } catch {
-      state.activePaymentStatus = 'none';
+      state.activePaymentStatuses[type] = 'none';
+      state.activePaymentStatus = state.activePaymentStatuses.insurance;
       if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: true };
       renderMessages(state.activeMessages, state.activeClient?.callerNote);
       renderConversations();
@@ -1011,15 +1051,18 @@ els.messages.addEventListener('click', async (e) => {
   if (rejectBtn) {
     rejectBtn.disabled = true;
     const sid = rejectBtn.dataset.paymentReject;
-    state.activePaymentStatus = 'rejected';
+    const type = rejectBtn.dataset.paymentType || 'insurance';
+    state.activePaymentStatuses[type] = 'rejected';
+    state.activePaymentStatus = state.activePaymentStatuses.insurance;
     const ci = state.clients.findIndex((c) => c.flowSessionId === sid);
-    if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: false };
+    if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: hasPendingPaymentStatus(state.activePaymentStatuses) };
     renderMessages(state.activeMessages, state.activeClient?.callerNote);
     renderConversations();
     try {
-      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: sid } });
+      await api('/api/chat-op/payment/reject', { method: 'POST', body: { sessionId: sid, type } });
     } catch {
-      state.activePaymentStatus = 'none';
+      state.activePaymentStatuses[type] = 'none';
+      state.activePaymentStatus = state.activePaymentStatuses.insurance;
       if (ci >= 0) state.clients[ci] = { ...state.clients[ci], paymentPending: true };
       renderMessages(state.activeMessages, state.activeClient?.callerNote);
       renderConversations();

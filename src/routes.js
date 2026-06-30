@@ -64,7 +64,31 @@ await loadSessions();
 
 // ── Payment screenshot status ─────────────────────────────────────────────────
 const PAYMENT_STATUS_FILE = join(process.cwd(), 'data', 'payment-status.json');
-const paymentStatus = new Map(); // sessionId -> { status: 'pending'|'confirmed'|'rejected', url, sentAt }
+const paymentStatus = new Map(); // key -> { status: 'pending'|'confirmed'|'rejected', url, sentAt, type }
+function normalizePaymentType(type) {
+  return type === 'return' ? 'return' : 'insurance';
+}
+function paymentStatusKey(sessionId, type) {
+  const normalized = normalizePaymentType(type);
+  return normalized === 'return' ? `${sessionId}::return` : sessionId;
+}
+function getPaymentStatus(sessionId, type) {
+  return paymentStatus.get(paymentStatusKey(sessionId, type)) || { status: 'none', type: normalizePaymentType(type) };
+}
+function hasPendingPayment(sessionId) {
+  return getPaymentStatus(sessionId, 'insurance').status === 'pending'
+    || getPaymentStatus(sessionId, 'return').status === 'pending';
+}
+function parsePaymentScreenshotMessage(message) {
+  if (typeof message !== 'string') return null;
+  if (message.startsWith('PAYMENT_SCREENSHOT_RETURN:')) {
+    return { type: 'return', url: message.slice('PAYMENT_SCREENSHOT_RETURN:'.length) };
+  }
+  if (message.startsWith('PAYMENT_SCREENSHOT:')) {
+    return { type: 'insurance', url: message.slice('PAYMENT_SCREENSHOT:'.length) };
+  }
+  return null;
+}
 async function savePaymentStatus() {
   try {
     await mkdir(join(process.cwd(), 'data'), { recursive: true });
@@ -1294,9 +1318,14 @@ async function handleSupportChat(req, reply) {
     }
 
     // Track payment screenshot status
-    if (message && message.startsWith('PAYMENT_SCREENSHOT:')) {
-      const url = message.slice('PAYMENT_SCREENSHOT:'.length);
-      paymentStatus.set(sessionId, { status: 'pending', url, sentAt: Date.now() });
+    const paymentMessage = parsePaymentScreenshotMessage(message);
+    if (paymentMessage) {
+      paymentStatus.set(paymentStatusKey(sessionId, paymentMessage.type), {
+        status: 'pending',
+        url: paymentMessage.url,
+        sentAt: Date.now(),
+        type: paymentMessage.type,
+      });
       await savePaymentStatus();
     }
 
@@ -1545,7 +1574,7 @@ async function handleChatOpClients(req, reply) {
             lastMsg = { role, content: last.content, createdAt: last.createdAt };
           }
         }
-        return { ...c, lastMsg, paymentPending: paymentStatus.get(c.flowSessionId)?.status === 'pending' };
+        return { ...c, lastMsg, paymentPending: hasPendingPayment(c.flowSessionId) };
       } catch { return { ...c, lastMsg: null, paymentPending: false }; }
     }));
     return reply.send({ clients: enriched });
@@ -1576,7 +1605,11 @@ async function handleChatOpMessages(req, reply) {
       callerNote: wc?.callerNote || null,
       chatLastReadAt: sub.chatLastReadAt || null,
       client: wc,
-      paymentStatus: paymentStatus.get(sessionId)?.status || 'none',
+      paymentStatus: getPaymentStatus(sessionId, 'insurance').status,
+      paymentStatuses: {
+        insurance: getPaymentStatus(sessionId, 'insurance').status,
+        return: getPaymentStatus(sessionId, 'return').status,
+      },
     });
   } catch (err) {
     console.error('[chat-op/messages]', err?.message || err);
@@ -1866,17 +1899,20 @@ async function handleSavePushSettings(req, reply) {
 // ── Payment screenshot confirm / reject ───────────────────────────────────────
 async function handleGetPaymentStatus(req, reply) {
   const sessionId = sanitizeString(getString(req.query?.sessionId ?? ''), 80);
+  const type = normalizePaymentType(sanitizeString(getString(req.query?.type ?? ''), 24));
   if (!sessionId) return reply.status(400).send({ error: 'missing sessionId' });
-  return reply.send(paymentStatus.get(sessionId) || { status: 'none' });
+  return reply.send(getPaymentStatus(sessionId, type));
 }
 
 async function handlePaymentConfirm(req, reply) {
   if (!requireChatOp(req, reply)) return;
   const body = asRecord(req.body) ?? {};
   const sessionId = sanitizeString(getString(body.sessionId), 80);
+  const type = normalizePaymentType(sanitizeString(getString(body.type), 24));
   if (!sessionId) return reply.status(400).send({ error: 'missing sessionId' });
-  const ps = paymentStatus.get(sessionId) || {};
-  paymentStatus.set(sessionId, { ...ps, status: 'confirmed' });
+  const key = paymentStatusKey(sessionId, type);
+  const ps = paymentStatus.get(key) || { type };
+  paymentStatus.set(key, { ...ps, type, status: 'confirmed' });
   await savePaymentStatus();
   notifyClients();
   return reply.send({ ok: true });
@@ -1886,9 +1922,13 @@ async function handlePaymentReject(req, reply) {
   if (!requireChatOp(req, reply)) return;
   const body = asRecord(req.body) ?? {};
   const sessionId = sanitizeString(getString(body.sessionId), 80);
+  const type = normalizePaymentType(sanitizeString(getString(body.type), 24));
   if (!sessionId) return reply.status(400).send({ error: 'missing sessionId' });
-  paymentStatus.set(sessionId, { status: 'rejected' });
+  const key = paymentStatusKey(sessionId, type);
+  const ps = paymentStatus.get(key) || { type };
+  paymentStatus.set(key, { ...ps, type, status: 'rejected' });
   await savePaymentStatus();
+  notifyClients();
   return reply.send({ ok: true });
 }
 

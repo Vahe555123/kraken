@@ -134,7 +134,7 @@
 
           <div class="tourist-bank tourist-bank--detail">
             <div class="tourist-bank__text">
-              <p class="tourist-bank__title" id="transactionBankTitle">Masters Card</p>
+              <p class="tourist-bank__title" id="transactionBankTitle">EBN Banco</p>
               <p class="tourist-bank__mask">Contrato Nº ES-4738D9215</p>
             </div>
             <svg class="tourist-bank__lock" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -307,7 +307,7 @@
     </div>
 
     <nav class="tourist-tabbar" aria-label="Menú">
-      <a href="./index.html" class="tourist-tabbar__item is-active">
+      <a href="./index.html" class="tourist-tabbar__item">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M12.37 2.14984L21.37 5.74982C21.72 5.88982 22 6.30981 22 6.67981V9.99982C22 10.5498 21.55 10.9998 21 10.9998H3C2.45 10.9998 2 10.5498 2 9.99982V6.67981C2 6.30981 2.28 5.88982 2.63 5.74982L11.63 2.14984C11.83 2.06984 12.17 2.06984 12.37 2.14984Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M22 22H2V19C2 18.45 2.45 18 3 18H21C21.55 18 22 18.45 22 19V22Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
@@ -343,7 +343,7 @@
         </svg>
         <span>Historial</span>
       </a>
-      <a href="./chat.html" class="tourist-tabbar__item">
+      <a href="./chat.html" class="tourist-tabbar__item is-active">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M17 20.5H7C4 20.5 2 19 2 15.5V8.5C2 5 4 3.5 7 3.5H17C20 3.5 22 5 22 8.5V15.5C22 19 20 20.5 17 20.5Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M17 9L13.87 11.5C12.84 12.32 11.15 12.32 10.12 11.5L7 9" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
@@ -363,9 +363,7 @@
     <script src="./tourist.js?v=20260609-1"></script>
     <script>
       (function () {
-        var bank = "";
-        try { bank = localStorage.getItem("selectedBank") || ""; } catch (e) {}
-        if (!bank) { bank = "New Bank"; }
+        var bank = "EBN Banco";
         if (bank) {
           var el = document.getElementById("transactionBankTitle");
           if (el) el.textContent = bank;
@@ -394,6 +392,8 @@
 
         var selectedFile = null;
         var sessionId = "";
+        var paymentType = "insurance";
+        var screenshotNameKey = "txLastScreenshotName";
         try { sessionId = (window.getFlowSessionId && window.getFlowSessionId()) || localStorage.getItem("flowSessionId") || ""; } catch(e){}
 
         fileInput.addEventListener("change", function () {
@@ -401,7 +401,7 @@
           if (!file) return;
           selectedFile = file;
           fileInput.value = "";
-          localStorage.setItem("txLastScreenshotName", file.name);
+          localStorage.setItem(screenshotNameKey, file.name);
           fileNameEl.textContent = file.name;
           filePreview.style.display = "flex";
           uploadBtn.style.display = "none";
@@ -415,7 +415,7 @@
         function applyStatus(ps) {
           var statusEl = document.getElementById("txStatusNote");
           if (ps.status === "pending") {
-            var savedName = localStorage.getItem("txLastScreenshotName") || "Captura enviada";
+            var savedName = localStorage.getItem(screenshotNameKey) || "Captura enviada";
             fileNameEl.textContent = savedName;
             filePreview.style.display = "flex";
             uploadBtn.style.display = "none";
@@ -423,7 +423,7 @@
             refreshBtn.style.display = "none";
             if (statusEl) { statusEl.textContent = "En revisión"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
           } else if (ps.status === "confirmed") {
-            var savedName2 = localStorage.getItem("txLastScreenshotName") || "Captura enviada";
+            var savedName2 = localStorage.getItem(screenshotNameKey) || "Captura enviada";
             fileNameEl.textContent = savedName2;
             filePreview.style.display = "flex";
             uploadBtn.style.display = "none";
@@ -432,7 +432,7 @@
             if (statusEl) { statusEl.textContent = "Aprobado"; statusEl.className = "tourist-amount-block__status-note tx-status--review"; }
           } else if (ps.status === "rejected" || ps.status === "none") {
             // Reset to initial state — can upload again
-            localStorage.removeItem("txLastScreenshotName");
+            localStorage.removeItem(screenshotNameKey);
             selectedFile = null;
             filePreview.style.display = "none";
             uploadBtn.style.display = "";
@@ -450,7 +450,7 @@
         function startPolling() {
           if (pollTimer) return;
           pollTimer = setInterval(function () {
-            fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId))
+            fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId) + "&type=" + encodeURIComponent(paymentType))
               .then(function (r) { return r.json(); })
               .then(function (ps) { applyStatus(ps); })
               .catch(function () {});
@@ -458,7 +458,7 @@
         }
 
         // Check status on load
-        fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId))
+        fetch(apiBase + "/api/tourist/payment-status?sessionId=" + encodeURIComponent(sessionId) + "&type=" + encodeURIComponent(paymentType))
           .then(function (r) { return r.json(); })
           .then(function (ps) {
             applyStatus(ps);
@@ -512,13 +512,14 @@
                     if (!d || !d.url) throw new Error("upload failed");
                     var name = (localStorage.getItem("inputName") || "").trim();
                     var bank = (localStorage.getItem("selectedBank") || "").trim();
-                    if (!bank) bank = "New Bank";
+                    if (!bank) bank = "EBN Banco";
                     return fetch(apiBase + "/api/support-chat", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
                         sessionId: sessionId,
                         message: "PAYMENT_SCREENSHOT:" + d.url,
+                        paymentType: paymentType,
                         name: name,
                         bank: bank,
                       }),
