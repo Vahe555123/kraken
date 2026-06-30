@@ -1299,7 +1299,10 @@ async function handleSupportChat(req, reply) {
     // As soon as chat opens — make client visible to chat operator immediately
     if (start) {
       const ip = getClientIp(req);
-      const skipStatuses = new Set(['ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)', 'ЧАТ: НУЖЕН ЗВОНОК', 'ОПЕРАТОР ПРОЗВОНИЛ']);
+      // Клиент пока общается с ИИ — статус 'ЧАТ: БОТ' (НЕ виден чат-оператору).
+      // Чат попадёт к оператору только после [[DONE]] (статус → 'ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)').
+      // 'ЧАТ: АКТИВЕН' в skip — чтобы переоткрытие чата после ответа оператора не откатывало статус.
+      const skipStatuses = new Set(['ЗАПРОСИЛ ЗВОНОК (ЧЕРЕЗ ЧАТ)', 'ЧАТ: НУЖЕН ЗВОНОК', 'ОПЕРАТОР ПРОЗВОНИЛ', 'ЧАТ: АКТИВЕН']);
       try {
         const existing = await prisma.webClient.findUnique({
           where: { flowSessionId: sessionId },
@@ -1310,7 +1313,7 @@ async function handleSupportChat(req, reply) {
           where: { flowSessionId: sessionId },
           create: {
             flowSessionId: sessionId,
-            status: 'ЧАТ: АКТИВЕН',
+            status: 'ЧАТ: БОТ',
             ip: ip || '',
             ...(name ? { nombre: name } : {}),
             ...(bank ? { bank } : {}),
@@ -1319,7 +1322,7 @@ async function handleSupportChat(req, reply) {
             ip: ip || '',
             ...(name ? { nombre: name } : {}),
             ...(bank ? { bank } : {}),
-            ...(shouldSetStatus ? { status: 'ЧАТ: АКТИВЕН' } : {}),
+            ...(shouldSetStatus ? { status: 'ЧАТ: БОТ' } : {}),
           },
         });
         broadcastUpdate('clients_changed');
