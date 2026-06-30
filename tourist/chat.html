@@ -1516,7 +1516,9 @@
             el.className = 'caller-actions-wrap';
             try {
               localStorage.setItem('touristNotifCommission', '1');
-              localStorage.setItem('touristBellUnread', '1');
+              if (localStorage.getItem('touristCommissionBellAcked') !== '1') {
+                localStorage.setItem('touristBellUnread', '1');
+              }
             } catch (e) {}
             var bubble = document.createElement('div');
             bubble.className = 'caller-msg-bubble';
@@ -1627,7 +1629,9 @@
             el.className = 'caller-actions-wrap';
             try {
               localStorage.setItem('touristNotifStart', '1');
-              localStorage.setItem('touristBellUnread', '1');
+              if (localStorage.getItem('touristStartBellAcked') !== '1') {
+                localStorage.setItem('touristBellUnread', '1');
+              }
             } catch (e) {}
 
             // 1. Text bubble

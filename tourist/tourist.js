@@ -75,8 +75,10 @@
         var hasStart      = localStorage.getItem("touristNotifStart")      === "1";
 
         if (hasCommission) {
+          try { localStorage.setItem("touristCommissionBellAcked", "1"); } catch (e) {}
           window.location.replace("./notifications3.html");
         } else if (hasStart) {
+          try { localStorage.setItem("touristStartBellAcked", "1"); } catch (e) {}
           window.location.replace("./notifications2.html");
         } else {
           localStorage.setItem("notifInitialRead", "1");
