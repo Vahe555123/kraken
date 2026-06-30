@@ -1746,7 +1746,7 @@ async function handleChatOpSendSms(req, reply) {
     const { apiKey, sid, baseUrl } = config.eliteGateway;
     const res = await fetch(`${baseUrl}/api/send/sms`, {
       method: 'POST',
-      headers: { 'api_key': apiKey, 'Content-Type': 'application/json' },
+      headers: { 'api-key': apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({ SID: sid, Content: text, number: phone }),
     });
     const rawText = await res.text();
