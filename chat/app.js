@@ -19,7 +19,7 @@ let state = {
   filter: 'all',
   search: '',
   page: 1,
-  editingComment: false,
+
   editingNoteId: null,
   callPending: false,
   clientPollTimer: null,
@@ -58,9 +58,7 @@ const els = {
   mainInfo:     $('[data-main-info]'),
   clientData:   $('[data-client-data]'),
   events:       $('[data-events]'),
-  commentForm:  $('[data-comment-form]'),
-  commentInput: $('[data-comment-input]'),
-  commentEdit:  $('[data-comment-edit]'),
+
   noteForm:     $('[data-note-form]'),
   noteInput:    $('[data-note-input]'),
   notes:        $('[data-notes]'),
@@ -402,8 +400,7 @@ function renderStartBar() {
 async function selectClient(sessionId) {
   state.activeSessionId = sessionId;
   state.callPending = false;
-  state.editingComment = false;
-  els.callComment.value = ''; // не переносим комментарий для звонка на другой чат
+  els.callComment.value = '';
   clearInterval(state.msgPollTimer);
 
   const c = state.clients.find((x) => x.flowSessionId === sessionId);
@@ -424,7 +421,6 @@ async function selectClient(sessionId) {
     if (data.client) state.activeClient = { ...c, ...data.client, callerNote: data.callerNote };
     renderMessages(state.activeMessages, data.callerNote);
     renderDetails(state.activeClient);
-    renderCommentEditor(data.callerNote || '');
     renderStartBar();
   } catch {}
 
@@ -563,14 +559,6 @@ function renderBalance(c) {
   els.balanceDisp.textContent = c.balance != null ? fmtEur(c.balance) : '...';
 }
 
-// ─── Comment editor ───────────────────────────────────────────────────────────
-function renderCommentEditor(note) {
-  els.commentInput.value = note || '';
-  els.commentInput.readOnly = !state.editingComment;
-  els.commentInput.classList.toggle('is-editing', state.editingComment);
-  els.commentEdit.classList.toggle('save-mode', state.editingComment);
-  els.commentEdit.textContent = state.editingComment ? '✓ Сохранить' : '✎ Изменить';
-}
 
 // ─── Notes ───────────────────────────────────────────────────────────────────
 function renderNotes() {
@@ -815,27 +803,6 @@ els.imageInput.addEventListener('change', async () => {
   } finally {
     els.imageBtn.disabled = false;
   }
-});
-
-// Comment edit
-els.commentEdit.addEventListener('click', async () => {
-  if (state.editingComment) {
-    const note = els.commentInput.value.trim();
-    state.editingComment = false;
-    renderCommentEditor(note);
-    if (state.activeSessionId) {
-      try { await api('/api/chat-op/note', { method: 'PUT', body: { sessionId: state.activeSessionId, note } }); } catch {}
-    }
-    return;
-  }
-  state.editingComment = true;
-  renderCommentEditor(state.activeClient?.callerNote || '');
-  els.commentInput.focus();
-});
-
-els.commentForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  els.commentEdit.click();
 });
 
 // Notes
