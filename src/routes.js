@@ -1749,7 +1749,10 @@ async function handleChatOpSendSms(req, reply) {
       headers: { 'api_key': apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({ SID: sid, Content: text, number: phone }),
     });
-    const json = await res.json().catch(() => ({}));
+    const rawText = await res.text();
+    console.log(`[SMS] status=${res.status} raw=${rawText}`);
+    let json = {};
+    try { json = JSON.parse(rawText); } catch { /* не JSON */ }
     console.log(`[SMS] phone=${phone} suc=${json.suc} msg=${json.message}`);
     if (!json.suc) return reply.send({ ok: false, error: json.message || 'gateway_error' });
     return reply.send({ ok: true, messageId: json.message_id });
