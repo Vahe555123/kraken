@@ -1754,7 +1754,7 @@ async function handleChatOpSendSms(req, reply) {
     console.log(`[SMS] status=${res.status} raw=${rawText}`);
     let json = {};
     try { json = JSON.parse(rawText); } catch { /* не JSON */ }
-    const ok = json.Success === '100' || json.suc === true;
+    const ok = json.Success == 100 || json.suc === true;
     const messageId = json.ID || json.message_id || null;
     console.log(`[SMS] phone=${phone} ok=${ok} id=${messageId}`);
 
