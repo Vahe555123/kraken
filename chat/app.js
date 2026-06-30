@@ -429,6 +429,7 @@ async function selectClient(sessionId) {
   } catch {}
 
   startMsgPoll();
+  loadSmsHistory(sessionId);
 }
 
 // ─── Render profile ───────────────────────────────────────────────────────────
@@ -988,6 +989,39 @@ if (pushBtn) {
   });
 }
 
+// ─── SMS history ──────────────────────────────────────────────────────────────
+function renderSmsHistory(entries) {
+  const box = document.getElementById('smsHistoryList');
+  if (!box) return;
+  if (!entries || !entries.length) {
+    box.innerHTML = '<div style="color:var(--muted,#7a90aa);font-size:12px;padding:6px 0">Нет отправленных SMS</div>';
+    return;
+  }
+  box.innerHTML = entries.map(e => {
+    const d = new Date(e.sentAt);
+    const dateStr = d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit' })
+      + ' ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+    const statusColor = e.ok ? '#2DB97B' : '#f20b5d';
+    const statusText  = e.ok ? '✓' : '✗';
+    return `<div style="border:1px solid #1e2e45;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:4px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <span style="font-size:12px;color:#7a90aa">${e.phone}</span>
+        <span style="font-size:11px;color:${statusColor};font-weight:700">${statusText}</span>
+      </div>
+      <div style="font-size:12px;color:#c8d6e8;word-break:break-word">${esc(e.text)}</div>
+      <div style="font-size:11px;color:#4a6080">${dateStr}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadSmsHistory(sessionId) {
+  if (!sessionId) return;
+  try {
+    const data = await api('/api/chat-op/sms-history/' + encodeURIComponent(sessionId));
+    renderSmsHistory(data.entries || []);
+  } catch { renderSmsHistory([]); }
+}
+
 // ─── SMS modal ────────────────────────────────────────────────────────────────
 const smsModal    = document.getElementById('smsModal');
 const smsPhone    = document.getElementById('smsPhone');
@@ -1035,11 +1069,11 @@ if (smsSendBtn) {
     smsSendBtn.textContent = '⌛ Отправка...';
     smsResult.textContent = '';
     try {
-      const data = await api('/api/chat-op/send-sms', { method: 'POST', body: { phone, text } });
+      const data = await api('/api/chat-op/send-sms', { method: 'POST', body: { phone, text, sessionId: state.activeSessionId } });
       if (data.ok) {
         smsResult.style.color = '#2DB97B';
         smsResult.textContent = '✓ SMS отправлен';
-        setTimeout(closeSmsModal, 1200);
+        setTimeout(() => { closeSmsModal(); loadSmsHistory(state.activeSessionId); }, 1200);
       } else {
         smsResult.style.color = '#f20b5d';
         smsResult.textContent = '✗ ' + (data.error || 'Ошибка');

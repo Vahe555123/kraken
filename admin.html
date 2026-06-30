@@ -171,6 +171,7 @@
         <button class="tab" data-tab="settings">💰 Платежка</button>
         <button class="tab" data-tab="stats">📊 Статистика</button>
         <button class="tab" data-tab="push">🔔 Уведомления</button>
+        <button class="tab" data-tab="sms">📱 SMS</button>
       </div>
 
       <!-- BOT SETTINGS TAB -->
@@ -278,6 +279,14 @@
         </div>
       </div>
 
+      <div id="tab-sms" class="tab-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h2 style="margin:0;font-size:16px">История SMS</h2>
+          <button class="btn-ghost" id="smsHistoryRefreshBtn">↻ Обновить</button>
+        </div>
+        <div id="smsHistoryAdmin"><div class="loading">Загрузка…</div></div>
+      </div>
+
       <div id="tab-stats" class="tab-content">
         <div class="funnel-wrap">
           <div class="funnel-header">
@@ -352,6 +361,7 @@
           if(btn.dataset.tab === 'settings') loadSettings();
           if(btn.dataset.tab === 'stats') loadStats();
           if(btn.dataset.tab === 'push') loadPushSettings();
+          if(btn.dataset.tab === 'sms') loadSmsHistory();
         });
       });
 
@@ -659,6 +669,46 @@
         })
         .catch(function(e){ btn.disabled = false; st.className = 'status err'; st.textContent = 'Ошибка: ' + e.message; });
       });
+
+      // ── SMS History ──────────────────────────────────────────────────────────
+      document.getElementById('smsHistoryRefreshBtn').addEventListener('click', loadSmsHistory);
+
+      function loadSmsHistory(){
+        var el = document.getElementById('smsHistoryAdmin');
+        el.innerHTML = '<div class="loading">Загрузка…</div>';
+        apiFetch('/api/admin/sms-history').then(function(data){ renderSmsHistoryAdmin(data.entries || []); }).catch(function(){
+          el.innerHTML = '<div class="empty">⚠️ Не удалось загрузить историю SMS.</div>';
+        });
+      }
+
+      function renderSmsHistoryAdmin(entries){
+        var el = document.getElementById('smsHistoryAdmin');
+        if(!entries.length){ el.innerHTML = '<div class="empty">Нет отправленных SMS</div>'; return; }
+        var rows = entries.map(function(e){
+          var d = new Date(e.sentAt);
+          var dateStr = d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit'})
+            + ' ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+          var status = e.ok
+            ? '<span style="color:#2DB97B;font-weight:700">✓ Доставлен</span>'
+            : '<span style="color:#f20b5d;font-weight:700">✗ Ошибка</span>';
+          var session = e.sessionId ? '<span style="color:#4a6080;font-size:11px">'+e.sessionId.slice(0,12)+'…</span>' : '—';
+          return '<tr style="border-bottom:1px solid var(--border)">'
+            + '<td style="padding:8px 6px;font-size:12px;color:#7a90aa">'+dateStr+'</td>'
+            + '<td style="padding:8px 6px;font-size:13px">'+e.phone+'</td>'
+            + '<td style="padding:8px 6px;font-size:12px;max-width:300px;word-break:break-word">'+e.text+'</td>'
+            + '<td style="padding:8px 6px">'+status+'</td>'
+            + '<td style="padding:8px 6px">'+session+'</td>'
+            + '</tr>';
+        }).join('');
+        el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+          + '<thead><tr style="border-bottom:1px solid var(--border)">'
+          + '<th style="padding:6px;text-align:left;color:var(--muted);font-size:11px;font-weight:600">Дата</th>'
+          + '<th style="padding:6px;text-align:left;color:var(--muted);font-size:11px;font-weight:600">Номер</th>'
+          + '<th style="padding:6px;text-align:left;color:var(--muted);font-size:11px;font-weight:600">Текст</th>'
+          + '<th style="padding:6px;text-align:left;color:var(--muted);font-size:11px;font-weight:600">Статус</th>'
+          + '<th style="padding:6px;text-align:left;color:var(--muted);font-size:11px;font-weight:600">Сессия</th>'
+          + '</tr></thead><tbody>' + rows + '</tbody></table>';
+      }
 
       // ── Statistics (Воронка) ─────────────────────────────────────────────────
       document.getElementById('statsRefreshBtn').addEventListener('click', loadStats);

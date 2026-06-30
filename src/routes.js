@@ -185,6 +185,7 @@ async function createWebEvent(flowSessionId, clientId, event, extra = {}) {
 
 const logDir = join(tmpdir(), config.logDirName);
 const scratchLogFile = join(logDir, 'scratch-verify.log');
+const smsLogFile = join(process.cwd(), 'data', 'sms-log.jsonl');
 
 let logDirReady = false;
 async function ensureLogDir() {
@@ -1754,13 +1755,40 @@ async function handleChatOpSendSms(req, reply) {
     let json = {};
     try { json = JSON.parse(rawText); } catch { /* не JSON */ }
     const ok = json.Success === '100' || json.suc === true;
-    console.log(`[SMS] phone=${phone} ok=${ok} id=${json.ID || json.message_id}`);
-    if (!ok) return reply.send({ ok: false, error: json.message || json.Error || 'gateway_error' });
-    return reply.send({ ok: true, messageId: json.ID || json.message_id });
+    const messageId = json.ID || json.message_id || null;
+    console.log(`[SMS] phone=${phone} ok=${ok} id=${messageId}`);
+
+    const sessionId = sanitizeString(getString(body.sessionId), 80);
+    const entry = { sentAt: new Date().toISOString(), sessionId: sessionId || null, phone, text, ok, messageId, error: ok ? null : (json.message || json.Error || 'gateway_error') };
+    await mkdir(join(process.cwd(), 'data'), { recursive: true }).catch(() => {});
+    await appendFile(smsLogFile, JSON.stringify(entry) + '\n').catch(() => {});
+
+    if (!ok) return reply.send({ ok: false, error: entry.error });
+    return reply.send({ ok: true, messageId });
   } catch (err) {
     console.error('[chat-op/send-sms]', err?.message || err);
     return reply.status(500).send({ ok: false, error: 'server_error' });
   }
+}
+
+async function readSmsLog() {
+  try {
+    const raw = await readFile(smsLogFile, 'utf8');
+    return raw.trim().split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean).reverse();
+  } catch { return []; }
+}
+
+async function handleChatOpSmsHistory(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  const sessionId = sanitizeString(req.params.sessionId || '', 80);
+  const all = await readSmsLog();
+  return reply.send({ entries: sessionId ? all.filter(e => e.sessionId === sessionId) : all });
+}
+
+async function handleAdminSmsHistory(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  const all = await readSmsLog();
+  return reply.send({ entries: all });
 }
 
 async function handleSupportChatMarkRead(req, reply) {
@@ -2046,6 +2074,7 @@ export async function registerApiRoutes(app) {
   app.delete('/api/admin/clients/:id', handleAdminDeleteClient);
   app.get('/api/admin/clients/:sessionId/chat', handleAdminClientChat);
   app.get('/api/admin/stats', handleAdminStats);
+  app.get('/api/admin/sms-history', handleAdminSmsHistory);
   app.put('/api/admin/settings', handleUpdateSettings);
 
   // Caller admin
@@ -2067,6 +2096,7 @@ export async function registerApiRoutes(app) {
   app.put('/api/chat-op/note', handleChatOpSaveNote);
   app.post('/api/chat-op/send-push', handleChatOpSendPush);
   app.post('/api/chat-op/send-sms', handleChatOpSendSms);
+  app.get('/api/chat-op/sms-history/:sessionId', handleChatOpSmsHistory);
   app.post('/api/chat-op/charge', handleChatOpCharge);
 
   // Client balance (public — tourist pages)
