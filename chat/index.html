@@ -69,6 +69,7 @@
                 <button type="button">Оплата-2</button>
                 <button type="button">Оплата-3</button>
                 <button type="button" id="sendPushBtn" data-send-push title="Отправить push-уведомление клиенту">🔔 Пуш</button>
+                <button type="button" id="sendSmsBtn" data-send-sms title="Отправить SMS клиенту">📱 SMS</button>
                 <button type="button" id="debitoBtn" title="Баланс / Списание">💶 Списание</button>
               </div>
             </div>
@@ -204,6 +205,30 @@
 
     <!-- Toast notifications -->
     <div id="toastContainer" style="position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none"></div>
+
+    <!-- SMS modal -->
+    <div id="smsModal" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+      <div style="background:#131d2e;border:1px solid #1e2e45;border-radius:14px;padding:28px 24px;width:340px;display:flex;flex-direction:column;gap:14px;position:relative">
+        <button id="smsModalClose" type="button" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:#1d2b44;border:1px solid #263654;color:#edf4ff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1">✕</button>
+        <h3 style="margin:0;color:#e2eaf6;font-size:16px;font-weight:700">📱 Отправить SMS</h3>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="font-size:12px;color:#7a90aa">Номер телефона</label>
+          <input id="smsPhone" type="tel" placeholder="+34600000000"
+            style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:9px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;box-sizing:border-box" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <label style="font-size:12px;color:#7a90aa">Текст сообщения</label>
+          <textarea id="smsText" rows="4" maxlength="640" placeholder="Текст SMS..."
+            style="background:#0d1421;border:1px solid #1e2e45;border-radius:8px;padding:9px 12px;color:#e2eaf6;font-size:13px;outline:none;width:100%;box-sizing:border-box;resize:vertical;font-family:inherit"></textarea>
+          <span id="smsCharCount" style="font-size:11px;color:#7a90aa;text-align:right">0 / 640</span>
+        </div>
+        <button id="smsSendBtn" type="button"
+          style="background:#1166ff;border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">
+          Отправить
+        </button>
+        <span id="smsResultMsg" style="font-size:12px;min-height:16px;text-align:center;display:block"></span>
+      </div>
+    </div>
 
     <script src="app.js"></script>
   </body>

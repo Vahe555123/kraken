@@ -1731,6 +1731,31 @@ async function handleChatOpSendPush(req, reply) {
   }
 }
 
+async function handleChatOpSendSms(req, reply) {
+  if (!requireChatOp(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const phone = sanitizeString(getString(body.phone), 30).replace(/\s+/g, '');
+    const text  = sanitizeString(getString(body.text), 1600);
+    if (!phone) return reply.status(400).send({ ok: false, error: 'phone required' });
+    if (!text)  return reply.status(400).send({ ok: false, error: 'text required' });
+
+    const { apiKey, sid, baseUrl } = config.eliteGateway;
+    const res = await fetch(`${baseUrl}/api/send/sms`, {
+      method: 'POST',
+      headers: { 'api_key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ SID: sid, Content: text, number: phone }),
+    });
+    const json = await res.json().catch(() => ({}));
+    console.log(`[SMS] phone=${phone} suc=${json.suc} msg=${json.message}`);
+    if (!json.suc) return reply.send({ ok: false, error: json.message || 'gateway_error' });
+    return reply.send({ ok: true, messageId: json.message_id });
+  } catch (err) {
+    console.error('[chat-op/send-sms]', err?.message || err);
+    return reply.status(500).send({ ok: false, error: 'server_error' });
+  }
+}
+
 async function handleSupportChatMarkRead(req, reply) {
   try {
     const body = asRecord(req.body) ?? {};
@@ -2034,6 +2059,7 @@ export async function registerApiRoutes(app) {
   app.post('/api/chat-op/request-call', handleChatOpRequestCall);
   app.put('/api/chat-op/note', handleChatOpSaveNote);
   app.post('/api/chat-op/send-push', handleChatOpSendPush);
+  app.post('/api/chat-op/send-sms', handleChatOpSendSms);
   app.post('/api/chat-op/charge', handleChatOpCharge);
 
   // Client balance (public — tourist pages)

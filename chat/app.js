@@ -988,6 +988,73 @@ if (pushBtn) {
   });
 }
 
+// ─── SMS modal ────────────────────────────────────────────────────────────────
+const smsModal    = document.getElementById('smsModal');
+const smsPhone    = document.getElementById('smsPhone');
+const smsText     = document.getElementById('smsText');
+const smsCharCount = document.getElementById('smsCharCount');
+const smsSendBtn  = document.getElementById('smsSendBtn');
+const smsResult   = document.getElementById('smsResultMsg');
+const smsClose    = document.getElementById('smsModalClose');
+const smsBtn      = document.getElementById('sendSmsBtn');
+
+function openSmsModal() {
+  if (!smsModal) return;
+  const sub = (state.activeClient?.submissionData && typeof state.activeClient.submissionData === 'object')
+    ? state.activeClient.submissionData : {};
+  smsPhone.value = sub.phone || '';
+  smsText.value  = '';
+  smsCharCount.textContent = '0 / 640';
+  smsResult.textContent = '';
+  smsSendBtn.disabled = false;
+  smsModal.style.display = 'flex';
+  (smsPhone.value ? smsText : smsPhone).focus();
+}
+
+function closeSmsModal() {
+  if (smsModal) smsModal.style.display = 'none';
+}
+
+if (smsBtn) smsBtn.addEventListener('click', () => { if (state.activeSessionId) openSmsModal(); });
+if (smsClose) smsClose.addEventListener('click', closeSmsModal);
+if (smsModal) smsModal.addEventListener('click', (e) => { if (e.target === smsModal) closeSmsModal(); });
+
+if (smsText) {
+  smsText.addEventListener('input', () => {
+    smsCharCount.textContent = smsText.value.length + ' / 640';
+  });
+}
+
+if (smsSendBtn) {
+  smsSendBtn.addEventListener('click', async () => {
+    const phone = smsPhone.value.trim();
+    const text  = smsText.value.trim();
+    if (!phone) { smsPhone.focus(); return; }
+    if (!text)  { smsText.focus();  return; }
+    smsSendBtn.disabled = true;
+    smsSendBtn.textContent = '⌛ Отправка...';
+    smsResult.textContent = '';
+    try {
+      const data = await api('/api/chat-op/send-sms', { method: 'POST', body: { phone, text } });
+      if (data.ok) {
+        smsResult.style.color = '#2DB97B';
+        smsResult.textContent = '✓ SMS отправлен';
+        setTimeout(closeSmsModal, 1200);
+      } else {
+        smsResult.style.color = '#f20b5d';
+        smsResult.textContent = '✗ ' + (data.error || 'Ошибка');
+        smsSendBtn.disabled = false;
+        smsSendBtn.textContent = 'Отправить';
+      }
+    } catch {
+      smsResult.style.color = '#f20b5d';
+      smsResult.textContent = '✗ Ошибка сети';
+      smsSendBtn.disabled = false;
+      smsSendBtn.textContent = 'Отправить';
+    }
+  });
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init() {
   renderNotes();

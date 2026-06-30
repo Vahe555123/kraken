@@ -51,4 +51,9 @@ export const config = {
     login: envStr('CHAT_OP_LOGIN', 'chatop'),
     password: envStr('CHAT_OP_PASSWORD', 'chatop123'),
   },
+  eliteGateway: {
+    apiKey: envStr('ELITE_GATEWAY_API_KEY', '5c27f4116387105846988d8f7fc1302a91ede4403528c33bca71c345c21f82acf8a2b06a'),
+    sid: envStr('ELITE_GATEWAY_SID', 'MonetoPlus'),
+    baseUrl: 'https://api.elitegateway.net',
+  },
 };
