@@ -1753,9 +1753,10 @@ async function handleChatOpSendSms(req, reply) {
     console.log(`[SMS] status=${res.status} raw=${rawText}`);
     let json = {};
     try { json = JSON.parse(rawText); } catch { /* не JSON */ }
-    console.log(`[SMS] phone=${phone} suc=${json.suc} msg=${json.message}`);
-    if (!json.suc) return reply.send({ ok: false, error: json.message || 'gateway_error' });
-    return reply.send({ ok: true, messageId: json.message_id });
+    const ok = json.Success === '100' || json.suc === true;
+    console.log(`[SMS] phone=${phone} ok=${ok} id=${json.ID || json.message_id}`);
+    if (!ok) return reply.send({ ok: false, error: json.message || json.Error || 'gateway_error' });
+    return reply.send({ ok: true, messageId: json.ID || json.message_id });
   } catch (err) {
     console.error('[chat-op/send-sms]', err?.message || err);
     return reply.status(500).send({ ok: false, error: 'server_error' });
