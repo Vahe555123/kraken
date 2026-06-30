@@ -951,6 +951,27 @@ h2 {
   border: 0;
   background: transparent;
   box-shadow: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #2b4064 transparent;
+}
+
+.details::-webkit-scrollbar {
+  width: 4px;
+}
+
+.details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.details::-webkit-scrollbar-thumb {
+  background: #2b4064;
+  border-radius: 4px;
+}
+
+.details::-webkit-scrollbar-thumb:hover {
+  background: #3a5280;
 }
 
 .panel {
