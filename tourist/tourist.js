@@ -62,18 +62,19 @@
     }
   }
 
-  // Колокольчик в шапке → notifications.html или notifications2.html в зависимости от статуса
+  // Колокольчик в шапке
   function bindHeaderNotification() {
     var bell = document.getElementById("touristBell");
     if (bell) {
       bell.addEventListener("click", function () {
         var badge = bell.querySelector(".tourist-bell-badge");
         if (badge) badge.remove();
+        localStorage.removeItem("touristBellUnread");
 
-        var hasInsurance = localStorage.getItem("touristNotifInsurance") === "1";
-        var hasStart     = localStorage.getItem("touristNotifStart")     === "1";
+        var hasCommission = localStorage.getItem("touristNotifCommission") === "1";
+        var hasStart      = localStorage.getItem("touristNotifStart")      === "1";
 
-        if (hasInsurance) {
+        if (hasCommission) {
           window.location.replace("./notifications3.html");
         } else if (hasStart) {
           window.location.replace("./notifications2.html");
@@ -373,80 +374,31 @@
     });
   }
 
-  // Badge "1" на колокольчике когда оператор нажал "Прозвонил"
+  // Badge "1" на колокольчике — показываем если есть непрочитанное уведомление
   function startCalledPoller() {
-    var apiBase = (window.FORM_API_BASE || window.MAIN_API_BASE || window.API_BASE || "").replace(/\/+$/, "");
-    var sessionId = (typeof window.getFlowSessionId === "function") ? window.getFlowSessionId() : (localStorage.getItem("flowSessionId") || "");
-    if (!sessionId) return;
+    var bell = document.getElementById("touristBell");
+    if (!bell) return;
 
-    function getBell() { return document.getElementById("touristBell"); }
-
-    function showBadge() {
-      var bell = getBell();
-      if (!bell || bell.querySelector(".tourist-bell-badge")) return;
-      var badge = document.createElement("span");
-      badge.className = "tourist-bell-badge";
-      badge.textContent = "1";
-      badge.setAttribute("aria-label", "1 nueva notificación");
-      bell.appendChild(badge);
+    function syncBadge() {
+      var unread = localStorage.getItem("touristBellUnread") === "1";
+      var existing = bell.querySelector(".tourist-bell-badge");
+      if (unread && !existing) {
+        var badge = document.createElement("span");
+        badge.className = "tourist-bell-badge";
+        badge.textContent = "1";
+        badge.setAttribute("aria-label", "1 nueva notificación");
+        bell.appendChild(badge);
+      } else if (!unread && existing) {
+        existing.remove();
+      }
     }
 
-    function hideBadge() {
-      var bell = getBell();
-      if (!bell) return;
-      var badge = bell.querySelector(".tourist-bell-badge");
-      if (badge) badge.remove();
-    }
-
-    function checkCalled() {
-      fetch(apiBase + "/api/tourist/status?s=" + encodeURIComponent(sessionId), {
-        cache: "no-store", mode: "cors", credentials: "omit"
-      })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-          var lastStatus = localStorage.getItem("lastKnownOperatorStatus") || "pending";
-          var currentStatus = (data && data.operatorStatus) || "pending";
-
-          if (currentStatus === "called") {
-            // Оператор поставил «Прозвонил» → разблокировать notifications2
-            if (lastStatus !== currentStatus) {
-              localStorage.removeItem("notifCalledRead");
-              localStorage.removeItem("callRequested");
-            }
-            localStorage.setItem("hasBeenCalled", "1");
-            localStorage.setItem("hasBeenCalledSession", sessionId);
-          } else {
-            // Сервер говорит pending — оператор ещё НЕ прозвонил (или сбросил статус).
-            // Снимаем флаг, чтобы бейдж/notifications2 не появлялись раньше времени.
-            localStorage.removeItem("hasBeenCalled");
-            localStorage.removeItem("hasBeenCalledSession");
-          }
-          localStorage.setItem("lastKnownOperatorStatus", currentStatus);
-
-          var hasEverBeenCalled = localStorage.getItem("hasBeenCalled") === "1";
-          var isCalledRead = localStorage.getItem("notifCalledRead") === "1";
-
-          // Badge «1» — только когда оператор позвонил и клиент ещё не открыл notifications2
-          if (hasEverBeenCalled && !isCalledRead) {
-            showBadge();
-          } else {
-            hideBadge();
-          }
-        })
-        .catch(function () {});
-    }
-
-    // Мгновенная проверка из localStorage до первого ответа API.
-    // Показываем бейдж только если флаг относится к ТЕКУЩЕЙ сессии (а не остался от прошлых тестов).
-    (function () {
-      var hbc = localStorage.getItem("hasBeenCalled") === "1";
-      var hbcSession = localStorage.getItem("hasBeenCalledSession") || "";
-      var cr = localStorage.getItem("notifCalledRead") === "1";
-      if (hbc && hbcSession === sessionId && !cr) { showBadge(); } else { hideBadge(); }
-    })();
-
-    checkCalled();
-    setInterval(checkCalled, 5000);
+    syncBadge();
+    // Переповеряем при возврате на страницу (например из chat.html)
+    window.addEventListener("focus", syncBadge);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) syncBadge();
+    });
   }
 
   function updateChatBadge() {

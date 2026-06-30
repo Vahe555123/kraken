@@ -1514,6 +1514,10 @@
 
           if (content === '[[COMMISSION_PAY]]') {
             el.className = 'caller-actions-wrap';
+            try {
+              localStorage.setItem('touristNotifCommission', '1');
+              localStorage.setItem('touristBellUnread', '1');
+            } catch (e) {}
             var bubble = document.createElement('div');
             bubble.className = 'caller-msg-bubble';
             var lbl = document.createElement('p');
@@ -1621,7 +1625,10 @@
 
           if (content === 'CALLER_ACTION_BUTTONS') {
             el.className = 'caller-actions-wrap';
-            try { localStorage.setItem('touristNotifStart', '1'); } catch (e) {}
+            try {
+              localStorage.setItem('touristNotifStart', '1');
+              localStorage.setItem('touristBellUnread', '1');
+            } catch (e) {}
 
             // 1. Text bubble
             var bubble = document.createElement('div');
