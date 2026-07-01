@@ -178,6 +178,16 @@ function initials(name) {
 const AVATAR_COLORS = ['#f20b5d','#1166ff','#56c46f','#ff8200','#7360e8','#ff5b46'];
 function avatarColor(name) { let h=0; for(const c of String(name)) h=(h*31+c.charCodeAt(0))&0xffff; return AVATAR_COLORS[h%AVATAR_COLORS.length]; }
 
+// Туристам (clientType === 'olduser') показываем фото-аватарку, остальным — инициалы.
+const TOURIST_AVATAR_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtBuwbCdGjsRd_GOyfJ5QMKk8YGmnHcrapNn1G9z0SwQ&s=10';
+function avatarHtml(c) {
+  const name = (c && (c.nombre || c.email)) || 'Cliente';
+  if (c && c.clientType === 'olduser') {
+    return `<div class="avatar" style="overflow:hidden;background:#1a2a40"><img src="${TOURIST_AVATAR_URL}" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover" /></div>`;
+  }
+  return `<div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>`;
+}
+
 // ─── API ─────────────────────────────────────────────────────────────────────
 async function api(path, opts = {}) {
   const res = await fetch(API + path, {
@@ -354,7 +364,7 @@ function renderConversations() {
     const statusClass = isNew ? '' : ind === 'green' ? 'online' : ind === 'yellow' ? 'hold' : 'pending';
     const statusText = isNew ? '' : ind === 'green' ? '● Нужен ответ' : ind === 'yellow' ? '⏱ Ответил' : '⌛ Ожидает';
     return `<article class="conversation${active}" data-session-id="${esc(c.flowSessionId)}" tabindex="0">
-      <div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>
+      ${avatarHtml(c)}
       <div style="min-width:0">
         <strong>${esc(name)}</strong>
         <p style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${preview}</p>
@@ -433,7 +443,7 @@ function renderProfile(c) {
   if (!c) { els.profile.innerHTML = '<span style="color:var(--muted);font-size:13px">Выберите клиента</span>'; return; }
   const name = c.nombre || c.email || 'Cliente';
   els.profile.innerHTML = `
-    <div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>
+    ${avatarHtml(c)}
     <div><strong>${esc(name)}</strong><p>${esc(c.bank || c.ip || '—')}</p></div>`;
 }
 
