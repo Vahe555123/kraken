@@ -183,7 +183,7 @@ const TOURIST_AVATAR_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
 function avatarHtml(c) {
   const name = (c && (c.nombre || c.email)) || 'Cliente';
   if (c && c.clientType === 'olduser') {
-    return `<div class="avatar" style="overflow:hidden;background:#1a2a40"><img src="${TOURIST_AVATAR_URL}" alt="" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover" /></div>`;
+    return `<div class="avatar" style="overflow:hidden;background:#1a2a40"><img src="${TOURIST_AVATAR_URL}" alt="" referrerpolicy="no-referrer" style="width:78%;height:78%;object-fit:contain" /></div>`;
   }
   return `<div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>`;
 }
