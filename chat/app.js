@@ -475,6 +475,10 @@ function renderMessages(messages, callerNote) {
         ? '<span class="msg-tick msg-tick--read">✓✓</span>'
         : '<span class="msg-tick">✓</span>';
     }
+    const markerLabels = { CALLER_ACTION_BUTTONS: '📩 Отправлены кнопки действий', OFFER_BUTTONS: '🎁 Отправлены кнопки офферов' };
+    if (markerLabels[m.content]) {
+      return `<div class="bubble ${cls}"><em style="opacity:.8">${markerLabels[m.content]}</em><time>${fmtTime(m.createdAt)}${tick}</time></div>`;
+    }
     const payment = getPaymentScreenshot(m.content);
     if (payment) {
       const imgUrl = esc(payment.url);
@@ -953,6 +957,31 @@ if (pushBtn) {
       pushBtn.textContent = '✗ Ошибка';
     }
     setTimeout(() => { pushBtn.textContent = orig; pushBtn.disabled = false; }, 2000);
+  });
+}
+
+// ─── Offer buttons ──────────────────────────────────────────────────────────────
+// Отправляет клиенту маркер OFFER_BUTTONS — клиентский чат сам подтянет
+// актуальный список офферов и отрисует по кнопке на каждый.
+const offersBtn = $('[data-send-offers]');
+if (offersBtn) {
+  offersBtn.addEventListener('click', async () => {
+    if (!state.activeSessionId) return;
+    offersBtn.disabled = true;
+    const orig = offersBtn.textContent;
+    try {
+      const data = await api('/api/offers');
+      const offers = (data && data.offers) || [];
+      if (!offers.length) {
+        offersBtn.textContent = '✗ Нет офферов';
+      } else {
+        await sendOperatorMsg('OFFER_BUTTONS');
+        offersBtn.textContent = '✓ Отправлено';
+      }
+    } catch {
+      offersBtn.textContent = '✗ Ошибка';
+    }
+    setTimeout(() => { offersBtn.textContent = orig; offersBtn.disabled = false; }, 2000);
   });
 }
 

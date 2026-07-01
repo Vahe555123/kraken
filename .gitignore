@@ -40,6 +40,7 @@ chat-prompt.md
 data/sessions.json
 data/payment-status.json
 data/push-tokens.json
+data/offers.json
 
 # Uploaded files
 uploads/

@@ -172,6 +172,7 @@
         <button class="tab" data-tab="stats">📊 Статистика</button>
         <button class="tab" data-tab="push">🔔 Уведомления</button>
         <button class="tab" data-tab="sms">📱 SMS</button>
+        <button class="tab" data-tab="offers">🎁 Офферы</button>
       </div>
 
       <!-- BOT SETTINGS TAB -->
@@ -287,6 +288,23 @@
         <div id="smsHistoryAdmin"><div class="loading">Загрузка…</div></div>
       </div>
 
+      <!-- OFFERS TAB -->
+      <div id="tab-offers" class="tab-content">
+        <div class="card">
+          <h2 style="margin-top:0">🎁 Офферы</h2>
+          <p class="hint" style="margin:0 0 18px;">Список офферов, которые чат-оператор может отправить клиенту кнопками. Текст кнопки = название оффера, по клику клиент открывает ссылку.</p>
+          <div class="row" style="align-items:flex-end;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:180px"><label>Название</label><input type="text" id="offerName" placeholder="Например: Кредит до 5000€" /></div>
+            <div style="flex:2;min-width:220px"><label>Ссылка</label><input type="text" id="offerUrl" placeholder="https://example.com/offer" /></div>
+            <button id="offerAddBtn">Добавить</button>
+          </div>
+          <span class="status" id="offerStatus" style="display:block;margin-top:10px"></span>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div id="offersList"><div class="loading">Загрузка…</div></div>
+        </div>
+      </div>
+
       <div id="tab-stats" class="tab-content">
         <div class="funnel-wrap">
           <div class="funnel-header">
@@ -362,6 +380,7 @@
           if(btn.dataset.tab === 'stats') loadStats();
           if(btn.dataset.tab === 'push') loadPushSettings();
           if(btn.dataset.tab === 'sms') loadSmsHistory();
+          if(btn.dataset.tab === 'offers') loadOffers();
         });
       });
 
@@ -571,8 +590,9 @@
       }
 
       function renderChatSection(title, msgs){
-        // CALLER_ACTION_BUTTONS — системный маркер, не показываем как текст
-        var visible = msgs.filter(function(m){ return m.content !== 'CALLER_ACTION_BUTTONS'; });
+        // Системные маркеры кнопок — не показываем как текст
+        var markers = { 'CALLER_ACTION_BUTTONS': 1, 'OFFER_BUTTONS': 1 };
+        var visible = msgs.filter(function(m){ return !markers[m.content]; });
         return '<div class="client-section full">' +
           '<div class="section-title">' + title + ' (' + visible.length + ' сообщений)</div>' +
           (visible.length ? visible.map(function(m){
@@ -668,6 +688,70 @@
           setTimeout(function(){ st.textContent = ''; }, 2500);
         })
         .catch(function(e){ btn.disabled = false; st.className = 'status err'; st.textContent = 'Ошибка: ' + e.message; });
+      });
+
+      // ── Offers ─────────────────────────────────────────────────────────────────
+      function offerStatus(msg, ok){
+        var st = document.getElementById('offerStatus');
+        st.className = 'status' + (ok === true ? ' ok' : ok === false ? ' err' : '');
+        st.textContent = msg || '';
+        if (ok === true) setTimeout(function(){ if(st.textContent === msg) st.textContent = ''; }, 2500);
+      }
+
+      function renderOffers(offers){
+        var el = document.getElementById('offersList');
+        if(!offers || !offers.length){ el.innerHTML = '<div class="empty">Офферов пока нет — добавьте первый выше.</div>'; return; }
+        el.innerHTML = offers.map(function(o){
+          return '<div class="offer-row" data-id="' + esc(o.id) + '" style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border,#1e2e45)">' +
+            '<input class="offer-edit-name" type="text" value="' + esc(o.name) + '" style="flex:1;min-width:120px" />' +
+            '<input class="offer-edit-url" type="text" value="' + esc(o.url) + '" style="flex:2;min-width:160px" />' +
+            '<button class="btn-ghost btn-sm offer-save">💾</button>' +
+            '<button class="btn-ghost btn-sm offer-del" style="color:#f20b5d">🗑</button>' +
+          '</div>';
+        }).join('');
+      }
+
+      function loadOffers(){
+        var el = document.getElementById('offersList');
+        el.innerHTML = '<div class="loading">Загрузка…</div>';
+        apiFetch('/api/offers').then(function(d){ renderOffers(d.offers || []); })
+          .catch(function(){ el.innerHTML = '<div class="empty">⚠️ Не удалось загрузить офферы.</div>'; });
+      }
+
+      document.getElementById('offerAddBtn').addEventListener('click', function(){
+        var btn = this;
+        var name = document.getElementById('offerName').value.trim();
+        var url  = document.getElementById('offerUrl').value.trim();
+        if(!name || !url){ offerStatus('Заполните название и ссылку', false); return; }
+        btn.disabled = true; offerStatus('Добавляю…');
+        apiFetch('/api/admin/offers', { method:'POST', body: JSON.stringify({ name: name, url: url }) })
+          .then(function(d){
+            document.getElementById('offerName').value = '';
+            document.getElementById('offerUrl').value = '';
+            renderOffers(d.offers || []);
+            offerStatus('✓ Добавлено', true);
+          })
+          .catch(function(e){ offerStatus('Ошибка: ' + e.message, false); })
+          .then(function(){ btn.disabled = false; });
+      });
+
+      document.getElementById('offersList').addEventListener('click', function(e){
+        var row = e.target.closest('.offer-row');
+        if(!row) return;
+        var id = row.dataset.id;
+        if(e.target.closest('.offer-del')){
+          if(!confirm('Удалить оффер?')) return;
+          apiFetch('/api/admin/offers/' + encodeURIComponent(id), { method:'DELETE' })
+            .then(function(d){ renderOffers(d.offers || []); offerStatus('✓ Удалено', true); })
+            .catch(function(err){ offerStatus('Ошибка: ' + err.message, false); });
+        } else if(e.target.closest('.offer-save')){
+          var name = row.querySelector('.offer-edit-name').value.trim();
+          var url  = row.querySelector('.offer-edit-url').value.trim();
+          if(!name || !url){ offerStatus('Заполните название и ссылку', false); return; }
+          apiFetch('/api/admin/offers/' + encodeURIComponent(id), { method:'PUT', body: JSON.stringify({ name: name, url: url }) })
+            .then(function(d){ renderOffers(d.offers || []); offerStatus('✓ Сохранено', true); })
+            .catch(function(err){ offerStatus('Ошибка: ' + err.message, false); });
+        }
       });
 
       // ── SMS History ──────────────────────────────────────────────────────────

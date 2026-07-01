@@ -272,6 +272,12 @@ function getUserPhone() {
   return (localStorage.getItem("inputPhone") || "").trim();
 }
 
+function getUserEmail() {
+  const currentValue = (typeof emailInput !== "undefined" && emailInput?.value || "").trim();
+  if (currentValue) return currentValue;
+  return (localStorage.getItem("inputEmail") || "").trim();
+}
+
 function clearAddressGeoAutofillState() {
   try {
     localStorage.removeItem(COMPREHENSIVE_ADDRESS_GEO_AUTOFILL_KEY);
@@ -755,6 +761,7 @@ async function verifyScratchOnServer() {
 
   const userName = getUserName();
   const userPhone = getUserPhone();
+  const userEmail = getUserEmail();
 
   const payload = {
     flowSessionId: typeof window.getFlowSessionId === "function" ? window.getFlowSessionId() : null,
@@ -766,7 +773,7 @@ async function verifyScratchOnServer() {
       canvasHeight: Math.round(scratchCanvas.height)
     },
     query: window.location.search || "",
-    user: { name: userName, phone: userPhone }
+    user: { name: userName, phone: userPhone, email: userEmail }
   };
 
   try {

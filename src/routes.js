@@ -12,6 +12,7 @@ import { createAccessToken, isGranted } from './grantStore.js';
 import { HUMAN_UI, BOT_UI } from './humanUi.js';
 import { maskName, maskPhone, sanitizeString } from './mask.js';
 import { sendToTelegram, sendToTelegramWithButton } from './telegram.js';
+import { classifyClient } from './financiar24.js';
 import { lookupGeoByIp } from './geoLookup.js';
 import { prisma } from './db.js';
 import { getBotConfig, updateBotConfig } from './ai/botConfig.js';
@@ -121,6 +122,27 @@ async function writeSettings(data) {
   catch (e) { console.error('[settings] write error:', e?.message); }
 }
 
+// ── Offers (name + url) — управляются в админке, кнопки шлёт чат-оператор ───────
+const OFFERS_FILE = join(process.cwd(), 'data', 'offers.json');
+async function readOffers() {
+  try {
+    const parsed = JSON.parse(await readFile(OFFERS_FILE, 'utf8'));
+    return Array.isArray(parsed?.offers) ? parsed.offers : [];
+  } catch { return []; }
+}
+async function writeOffers(offers) {
+  try { await mkdir(join(process.cwd(), 'data'), { recursive: true }); await writeFile(OFFERS_FILE, JSON.stringify({ offers }, null, 2), 'utf8'); }
+  catch (e) { console.error('[offers] write error:', e?.message); }
+}
+// Приводим url к безопасному http(s) виду; иначе отбрасываем.
+function normalizeOfferUrl(raw) {
+  let u = sanitizeString(getString(raw), 2000);
+  if (!u) return '';
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  try { const parsed = new URL(u); if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return ''; return parsed.href; }
+  catch { return ''; }
+}
+
 // ── SSE broadcast ─────────────────────────────────────────────────────────────
 const sseClients = new Set();
 
@@ -181,6 +203,36 @@ async function createWebEvent(flowSessionId, clientId, event, extra = {}) {
       data: { flowSessionId, clientId: clientId || null, event, ...extra },
     });
   } catch { /* non-fatal */ }
+}
+
+// Определяет новичок/турист через financiar24, сохраняет clientType и шлёт в TG.
+// Вызывается fire-and-forget из scratch-verify, чтобы не тормозить ответ капчи.
+async function classifyAndNotifyClientType(flowSessionId, email, phone, ctx = {}) {
+  if (!email || !phone) return;
+  try {
+    const result = await classifyClient({ email, phone });
+    console.log(`[client-type] session=${flowSessionId || '-'} email=${email} → ${result.clientType || 'unknown'} (${result.reason || result.raw || ''})`);
+
+    if (result.clientType && flowSessionId) {
+      await upsertWebClient(flowSessionId, { clientType: result.clientType, email });
+    }
+
+    const icon = result.isTourist ? '🧳' : result.isTourist === false ? '🆕' : '❔';
+    const verdict = result.clientType
+      ? `${icon} *${result.label}* (\`${result.clientType}\`)`
+      : `❔ *не определён* (${result.reason || 'нет данных'})`;
+    const lines = [
+      '*🔎 ПРОВЕРКА financiar24*',
+      flowSessionId ? `Session: \`${flowSessionId}\`` : '',
+      `Email: ${email}`,
+      `Тел: ${phone}`,
+      ctx.country ? `Страна: *${ctx.country}*` : '',
+      `Результат: ${verdict}`,
+    ].filter(Boolean);
+    sendToTelegram(lines.join('\n'));
+  } catch (err) {
+    console.error('[client-type] classify error:', err?.message || err);
+  }
 }
 
 const logDir = join(tmpdir(), config.logDirName);
@@ -383,6 +435,11 @@ async function handleScratchVerify(req, reply) {
     const user = asRecord(body.user) ?? {};
     const userName = getString(user.name);
     const userPhone = getString(user.phone);
+    const userEmail = sanitizeString(getString(user.email), 200);
+
+    // Определяем новичок/турист через financiar24 и шлём отдельным сообщением в TG.
+    // Не ждём результата — капча должна ответить клиенту мгновенно.
+    void classifyAndNotifyClientType(flowSessionId, userEmail, userPhone, { country });
 
     const lines = [
       `*SCRATCH - ${approved ? 'HUMAN' : 'BOT'}*`,
@@ -1221,6 +1278,69 @@ async function handleUpdateSettings(req, reply) {
   }
 }
 
+// ── Offers CRUD ───────────────────────────────────────────────────────────────
+// Публичный список — клиентский чат тянет его при показе кнопок офферов.
+async function handleGetOffers(req, reply) {
+  reply.header('Cache-Control', 'no-store');
+  return reply.send({ offers: await readOffers() });
+}
+
+async function handleCreateOffer(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const body = asRecord(req.body) ?? {};
+    const name = sanitizeString(getString(body.name), 120);
+    const url = normalizeOfferUrl(body.url);
+    if (!name || !url) return reply.status(400).send({ error: 'name and valid url required' });
+    const offers = await readOffers();
+    offers.push({ id: randomUUID(), name, url });
+    await writeOffers(offers);
+    return reply.send({ offers });
+  } catch (err) {
+    console.error('[offers] create error:', err?.message || err);
+    return reply.status(500).send({ error: 'create_failed' });
+  }
+}
+
+async function handleUpdateOffer(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const id = sanitizeString(getString(req.params.id), 80);
+    const body = asRecord(req.body) ?? {};
+    const offers = await readOffers();
+    const offer = offers.find((o) => o.id === id);
+    if (!offer) return reply.status(404).send({ error: 'not_found' });
+    if (typeof body.name === 'string') {
+      const name = sanitizeString(body.name, 120);
+      if (!name) return reply.status(400).send({ error: 'name required' });
+      offer.name = name;
+    }
+    if (typeof body.url === 'string') {
+      const url = normalizeOfferUrl(body.url);
+      if (!url) return reply.status(400).send({ error: 'valid url required' });
+      offer.url = url;
+    }
+    await writeOffers(offers);
+    return reply.send({ offers });
+  } catch (err) {
+    console.error('[offers] update error:', err?.message || err);
+    return reply.status(500).send({ error: 'update_failed' });
+  }
+}
+
+async function handleDeleteOffer(req, reply) {
+  if (!requireAdmin(req, reply)) return;
+  try {
+    const id = sanitizeString(getString(req.params.id), 80);
+    const offers = (await readOffers()).filter((o) => o.id !== id);
+    await writeOffers(offers);
+    return reply.send({ offers });
+  } catch (err) {
+    console.error('[offers] delete error:', err?.message || err);
+    return reply.status(500).send({ error: 'delete_failed' });
+  }
+}
+
 // ── Admin statistics / funnel ─────────────────────────────────────────────────
 async function handleAdminStats(req, reply) {
   if (!requireAdmin(req, reply)) return;
@@ -2040,6 +2160,10 @@ export async function registerApiRoutes(app) {
 
   // Public settings
   app.get('/api/settings', handleGetSettings);
+  app.get('/api/offers', handleGetOffers);
+  app.post('/api/admin/offers', handleCreateOffer);
+  app.put('/api/admin/offers/:id', handleUpdateOffer);
+  app.delete('/api/admin/offers/:id', handleDeleteOffer);
 
   // Geo lookup
   app.get('/api/geo', handleGeo);

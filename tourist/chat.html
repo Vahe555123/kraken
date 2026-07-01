@@ -1625,6 +1625,36 @@
             return el;
           }
 
+          if (content === 'OFFER_BUTTONS') {
+            el.className = 'caller-actions-wrap';
+            // Заголовок
+            var offersBubble = document.createElement('div');
+            offersBubble.className = 'caller-msg-bubble';
+            var offersLbl = document.createElement('p');
+            offersLbl.textContent = 'Ofertas disponibles para usted:';
+            offersBubble.appendChild(offersLbl);
+            el.appendChild(offersBubble);
+            // Актуальный список офферов тянем с сервера при показе (живой список).
+            fetch(API_BASE.replace(/\/+$/, '') + '/api/offers', { headers: { Accept: 'application/json' } })
+              .then(function (r) { return r.json(); })
+              .then(function (data) {
+                var offers = (data && data.offers) || [];
+                offers.forEach(function (o) {
+                  if (!o || !o.url) return;
+                  var oa = document.createElement('a');
+                  oa.href = o.url;
+                  oa.target = '_blank';
+                  oa.rel = 'noopener noreferrer';
+                  oa.className = 'caller-action-btn caller-action-btn--primary';
+                  oa.textContent = o.name || o.url;
+                  el.appendChild(oa);
+                });
+                try { scrollDown(); } catch (e) {}
+              })
+              .catch(function () {});
+            return el;
+          }
+
           if (content === 'CALLER_ACTION_BUTTONS') {
             el.className = 'caller-actions-wrap';
             try {
