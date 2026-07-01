@@ -178,12 +178,12 @@ function initials(name) {
 const AVATAR_COLORS = ['#f20b5d','#1166ff','#56c46f','#ff8200','#7360e8','#ff5b46'];
 function avatarColor(name) { let h=0; for(const c of String(name)) h=(h*31+c.charCodeAt(0))&0xffff; return AVATAR_COLORS[h%AVATAR_COLORS.length]; }
 
-// Туристам (clientType === 'olduser') показываем фото-аватарку, остальным — инициалы.
-const TOURIST_AVATAR_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtBuwbCdGjsRd_GOyfJ5QMKk8YGmnHcrapNn1G9z0SwQ&s=10';
+// Туристам (clientType === 'olduser') показываем фото-аватарку (фон убран), остальным — инициалы.
+const TOURIST_AVATAR_URL = '/assets/tourist-avatar.png';
 function avatarHtml(c) {
   const name = (c && (c.nombre || c.email)) || 'Cliente';
   if (c && c.clientType === 'olduser') {
-    return `<div class="avatar" style="overflow:hidden;background:#1a2a40"><img src="${TOURIST_AVATAR_URL}" alt="" referrerpolicy="no-referrer" style="width:78%;height:78%;object-fit:contain" /></div>`;
+    return `<div class="avatar" style="overflow:hidden;background:#1a2a40"><img src="${TOURIST_AVATAR_URL}" alt="" style="width:86%;height:86%;object-fit:contain" /></div>`;
   }
   return `<div class="avatar" style="background:${avatarColor(name)}">${esc(initials(name))}</div>`;
 }
