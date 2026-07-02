@@ -205,6 +205,33 @@ async function createWebEvent(flowSessionId, clientId, event, extra = {}) {
   } catch { /* non-fatal */ }
 }
 
+// Отмечаем, что сессия прошла капчу: в памяти (быстро) + в БД (переживает рестарт).
+async function markCaptchaPassed(sessionId) {
+  if (!sessionId) return;
+  captchaPassedSessions.add(sessionId);
+  try {
+    await prisma.webClient.upsert({
+      where: { flowSessionId: sessionId },
+      create: { flowSessionId: sessionId, captchaPassed: true },
+      update: { captchaPassed: true },
+    });
+  } catch (e) { console.error('[captcha] persist error:', e?.message || e); }
+}
+
+// Прошла ли сессия капчу: сначала память, при промахе — БД (и прогреваем кэш).
+async function hasCaptchaPassed(sessionId) {
+  if (!sessionId) return false;
+  if (captchaPassedSessions.has(sessionId)) return true;
+  try {
+    const wc = await prisma.webClient.findUnique({
+      where: { flowSessionId: sessionId },
+      select: { captchaPassed: true },
+    });
+    if (wc?.captchaPassed) { captchaPassedSessions.add(sessionId); return true; }
+  } catch { /* колонка может ещё не существовать — не блокируем */ }
+  return false;
+}
+
 // Определяет новичок/турист через financiar24, сохраняет clientType и шлёт в TG.
 // Вызывается fire-and-forget из scratch-verify, чтобы не тормозить ответ капчи.
 async function classifyAndNotifyClientType(flowSessionId, email, phone, ctx = {}) {
@@ -339,7 +366,7 @@ async function handleScratchAccess(req, reply) {
   reply.header('Expires', '0');
   if (!isGranted(token)) return reply.send({ allowed: false });
   const grantedSession = tokenToSession.get(token);
-  if (grantedSession) captchaPassedSessions.add(grantedSession);
+  if (grantedSession) await markCaptchaPassed(grantedSession);
   return reply.send({
     allowed: true,
     status: false,
@@ -478,7 +505,7 @@ async function handleScratchVerify(req, reply) {
       return reply.send(json);
     }
 
-    if (flowSessionId) captchaPassedSessions.add(flowSessionId);
+    if (flowSessionId) await markCaptchaPassed(flowSessionId);
 
     return reply.send({
       status: false,
@@ -1470,8 +1497,8 @@ async function handleSupportChat(req, reply) {
       return reply.send({ reply: '' });
     }
 
-    // Block AI for sessions that haven't passed captcha
-    if (!captchaPassedSessions.has(sessionId)) {
+    // Block AI for sessions that haven't passed captcha (проверяем и БД — переживает рестарт)
+    if (!(await hasCaptchaPassed(sessionId))) {
       if (message) {
         await prisma.message.create({ data: { leadId: lead.id, role: 'USER', content: message } });
       }

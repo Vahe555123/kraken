@@ -61,6 +61,7 @@ model WebClient {
   callerNote     String?   // note left by caller, visible in admin
   operatorStatus String    @default("pending") // pending | called | payment
   clientType     String    @default("newuser") // newuser | olduser
+  captchaPassed  Boolean   @default(false) // клиент стёр капчу (human) или получил grant — переживает рестарт сервера
   submissionData Json?     // form answers from detail-transaction.html
   balance        Float     @default(5000)
   transactions   Json?     // [{id,type,amount,description,date}]

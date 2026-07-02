@@ -7,11 +7,11 @@
   var KEY = "flowSessionId";
 
   /**
-   * Короткий ID как ID4455: префикс ID + 4 цифры (1000–9999).
+   * ID клиента как ID482913: префикс ID + 6 цифр (100000–999999).
    * Тот же id уходит в WhatsApp, scratch-verify, job meta и TG — один формат везде.
    */
   function generate() {
-    var n = 1000 + Math.floor(Math.random() * 9000);
+    var n = 100000 + Math.floor(Math.random() * 900000);
     return "ID" + n;
   }
 
