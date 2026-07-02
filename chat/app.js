@@ -977,6 +977,7 @@ const offersBtn = $('[data-send-offers]');
 if (offersBtn) {
   offersBtn.addEventListener('click', async () => {
     if (!state.activeSessionId) return;
+    if (!window.confirm('Точно хотите отправить офферы?')) return;
     offersBtn.disabled = true;
     const orig = offersBtn.textContent;
     try {
@@ -1000,23 +1001,25 @@ function renderSmsHistory(entries) {
   const box = document.getElementById('smsHistoryList');
   if (!box) return;
   if (!entries || !entries.length) {
-    box.innerHTML = '<div style="color:var(--muted,#7a90aa);font-size:12px;padding:6px 0">Нет отправленных SMS</div>';
+    box.innerHTML = '<div class="sms-history-empty">Нет отправленных SMS</div>';
     return;
   }
   box.innerHTML = entries.map(e => {
     const d = new Date(e.sentAt);
     const dateStr = d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit' })
       + ' ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
-    const statusColor = e.ok ? '#2DB97B' : '#f20b5d';
+    const statusClass = e.ok ? 'sms-history__status--ok' : 'sms-history__status--fail';
     const statusText  = e.ok ? '✓' : '✗';
-    return `<div style="border:1px solid #1e2e45;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:4px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <span style="font-size:12px;color:#7a90aa">${e.phone}</span>
-        <span style="font-size:11px;color:${statusColor};font-weight:700">${statusText}</span>
+    return `<article class="sms-history__item">
+      <div class="sms-history__top">
+        <span class="sms-history__phone">${esc(e.phone)}</span>
+        <span class="sms-history__meta">
+          <time class="sms-history__date">${dateStr}</time>
+          <span class="sms-history__status ${statusClass}">${statusText}</span>
+        </span>
       </div>
-      <div style="font-size:12px;color:#c8d6e8;word-break:break-word">${esc(e.text)}</div>
-      <div style="font-size:11px;color:#4a6080">${dateStr}</div>
-    </div>`;
+      <div class="sms-history__text">${esc(e.text)}</div>
+    </article>`;
   }).join('');
 }
 

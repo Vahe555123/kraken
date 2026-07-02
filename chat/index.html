@@ -65,9 +65,6 @@
             <div class="chat-tools">
               <div class="date" data-chat-date>12.06.26</div>
               <div class="payment-actions">
-                <button type="button">Оплата-1</button>
-                <button type="button">Оплата-2</button>
-                <button type="button">Оплата-3</button>
                 <button type="button" id="sendPushBtn" data-send-push title="Отправить push-уведомление клиенту">🔔 Пуш</button>
                 <button type="button" id="sendOffersBtn" data-send-offers title="Показать клиенту кнопки офферов">🎁 Офферы</button>
                 <button type="button" id="sendSmsBtn" data-send-sms title="Отправить SMS клиенту">📱 SMS</button>
@@ -157,12 +154,12 @@
             <ul class="events" data-events></ul>
           </section>
 
-          <section class="panel">
+          <section class="panel panel--sms">
             <div class="panel-title">
               <h2>📱 История SMS</h2>
             </div>
             <div id="smsHistoryList">
-              <div style="color:#4a6080;font-size:12px">Выберите клиента</div>
+              <div class="sms-history-empty">Выберите клиента</div>
             </div>
           </section>
 

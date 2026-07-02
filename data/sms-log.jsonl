@@ -1,0 +1,5 @@
+{"sentAt":"2026-06-30T22:18:15.723Z","sessionId":"ID9859","phone":"+34666666666","text":"tyutyuty","ok":false,"messageId":"QUEUED","error":"gateway_error"}
+{"sentAt":"2026-06-30T22:19:02.783Z","sessionId":"ID9859","phone":"+34665954272","text":"dsfsdfsd sdfsdf","ok":false,"messageId":"QUEUED","error":"gateway_error"}
+{"sentAt":"2026-06-30T22:23:12.837Z","sessionId":"ID9859","phone":"+34665954272","text":"dsfsdfsd sdfsdf","ok":false,"messageId":"QUEUED","error":"gateway_error"}
+{"sentAt":"2026-06-30T22:25:07.986Z","sessionId":"ID9859","phone":"+34666666666","text":"ываыва","ok":true,"messageId":"QUEUED","error":null}
+{"sentAt":"2026-07-01T15:12:55.951Z","sessionId":"ID1495","phone":"+34600551393","text":"Buenos días y que tengas un buen día","ok":true,"messageId":"Insufficient balance.","error":null}

@@ -240,7 +240,7 @@
                   <span id="touristLoanTime" style="opacity:0">—</span>
                 </div>
               </div>
-              <span class="tourist-list-item__amount">+€5,000.00</span>
+              <span class="tourist-list-item__amount">+€5.000,00</span>
             </div>
           </div>
         </section>
@@ -603,7 +603,11 @@
           : (localStorage.getItem('flowSessionId') || '');
         if (!sessionId) return;
         function fmtEur(v) {
-          return Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          var n = Number(v);
+          if (!isFinite(n)) n = 0;
+          var parts = Math.abs(n).toFixed(2).split('.');
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+          return parts[0] + ',' + parts[1];
         }
         fetch(API_BASE.replace(/\/+$/, '') + '/api/tourist/balance/' + encodeURIComponent(sessionId), {
           method: 'GET', cache: 'no-store', mode: 'cors', credentials: 'omit',
